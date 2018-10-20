@@ -122,7 +122,7 @@ function _resolveMask(mask, params) {
 function _getCfgParams(params) {
    const res = {};
    params.forEach(function(param) {
-      res[param.name] = encodeURIComponent(param.value);
+      res[param.name] = param.value;
    });
    return res;
 }
