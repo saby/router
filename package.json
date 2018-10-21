@@ -3,8 +3,11 @@
    "version": "3.18.600",
    "repository": {
       "type": "git",
-      "url": "git@github.com:saby/Router.git"
+      "url": "git@platform-git.sbis.ru:saby/router.git"
    },
+   "files": [
+      "Router/*"
+   ],
    "dependencies": {
       "typescript": "^2.9.1"
    },
