@@ -5,18 +5,6 @@
       "type": "git",
       "url": "git@github.com:saby/Router.git"
    },
-   "files": [
-      "Router/*"
-   ],
-   "scripts": {
-      "start": "node app",
-      "build": "grunt build",
-      "rebuild": "grunt rebuild",
-      "test": "node node_modules/ws-unit-testing/mocha --amd test-isolated",
-      "test:debug": "node node_modules/ws-unit-testing/mocha --amd %NODE_DEBUG_OPTION% test-isolated",
-      "coverage": "node node_modules/ws-unit-testing/cover --amd test-isolated",
-      "lint": "node ./node_modules/eslint/bin/eslint --color --no-eslintrc -c=.eslintrc -f=stylish ."
-   },
    "dependencies": {
       "typescript": "^2.9.1"
    },

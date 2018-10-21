@@ -1,6 +1,6 @@
-/// <amd-module name="Controls/Router/Link" />
+/// <amd-module name="Router/Link" />
 import Control = require('Core/Control');
-import template = require('wml!Controls/Router/Link');
+import template = require('wml!Router/Link');
 import RouterHelper from './Helper';
 
 class Link extends Control {

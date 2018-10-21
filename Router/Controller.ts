@@ -4,9 +4,9 @@ import Control = require('Core/Control');
 import template = require('wml!Router/Controller');
 import registrar = require('Controls/Event/Registrar');
 import UrlRewriter from './UrlRewriter'
-import Router from 'Route';
+import Router from './Route';
 import History from './History';
-import Link = require("./Link");
+import Link from './Link';
 
 class Controller extends Control {
    private _registrar: registrar = null;

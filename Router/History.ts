@@ -1,4 +1,4 @@
-/// <amd-module name="Controls/Router/History" />
+/// <amd-module name="Router/History" />
 import RouterHelper from './Helper';
 
 let localHistory = [];

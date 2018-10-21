@@ -1,6 +1,6 @@
-/// <amd-module name="Controls/Router" />
+/// <amd-module name="Router/Route" />
 import Control = require('Core/Control');
-import template = require('wml!Controls/Router/Router');
+import template = require('wml!Router/Route');
 import RouterHelper from './Helper';
 import History from './History';
 
