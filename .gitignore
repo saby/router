@@ -1,0 +1,10 @@
+.idea
+.history
+.DS_Store
+node_modules
+*.log
+/application
+/builder-ui
+/builderCfg.json
+/package-lock.json
+/SBIS3.CONTROLS

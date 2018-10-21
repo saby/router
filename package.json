@@ -1,0 +1,48 @@
+{
+   "name": "Router",
+   "version": "3.18.600",
+   "repository": {
+      "type": "git",
+      "url": "git@github.com:saby/Router.git"
+   },
+   "files": [
+      "Router/*"
+   ],
+   "scripts": {
+      "start": "node app",
+      "build": "grunt build",
+      "rebuild": "grunt rebuild",
+      "test": "node node_modules/ws-unit-testing/mocha --amd test-isolated",
+      "test:debug": "node node_modules/ws-unit-testing/mocha --amd %NODE_DEBUG_OPTION% test-isolated",
+      "coverage": "node node_modules/ws-unit-testing/cover --amd test-isolated",
+      "lint": "node ./node_modules/eslint/bin/eslint --color --no-eslintrc -c=.eslintrc -f=stylish ."
+   },
+   "dependencies": {
+      "typescript": "^2.9.1"
+   },
+   "devDependencies": {
+      "@tensor-corp/eslint-config": "^2.0.3",
+      "body-parser": "^1.18.3",
+      "cookie-parser": "^1.4.3",
+      "eslint": "^5.6.1",
+      "express": "^4.16.3",
+      "gulp": "^4.0.0",
+      "gulp-less": "^3.5.0",
+      "gulp-livereload": "^3.8.1",
+      "humanize": "0.0.9",
+      "less": "^2.7.3",
+      "load-grunt-config": "0.16.0",
+      "merge": "1.2.0",
+      "minimatch": "^3.0.3",
+      "postcss": "^6.0.23",
+      "progress": "^2.0.0",
+      "requirejs": "2.1.18",
+      "sbis3-builder": "git+https://git.sbis.ru/root/sbis3-builder.git#rc-3.18.600",
+      "sbis3-ws": "git+https://git.sbis.ru/sbis/ws.git#rc-3.18.600",
+      "sbis3-controls": "git+http://git.sbis.ru/sbis/controls.git#3.18.600/feature/router-panels",
+      "serve-static": "1.11.x",
+      "typescript": "2.5.3",
+      "ws-data": "git+http://git.sbis.ru/ws/data.git#rc-3.18.600",
+      "ws-unit-testing": "git+https://git.sbis.ru/ws/unit-testing.git#rc-3.18.600"
+   }
+}

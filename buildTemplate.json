@@ -1,0 +1,61 @@
+{
+  "cache": "%cd%/builder-ui/builder-json-cache",
+  "output": "%cd%/application",
+  "logs": "%cd%/builder-ui/logs",
+  "mode": "debug",
+  "modules": [
+    {
+      "name": "Router",
+      "path": "%cd%/Router"
+    },
+    {
+      "name": "Controls",
+      "path": "%cd%/node_modules/sbis3-controls/Controls"
+    },
+    {
+      "name": "Controls-demo",
+      "path": "%cd%/node_modules/sbis3-controls/Controls-demo"
+    },
+    {
+      "name": "Controls-theme",
+      "path": "%cd%/node_modules/sbis3-controls/Controls-theme"
+    },
+    {
+      "name": "Core",
+      "path": "%cd%/node_modules/sbis3-ws/Core"
+    },
+    {
+      "name": "WS.Core",
+      "path": "%cd%/node_modules/sbis3-ws/ws"
+    },
+    {
+      "name": "Lib",
+      "path": "%cd%/node_modules/sbis3-ws/ws/lib"
+    },
+    {
+      "name": "Ext",
+      "path": "%cd%/node_modules/sbis3-ws/ws/lib/Ext"
+    },
+    {
+      "name": "Transport",
+      "path": "%cd%/node_modules/sbis3-ws/ws/transport"
+    },
+    {
+      "name": "View",
+      "path": "%cd%/node_modules/sbis3-ws/View"
+    },
+    {
+      "name": "WS.Data",
+      "path": "%cd%/node_modules/ws-data/WS.Data"
+    },
+    {
+      "name": "Data",
+      "path": "%cd%/node_modules/ws-data/Data"
+    },
+    {
+      "name": "Vdom",
+      "path": "%cd%/node_modules/sbis3-ws/Vdom"
+    }
+
+  ]
+}
