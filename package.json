@@ -5,6 +5,9 @@
       "type": "git",
       "url": "git@github.com:saby/Router.git"
    },
+   "files": [
+      "Router/*"
+   ],
    "scripts": {
       "start": "node app",
       "build": "grunt build",
