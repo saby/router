@@ -1,4 +1,4 @@
-/// <amd-module name="Controls/Router/Helper" />
+/// <amd-module name="Router/Helper" />
 import getUrl = require('Transport/URL/getUrl');
 import IoC = require('Core/IoC');
 
