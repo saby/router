@@ -151,7 +151,9 @@ function _resolveHref(href, mask, cfg) {
    const toReplace = _resolveMask(mask, cfgParams);
 
    let result = href;
-   if (toFind) {
+   if (toReplace && toReplace[0] === '/') {
+      result = toReplace;
+   } else if (toFind) {
       if (toReplace) {
          result = href.replace(toFind, toReplace);
       } else {

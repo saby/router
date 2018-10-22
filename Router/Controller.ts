@@ -7,6 +7,21 @@ import UrlRewriter from './UrlRewriter'
 import Router from './Route';
 import History from './History';
 import Link from './Link';
+import RouterHelper from './Helper';
+
+function getStateForNavigate(localState: any, historyState: any, currentUrl: string): any {
+   if (!localState) {
+      if (historyState && historyState.url && historyState.prettyUrl) {
+         return historyState;
+      } else {
+         return {
+            url: currentUrl,
+            prettyUrl: currentUrl
+         }
+      }
+   }
+   return localState;
+}
 
 class Controller extends Control {
    private _registrar: registrar = null;
@@ -35,7 +50,8 @@ class Controller extends Control {
             if (!event.state || event.state.id < currentState.id) {
                //back
                let prevState = History.getPrevState();
-               this.navigate(event, prevState.url, prevState.prettyUrl,
+               let stateForNavigate = getStateForNavigate(prevState, event.state, RouterHelper.getRelativeUrl());
+               this.navigate(event, stateForNavigate.url, stateForNavigate.prettyUrl,
                   () => {
                      History.back();
                   },
@@ -46,7 +62,8 @@ class Controller extends Control {
             } else {
                //forward
                let nextState = History.getNextState();
-               this.navigate(event, nextState.url, nextState.prettyUrl,
+               let stateForNavigate = getStateForNavigate(nextState, event.state, RouterHelper.getRelativeUrl());
+               this.navigate(event, stateForNavigate.url, stateForNavigate.prettyUrl,
                   () => {
                      History.forward();
                   },
@@ -128,11 +145,11 @@ class Controller extends Control {
 
    routerCreated(event: Event, inst: Router): void {
       this._registrar.register(event, inst, (newUrl, oldUrl) => {
-         return inst.beforeApplyUrl(newUrl, oldUrl);
+            return inst.beforeApplyUrl(newUrl, oldUrl);
       });
 
       this._registrarUpdate.register(event, inst, (newUrl, oldUrl) => {
-         return inst.applyNewUrl(newUrl, oldUrl);
+            return inst.applyNewUrl(newUrl, oldUrl);
       });
    }
 
