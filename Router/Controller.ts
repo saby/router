@@ -7,6 +7,7 @@ import UrlRewriter from './UrlRewriter'
 import Router from './Route';
 import History from './History';
 import Link from './Link';
+import Helper from './Helper';
 
 class Controller extends Control {
    private _registrar: registrar = null;
@@ -60,10 +61,6 @@ class Controller extends Control {
       }
    }
 
-   getAppFromUrl(newUrl: string): string {
-      return newUrl.split('/')[1]+'/Index';
-   }
-
    applyUrl(): void {
       this._registrarUpdate.startAsync();
       this._registrarLink.startAsync();
@@ -71,14 +68,14 @@ class Controller extends Control {
 
    startAsyncUpdate(newUrl: string, newPrettyUrl: string): Promise {
       let state = History.getCurrentState();
-      return this._registrar.startAsync({url: newUrl, prettyUrl: newPrettyUrl},
-         {url: state.url, prettyUrl: state.prettyUrl}).then((values) => (values.find((value) => {return value === false;}) !== false ));
+      return this._registrar.startAsync({ url: newUrl, prettyUrl: newPrettyUrl },
+         { url: state.url, prettyUrl: state.prettyUrl }).then((values) => (values.find((value) => { return value === false; }) !== false));
    }
 
    beforeApplyUrl(newUrl: string, newPrettyUrl: string): void {
       let state = History.getCurrentState();
-      let newApp = this.getAppFromUrl(newUrl);
-      let currentApp = this.getAppFromUrl(state.url);
+      let newApp = Helper.getAppNameByUrl(newUrl);
+      let currentApp = Helper.getAppNameByUrl(state.url);
 
       return this.startAsyncUpdate(newUrl, newPrettyUrl).then((result) => {
          if (newApp === currentApp) {
@@ -86,7 +83,7 @@ class Controller extends Control {
          } else {
             return new Promise((resolve) => {
                require([newApp], () => {
-                  const changed = this._notify('changeApplication', [newApp], {bubbling: true});
+                  const changed = this._notify('changeApplication', [newApp], { bubbling: true });
                   if (!changed) {
                      this.startAsyncUpdate(newUrl, newPrettyUrl).then((ret) => {
                         resolve(ret);
@@ -102,16 +99,16 @@ class Controller extends Control {
    //co.navigate({}, '(.*)/edo/:idDoc([^/?]*)(.*)?', {idDoc:'8985'})
    //co.navigate({}, '/app/:razd/:idDoc([^/?]*)(.*)?', {razd: 'sda', idDoc:'12315'})
 
-   navigate(event: object, newUrl:string, newPrettyUrl:string, callback: any, errback: any): void {
+   navigate(event: object, newUrl: string, newPrettyUrl: string, callback: any, errback: any): void {
 
       const prettyUrl = newPrettyUrl || UrlRewriter.getPrettyUrl(newUrl);
       const currentState = History.getCurrentState();
 
-      if (currentState.url === newUrl || this._navigateProcessed){
+      if (currentState.url === newUrl || this._navigateProcessed) {
          return;
       }
       this._navigateProcessed = true;
-      this.beforeApplyUrl(newUrl, prettyUrl).then((accept:boolean)=>{
+      this.beforeApplyUrl(newUrl, prettyUrl).then((accept: boolean) => {
          if (accept) {
             if (callback) {
                callback();

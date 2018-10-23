@@ -195,10 +195,15 @@ function calculateHref(mask, cfg) {
    return result;
 }
 
+function getAppNameByUrl(url: string): string {
+    return url.split('/')[1] + '/Index';
+}
+
 export default {
    setRelativeUrl: setRelativeUrl,
    getRelativeUrl: getRelativeUrl,
    calculateUrlParams: calculateUrlParams,
    calculateCfgParams: calculateCfgParams,
-   calculateHref: calculateHref
+   calculateHref: calculateHref,
+   getAppNameByUrl: getAppNameByUrl
 };
