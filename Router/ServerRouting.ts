@@ -28,7 +28,7 @@ function _writeResponse(response, rendered) {
    }
 }
 
-function _renderApplication(request, response, application: string) {
+function _renderApplication(request, response, application: string, appOpts) {
    const rootTpl = require('wml!Controls/Application/Route');
 
    // set the appropriate request fields
@@ -36,16 +36,21 @@ function _renderApplication(request, response, application: string) {
 
    // render the application inside of Controls/Application/Route
    const renderResult = rootTpl({
+      // default options
       lite: true,
       wsRoot: '/WS.Core/',
       resourceRoot: '/',
+
+      // default options can be overridden from outside
+      ...appOpts,
+
       application
    });
 
    _writeResponse(response, renderResult);
 }
 
-function routeRequest(request, response): boolean {
+function routeRequest(request, response, options): boolean {
    const appName = RouterHelper.getAppNameByUrl(getUrl());
 
    try {
@@ -58,7 +63,7 @@ function routeRequest(request, response): boolean {
    }
 
    // if the module was found, render the application itself
-   _renderApplication(request, response, appName);
+   _renderApplication(request, response, appName, options);
 
    return true;
 }
