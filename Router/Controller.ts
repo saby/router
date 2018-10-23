@@ -77,10 +77,6 @@ class Controller extends Control {
       }
    }
 
-   getAppFromUrl(newUrl: string): string {
-      return newUrl.split('/')[1]+'/Index';
-   }
-
    applyUrl(): void {
       this._registrarUpdate.startAsync();
       this._registrarLink.startAsync();
@@ -94,8 +90,8 @@ class Controller extends Control {
 
    beforeApplyUrl(newUrl: string, newPrettyUrl: string): void {
       let state = History.getCurrentState();
-      let newApp = this.getAppFromUrl(newUrl);
-      let currentApp = this.getAppFromUrl(state.url);
+      let newApp = RouterHelper.getAppNameByUrl(newUrl);
+      let currentApp = RouterHelper.getAppNameByUrl(state.url);
 
       return this.startAsyncUpdate(newUrl, newPrettyUrl).then((result) => {
          if (newApp === currentApp) {
