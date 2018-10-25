@@ -6,6 +6,7 @@ import History from './History';
 
 class Router extends Control {
    private _urlOptions = null;
+   private _entered: boolean = false;
 
    pathUrlOptionsFromCfg(cfg:object): void {
       for (let i in cfg) {
@@ -44,10 +45,21 @@ class Router extends Control {
       this._urlOptions = RouterHelper.calculateUrlParams(this._options.mask, newLoc.url);
       if (this._wasResolvedParam()) {
          this.pathUrlOptionsFromCfg(this._options);
-         return this._notify('succesUrl', [newLoc, oldLoc]);
+         if (!this._entered) {
+            this._entered = true;
+            return this._notify('enter', [newLoc, oldLoc]);
+         } else {
+            return (new Promise((resolve) => {
+               resolve(true);
+            }));
+         }
       }
       this.pathUrlOptionsFromCfg(this._options);
-      return this._notify('errorUrl', [newLoc, oldLoc]);
+      if (this._entered) {
+         this._entered = false;
+         return this._notify('leave', [newLoc, oldLoc]);
+      }
+      return (new Promise((resolve)=>{resolve(true);}));
    }
 
    afterUpForNotify(): Promise {
@@ -58,9 +70,10 @@ class Router extends Control {
       const currentState = History.getCurrentState();
       const prevState = History.getPrevState();
       if (notUndefVal) {
-         return this._notify('succesUrl', [currentState, prevState]);
+         this._entered = true;
+         return this._notify('enter', [currentState, prevState]);
       }
-      return this._notify('errorUrl', [currentState, prevState]);
+      return new Promise((resolve)=>{resolve()});
    }
 
    applyNewUrl(): void {
