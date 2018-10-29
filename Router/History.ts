@@ -27,26 +27,44 @@ function getNextState():object {
 
 function back(): void {
    currentPosition--;
+   if (!localHistory[currentPosition]) {
+      const state = _getHistoryObject(RouterHelper.getRelativeUrl(), RouterHelper.getRelativeUrl());
+      currentPosition = 0;
+      state.id = 0;
+      localHistory.forEach((el) => { el.id++; });
+      localHistory = [state].concat(localHistory);
+   }
    RouterHelper.setRelativeUrl(localHistory[currentPosition].url);
 }
 
 function forward(): void {
    currentPosition++;
+   if (!localHistory[currentPosition]) {
+      _pushToHistory(RouterHelper.getRelativeUrl(), RouterHelper.getRelativeUrl());
+   }
    RouterHelper.setRelativeUrl(localHistory[currentPosition].url);
+}
+
+function _getHistoryObject(url: string, prettyUrl: string): any {
+   return state = {
+      id: currentPosition,
+      url: url,
+      prettyUrl: prettyUrl
+   };
+}
+
+function _pushToHistory(url: string, prettyUrl: string): void {
+   localHistory.push(_getHistoryObject(url, prettyUrl));
 }
 
 function push(newUrl: string, prettyUrl: string): void {
    currentPosition++;
    localHistory.splice(currentPosition);
 
-   let state = {
-      id: currentPosition,
-      url: newUrl,
-      prettyUrl: prettyUrl
-   };
+   _pushToHistory(newUrl, prettyUrl);
    RouterHelper.setRelativeUrl(newUrl);
    window.history.pushState(state, prettyUrl, prettyUrl);
-   localHistory.push(state);
+
 }
 
 export default {
