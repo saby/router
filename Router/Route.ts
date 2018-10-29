@@ -8,7 +8,7 @@ class Router extends Control {
    private _urlOptions = null;
    private _entered: boolean = false;
 
-   pathUrlOptionsFromCfg(cfg:object): void {
+   public pathUrlOptionsFromCfg(cfg: object): void {
       for (let i in cfg) {
          if (cfg.hasOwnProperty(i) && i !== 'mask' &&
             i !== 'content' && i !== '_logicParent') {
@@ -20,10 +20,10 @@ class Router extends Control {
    /**
     * return flag = resolved params from URL
     */
-   _wasResolvedParam(): boolean {
+   public _wasResolvedParam(): boolean {
       let notUndefVal = false;
-      for(let i in this._urlOptions) {
-         if (this._urlOptions.hasOwnProperty(i)){
+      for (let i in this._urlOptions) {
+         if (this._urlOptions.hasOwnProperty(i)) {
             if (this._urlOptions[i] !== undefined) {
                notUndefVal = true;
                break;
@@ -33,38 +33,44 @@ class Router extends Control {
       return notUndefVal;
    }
 
-
-   _applyNewUrl(mask: string, cfg: object): boolean {
-      this._urlOptions = RouterHelper.calculateUrlParams(mask, undefined);
-      let notUndefVal = this._wasResolvedParam();
+   public _applyNewUrl(mask: string, cfg: object): boolean {
+      this._urlOptions = RouterHelper.calculateUrlParams(mask, undefined, this._index);
+      const notUndefVal = this._wasResolvedParam();
       this.pathUrlOptionsFromCfg(cfg);
       return notUndefVal;
    }
 
-   beforeApplyUrl(newLoc: any, oldLoc: any): Promise {
-      this._urlOptions = RouterHelper.calculateUrlParams(this._options.mask, newLoc.url);
-      if (this._wasResolvedParam()) {
+   public beforeApplyUrl(newLoc: any, oldLoc: any): Promise {
+      let result;
+      this._urlOptions = RouterHelper.calculateUrlParams(this._options.mask, newLoc.url, this._index);
+      const wasResolvedParam = this._wasResolvedParam();
+      if (wasResolvedParam) {
          this.pathUrlOptionsFromCfg(this._options);
          if (!this._entered) {
-            this._entered = true;
-            return this._notify('enter', [newLoc, oldLoc]);
+            result = this._notify('enter', [newLoc, oldLoc]);
          } else {
-            return (new Promise((resolve) => {
+            result = (new Promise((resolve) => {
                resolve(true);
             }));
          }
-      }
-      this.pathUrlOptionsFromCfg(this._options);
-      if (this._entered) {
+         this._entered = true;
+      } else {
+         this.pathUrlOptionsFromCfg(this._options);
+         if (this._entered) {
+            result = this._notify('leave', [newLoc, oldLoc]);
+         } else {
+            result = (new Promise((resolve) => {
+               resolve(true);
+            }));
+         }
          this._entered = false;
-         return this._notify('leave', [newLoc, oldLoc]);
       }
-      return (new Promise((resolve)=>{resolve(true);}));
+      return result;
    }
 
-   afterUpForNotify(): Promise {
-      this._urlOptions = RouterHelper.calculateUrlParams(this._options.mask, RouterHelper.getRelativeUrl());
-      let notUndefVal = this._wasResolvedParam();
+   public afterUpForNotify(): Promise {
+      this._urlOptions = RouterHelper.calculateUrlParams(this._options.mask, RouterHelper.getRelativeUrl(), this._index);
+      const notUndefVal = this._wasResolvedParam();
       this.pathUrlOptionsFromCfg(this._options);
 
       const currentState = History.getCurrentState();
@@ -73,28 +79,38 @@ class Router extends Control {
          this._entered = true;
          return this._notify('enter', [currentState, prevState]);
       }
-      return new Promise((resolve)=>{resolve()});
+      return new Promise((resolve) => {resolve(); });
    }
 
-   applyNewUrl(): void {
+   public applyNewUrl(): void {
       this._forceUpdate();
    }
 
-   _beforeMount(cfg: any): void {
+   public _reserve(index: number, newUrl: string): number {
+      let res = RouterHelper.findIndex(this._options.mask, index, newUrl);
+      if (res !== -1) {
+         this._index = res - 1;
+      } else {
+         res = index;
+      }
+      return res;
+   }
+
+   public _beforeMount(cfg: any): void {
       this._urlOptions = {};
       this._applyNewUrl(cfg.mask, cfg);
    }
 
-   _afterMount(): void {
+   public _afterMount(): void {
       this._notify('routerCreated', [this], { bubbling: true });
       this.afterUpForNotify();
    }
 
-   _beforeUpdate(cfg: any) {
+   public _beforeUpdate(cfg: any) {
       this._applyNewUrl(cfg.mask, cfg);
    }
 
-   _beforeUnmount() {
+   public _beforeUnmount() {
       this._notify('routerDestroyed', [this], { bubbling: true });
    }
 }
