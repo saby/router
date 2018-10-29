@@ -29,12 +29,12 @@ function _generateFullmask(mask) {
       if (fullMask[0] === '/') {
          fullMask = '([/]|.*?\\.html/)' + fullMask.slice(1);
       } else {
-         fullMask = '(.*/)' + fullMask;
+         fullMask = '(.*?/)' + fullMask;
       }
    } else if (fullMask.indexOf('=') !== -1) {
-      fullMask = '(.*\\?|.*&)' + fullMask;
+      fullMask = '(.*?\\?|.*?&)' + fullMask;
    } else {
-      fullMask = '(.*/)' + fullMask;
+      fullMask = '(.*?/)' + fullMask;
    }
 
    if (fullMask.indexOf('=') !== -1) {
@@ -61,35 +61,49 @@ function _matchParams(mask, cb) {
    }
 }
 
-function _calculateParams(mask, cfg, forUrl) {
-   const url = forUrl || getRelativeUrl();
-   const fullMask = _generateFullmask(mask);
+function _generateFullmaskWithoutParams(mask, foundParamCallback) {
+   let fullMask = _generateFullmask(mask);
 
    const paramIndexes = [];
-   const result = [];
 
    _matchParams(fullMask, function(param) {
       paramIndexes.push({
          preffixEnd: param.preffixEnd,
          postfixStart: param.postfixStart
       });
+      foundParamCallback && foundParamCallback(param);
+   });
+
+   for (let i = paramIndexes.length - 1; i >= 0; i--) {
+      fullMask = fullMask.slice(0, paramIndexes[i].preffixEnd) + '([^\\/?&]+)' + fullMask.slice(paramIndexes[i].postfixStart);
+   }
+   return fullMask;
+}
+
+function findIndex(mask, index, newUrl) {
+   const fullmask = _generateFullmaskWithoutParams(mask);
+   const url = newUrl || getRelativeUrl();
+   const urlCutted = url.slice(index || 0);
+   const matched = urlCutted.match(fullmask);
+   return matched ? matched[1].length : -1;
+}
+
+function _calculateParams(mask, cfg, forUrl, index) {
+   const result = [];
+   const fullmask = _generateFullmaskWithoutParams(mask, (param) => {
       result.push({
          name: param.name,
          value: cfg[param.name]
       });
    });
 
-   let newFullMask = fullMask;
-   for (let i = paramIndexes.length - 1; i >= 0; i--) {
-      newFullMask = newFullMask.slice(0, paramIndexes[i].preffixEnd) + '([^\\/?&]+?)' + newFullMask.slice(paramIndexes[i].postfixStart);
-   }
-   newFullMask = '^' + newFullMask + '$';
-
-   const matched = url.match(newFullMask);
+   const url = forUrl || getRelativeUrl();
+   const urlCutted = url.slice(index || 0);
+   const matched = urlCutted.match(fullmask);
 
    if (matched) {
-      for (let j = 0; j < paramIndexes.length; j++) {
-         result[j].urlValue = decodeURIComponent(matched[j + 1 + 1]); // 0 это вся строка, 1 это префикс;
+      for (let j = 2; j < matched.length - 1; j++) { // 0 это вся строка, 1 это префикс; последнее это постфикс
+         result[j - 2].urlValue = decodeURIComponent(matched[j]);
       }
    }
    return result;
@@ -129,21 +143,21 @@ function _getCfgParams(params) {
 function _getUrlParams(params) {
    const res = {};
    params.forEach(function(param) {
-      res[param.name] = param.urlValue===undefined?undefined:decodeURIComponent(param.urlValue);
+      res[param.name] = param.urlValue === undefined ? undefined : decodeURIComponent(param.urlValue);
    });
    return res;
 }
-function calculateUrlParams(mask, forUrl) {
+function calculateUrlParams(mask, forUrl, index) {
    _validateMask(mask);
-   return _getUrlParams(_calculateParams(mask, {}, forUrl));
+   return _getUrlParams(_calculateParams(mask, {}, forUrl, index));
 }
-function calculateCfgParams(mask, cfg) {
+function calculateCfgParams(mask, cfg, index) {
    _validateMask(mask);
-   return _getCfgParams(_calculateParams(mask, cfg));
+   return _getCfgParams(_calculateParams(mask, cfg, undefined, index));
 }
 
-function _resolveHref(href, mask, cfg) {
-   const params = _calculateParams(mask, cfg);
+function _resolveHref(href, mask, cfg, index) {
+   const params = _calculateParams(mask, cfg, index);
    const cfgParams = _getCfgParams(params);
    const urlParams = _getUrlParams(params);
 
@@ -189,23 +203,19 @@ function _resolveHref(href, mask, cfg) {
    }
    return result;
 }
-function calculateHref(mask, cfg) {
+function calculateHref(mask, cfg, index) {
    _validateMask(mask);
    cfg = cfg.clear ? {} : cfg;
    const url = getRelativeUrl();
-   const result = _resolveHref(url, mask, cfg);
+   const result = _resolveHref(url, mask, cfg, index);
    return result;
 }
 
-function getAppNameByUrl(url: string): string {
-   return url.split('/')[1] + '/Index';
-}
-
 export default {
-   setRelativeUrl,
-   getRelativeUrl,
-   calculateUrlParams,
-   calculateCfgParams,
-   calculateHref,
-   getAppNameByUrl
+   setRelativeUrl: setRelativeUrl,
+   getRelativeUrl: getRelativeUrl,
+   calculateUrlParams: calculateUrlParams,
+   calculateCfgParams: calculateCfgParams,
+   calculateHref: calculateHref,
+   findIndex: findIndex
 };
