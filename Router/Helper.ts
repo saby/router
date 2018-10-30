@@ -1,5 +1,7 @@
 /// <amd-module name="Router/Helper" />
+// @ts-ignore
 import getUrl = require('Transport/URL/getUrl');
+// @ts-ignore
 import IoC = require('Core/IoC');
 
 let currentUrl: string = '';
@@ -81,7 +83,7 @@ function _generateFullmaskWithoutParams(mask, foundParamCallback) {
 }
 
 function findIndex(mask, index, newUrl) {
-   const fullmask = _generateFullmaskWithoutParams(mask);
+   const fullmask = _generateFullmaskWithoutParams(mask, undefined);
    const url = newUrl || getRelativeUrl();
    const urlCutted = url.slice(index || 0);
    const matched = urlCutted.match(fullmask);
@@ -110,7 +112,7 @@ function _calculateParams(mask, cfg, forUrl, index) {
 }
 
 function _resolveMask(mask, params) {
-   const paramCount = 0, resolvedCount = 0;
+   let paramCount = 0, resolvedCount = 0;
    _matchParams(mask, function(param) {
       paramCount++;
       if (params[param.name] !== undefined) {
@@ -157,7 +159,7 @@ function calculateCfgParams(mask, cfg, index) {
 }
 
 function _resolveHref(href, mask, cfg, index) {
-   const params = _calculateParams(mask, cfg, index);
+   const params = _calculateParams(mask, cfg, undefined, index);
    const cfgParams = _getCfgParams(params);
    const urlParams = _getUrlParams(params);
 

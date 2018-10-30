@@ -14,14 +14,15 @@
     "diagnostics": true,
     "locale": "ru",
     "importHelpers": true,
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "typeRoots": ["node_modules/@types", "../"],
+    "types" : ["typedef"]
   },
   "include": [
-    "../Router/*",
-    "tslib.js"
+    "./Router/*",
+    "./spec/tslib.js"
   ],
   "exclude": [
-    "../node_modules",
-    "../SBIS3.CONTROLS"
+    "./node_modules"
   ]
 }
