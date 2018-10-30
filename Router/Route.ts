@@ -1,12 +1,18 @@
 /// <amd-module name="Router/Route" />
+// @ts-ignore
 import Control = require('Core/Control');
+// @ts-ignore
 import template = require('wml!Router/Route');
-import RouterHelper from './Helper';
-import History from './History';
 
-class Router extends Control {
+import RouterHelper from 'Router/Helper';
+import History from 'Router/History';
+
+export default class Router extends Control {
    private _urlOptions = null;
    private _entered: boolean = false;
+   private _index: number = 0;
+
+   public _template: template;
 
    public pathUrlOptionsFromCfg(cfg: object): void {
       for (let i in cfg) {
@@ -40,7 +46,7 @@ class Router extends Control {
       return notUndefVal;
    }
 
-   public beforeApplyUrl(newLoc: any, oldLoc: any): Promise {
+   public beforeApplyUrl(newLoc: any, oldLoc: any): Promise<any> {
       let result;
       this._urlOptions = RouterHelper.calculateUrlParams(this._options.mask, newLoc.url, this._index);
       const wasResolvedParam = this._wasResolvedParam();
@@ -68,7 +74,7 @@ class Router extends Control {
       return result;
    }
 
-   public afterUpForNotify(): Promise {
+   public afterUpForNotify(): Promise<any> {
       this._urlOptions = RouterHelper.calculateUrlParams(this._options.mask, RouterHelper.getRelativeUrl(), this._index);
       const notUndefVal = this._wasResolvedParam();
       this.pathUrlOptionsFromCfg(this._options);
@@ -114,6 +120,3 @@ class Router extends Control {
       this._notify('routerDestroyed', [this], { bubbling: true });
    }
 }
-
-Router.prototype._template = template;
-export = Router;
