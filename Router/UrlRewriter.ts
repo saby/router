@@ -14,10 +14,6 @@ const rewriter = {
       }) || [];
 
       return finded[1] || URL;
-   },
-
-   getUrlBack(maskTo: string): string {
-
    }
 };
 

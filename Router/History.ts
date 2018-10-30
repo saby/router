@@ -69,10 +69,10 @@ function push(newUrl: string, prettyUrl: string): void {
 }
 
 export default {
-   getCurrentState: getCurrentState,
-   getPrevState: getPrevState,
-   getNextState: getNextState,
-   back: back,
-   forward: forward,
-   push: push
+   getCurrentState,
+   getPrevState,
+   getNextState,
+   back,
+   forward,
+   push
 }
