@@ -14,9 +14,7 @@
     "diagnostics": true,
     "locale": "ru",
     "importHelpers": true,
-    "experimentalDecorators": true,
-    "typeRoots": ["node_modules/@types", "../"],
-    "types" : ["typedef"]
+    "experimentalDecorators": true
   },
   "include": [
     "./Router/*",
