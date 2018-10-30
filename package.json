@@ -30,7 +30,6 @@
       "sbis3-controls": "git+http://git.sbis.ru/sbis/controls.git#3.18.700/feature/router-panels",
       "sbis3-ws": "git+https://git.sbis.ru/sbis/ws.git#rc-3.18.700",
       "serve-static": "1.11.x",
-      "typedef": "git+git@git.sbis.ru:av.zalyaev/typedef.git",
       "typescript": "^3.1.3",
       "ws-data": "git+http://git.sbis.ru/ws/data.git#rc-3.18.600",
       "ws-unit-testing": "git+https://git.sbis.ru/ws/unit-testing.git#rc-3.18.600"
