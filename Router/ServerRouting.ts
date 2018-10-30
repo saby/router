@@ -30,7 +30,7 @@ function _writeResponse(response, rendered) {
    }
 }
 
-function _renderApplication(request, response, application: string, appOpts) {
+function _renderApplication(request, response, application: string, appOpts: any) {
    const rootTpl = require('wml!Controls/Application/Route');
 
    // set the appropriate request fields
@@ -44,6 +44,7 @@ function _renderApplication(request, response, application: string, appOpts) {
       resourceRoot: '/',
 
       // default options can be overridden from outside
+      // @ts-ignore
       ...appOpts,
 
       application

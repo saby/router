@@ -15,12 +15,13 @@
     "locale": "ru",
     "importHelpers": true,
     "experimentalDecorators": true,
-    "typeRoots": ["node_modules/@types", "../"],
-    "types" : ["typedef"]
+    "paths": {
+      "tslib" : ["./spec/tslib.js"]
+    }
   },
   "include": [
     "./Router/*",
-    "./spec/tslib.js"
+    "./spec/*"
   ],
   "exclude": [
     "./node_modules"
