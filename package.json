@@ -8,9 +8,7 @@
    "files": [
       "Router/*"
    ],
-   "dependencies": {
-      "typescript": "^2.9.1"
-   },
+   "dependencies": {},
    "devDependencies": {
       "@tensor-corp/eslint-config": "^2.0.3",
       "body-parser": "^1.18.3",
@@ -29,10 +27,11 @@
       "progress": "^2.0.0",
       "requirejs": "2.1.18",
       "sbis3-builder": "git+https://git.sbis.ru/root/sbis3-builder.git#rc-3.18.700",
-      "sbis3-ws": "git+https://git.sbis.ru/sbis/ws.git#rc-3.18.700",
       "sbis3-controls": "git+http://git.sbis.ru/sbis/controls.git#3.18.700/feature/router-panels",
+      "sbis3-ws": "git+https://git.sbis.ru/sbis/ws.git#rc-3.18.700",
       "serve-static": "1.11.x",
-      "typescript": "2.5.3",
+      "typedef": "git+git@git.sbis.ru:av.zalyaev/typedef.git",
+      "typescript": "^3.1.3",
       "ws-data": "git+http://git.sbis.ru/ws/data.git#rc-3.18.600",
       "ws-unit-testing": "git+https://git.sbis.ru/ws/unit-testing.git#rc-3.18.600"
    }

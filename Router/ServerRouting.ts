@@ -1,8 +1,10 @@
 /// <amd-module name="Router/ServerRouting" />
-
+// @ts-ignore
 import getUrl = require('Transport/URL/getUrl');
+// @ts-ignore
 import { Deferred } from 'Core/Entity';
-import RouterHelper from './Helper';
+
+import RouterHelper from 'Router/Helper';
 
 function _prepareRequest(request) {
    request.compatible = false;

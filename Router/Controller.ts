@@ -1,13 +1,15 @@
 /// <amd-module name="Router/Controller" />
-
+// @ts-ignore
 import Control = require('Core/Control');
+// @ts-ignore
 import template = require('wml!Router/Controller');
+// @ts-ignore
 import registrar = require('Controls/Event/Registrar');
-import UrlRewriter from './UrlRewriter';
-import Router from './Route';
-import History from './History';
-import Link from './Link';
-import RouterHelper from './Helper';
+import UrlRewriter from 'Router/UrlRewriter';
+import Router from 'Router/Route';
+import History from 'Router/History';
+import Link from 'Router/Link';
+import RouterHelper from 'Router/Helper';
 
 function getStateForNavigate(localState: any, historyState: any, currentUrl: string): any {
    if (!localState) {
@@ -23,12 +25,15 @@ function getStateForNavigate(localState: any, historyState: any, currentUrl: str
    return localState;
 }
 
-class Controller extends Control {
+export default class Controller extends Control {
    private _registrar: registrar = null;
    private _registrarLink: registrar = null;
    private _currentRoute;
    private _registrarUpdate: registrar = null;
    private _registrarReserving: registrar = null;
+   private _navigateProcessed: boolean = false;
+   private _index: number = 0;
+   public _template: Function = template;
 
    constructor(cfg: object) {
       super(cfg);
@@ -88,13 +93,13 @@ class Controller extends Control {
       this._registrarLink.startAsync();
    }
 
-   public startAsyncUpdate(newUrl: string, newPrettyUrl: string): Promise {
+   public startAsyncUpdate(newUrl: string, newPrettyUrl: string): Promise<any> {
       const state = History.getCurrentState();
       return this._registrar.startAsync({url: newUrl, prettyUrl: newPrettyUrl},
          {url: state.url, prettyUrl: state.prettyUrl}).then((values) => (values.find((value) => {return value === false; }) !== false));
    }
 
-   public beforeApplyUrl(newUrl: string, newPrettyUrl: string): void {
+   public beforeApplyUrl(newUrl: string, newPrettyUrl: string): Promise<any> {
       const state = History.getCurrentState();
       const newApp = this.getAppFromUrl(newUrl);
       const currentApp = this.getAppFromUrl(state.url);
@@ -130,7 +135,7 @@ class Controller extends Control {
          return;
       }
       this._navigateProcessed = true;
-      this.startReserving(newUrl);
+      //this.startReserving();
       this.beforeApplyUrl(newUrl, prettyUrl).then((accept: boolean) => {
          if (accept) {
             if (callback) {
@@ -152,7 +157,7 @@ class Controller extends Control {
       });
 
       this._registrarUpdate.register(event, inst, (newUrl, oldUrl) => {
-         return inst.applyNewUrl(newUrl, oldUrl);
+         return inst.applyNewUrl();
       });
 
       this._registrarReserving.register(event, inst, (newUrl) => {
@@ -161,19 +166,19 @@ class Controller extends Control {
             this._index = res;
          }
       });
-      this.startReserving();
+      //this.startReserving();
    }
-   public startReserving(newUrl: string) {
+   /*public startReserving() {
       this._index = 0;
       // this._registrarReserving.start(newUrl); //todo запуск резервирования кусков url роутами
-   }
+   }*/
 
    public routerDestroyed(event: Event, inst: Router, mask: string): void {
       this._registrar.unregister(event, inst);
       this._registrarUpdate.unregister(event, inst);
       this._registrarReserving.unregister(event, inst);
 
-      this.startReserving();
+      //this.startReserving();
    }
 
    public linkCreated(event: Event, inst: Link): void {
@@ -186,7 +191,3 @@ class Controller extends Control {
       this._registrarLink.unregister(event, inst);
    }
 }
-
-Controller.prototype._template = template;
-
-export = Controller;

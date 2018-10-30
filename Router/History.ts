@@ -1,5 +1,6 @@
 /// <amd-module name="Router/History" />
-import RouterHelper from './Helper';
+
+import RouterHelper from 'Router/Helper';
 
 let localHistory = [];
 let currentPosition = 0;
@@ -13,15 +14,15 @@ if (typeof window !== 'undefined') {
    localHistory.push(state);
 }
 
-function getCurrentState():object {
+function getCurrentState():any {
    return localHistory[currentPosition];
 }
 
-function getPrevState():object {
+function getPrevState():any {
    return localHistory[currentPosition-1];
 }
 
-function getNextState():object {
+function getNextState():any {
    return localHistory[currentPosition+1];
 }
 
@@ -46,7 +47,7 @@ function forward(): void {
 }
 
 function _getHistoryObject(url: string, prettyUrl: string): any {
-   return state = {
+   return {
       id: currentPosition,
       url: url,
       prettyUrl: prettyUrl
@@ -63,7 +64,7 @@ function push(newUrl: string, prettyUrl: string): void {
 
    _pushToHistory(newUrl, prettyUrl);
    RouterHelper.setRelativeUrl(newUrl);
-   window.history.pushState(state, prettyUrl, prettyUrl);
+   window.history.pushState(getCurrentState(), prettyUrl, prettyUrl);
 
 }
 

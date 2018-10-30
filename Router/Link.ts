@@ -1,12 +1,17 @@
 /// <amd-module name="Router/Link" />
+// @ts-ignore
 import Control = require('Core/Control');
+// @ts-ignore
 import template = require('wml!Router/Link');
-import RouterHelper from './Helper';
 
-class Link extends Control {
+import RouterHelper from 'Router/Helper';
+
+export default class Link extends Control {
+
    private _href: string = '';
    private _prettyhref: string = '';
 
+   public _template: Function = template;
    clickHandler(e:Event): void {
       e.preventDefault();
       e.stopPropagation();
@@ -31,9 +36,9 @@ class Link extends Control {
    }
 
    _recalcHref(cfg: any): void {
-      this._href = RouterHelper.calculateHref(cfg.href, cfg);
+      this._href = RouterHelper.calculateHref(cfg.href, cfg, undefined);
       if (cfg.prettyUrl) {
-         this._prettyhref = RouterHelper.calculateHref(cfg.prettyUrl, cfg);
+         this._prettyhref = RouterHelper.calculateHref(cfg.prettyUrl, cfg, undefined);
       } else {
          this._prettyhref = undefined;
       }
@@ -44,6 +49,3 @@ class Link extends Control {
       this._forceUpdate();
    }
 }
-
-Link.prototype._template = template;
-export = Link;
