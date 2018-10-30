@@ -1,6 +1,6 @@
 /// <amd-module name="Router/Link" />
-// @ts-ignore
-import Control = require('Core/Control');
+
+import Control from 'Core/Control';
 // @ts-ignore
 import template = require('wml!Router/Link');
 
@@ -12,10 +12,10 @@ export default class Link extends Control {
    private _prettyhref: string = '';
 
    public _template: Function = template;
+
    clickHandler(e:Event): void {
       e.preventDefault();
       e.stopPropagation();
-
       this._notify('routerUpdated', [this._href, this._prettyhref], { bubbling: true });
    }
 

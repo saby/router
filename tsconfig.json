@@ -14,11 +14,14 @@
     "diagnostics": true,
     "locale": "ru",
     "importHelpers": true,
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "paths": {
+      "tslib" : ["./spec/tslib.js"]
+    }
   },
   "include": [
     "./Router/*",
-    "./spec/tslib.js"
+    "./spec/*"
   ],
   "exclude": [
     "./node_modules"
