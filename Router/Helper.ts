@@ -212,12 +212,16 @@ function calculateHref(mask, cfg, index) {
    const result = _resolveHref(url, mask, cfg, index);
    return result;
 }
+function getAppNameByUrl(url: string): string {
+   return url.split('/')[1] + '/Index';
+}
 
 export default {
-   setRelativeUrl: setRelativeUrl,
-   getRelativeUrl: getRelativeUrl,
-   calculateUrlParams: calculateUrlParams,
-   calculateCfgParams: calculateCfgParams,
-   calculateHref: calculateHref,
-   findIndex: findIndex
+   setRelativeUrl,
+   getRelativeUrl,
+   calculateUrlParams,
+   calculateCfgParams,
+   calculateHref,
+   findIndex,
+   getAppNameByUrl
 };
