@@ -1,6 +1,7 @@
 /// <amd-module name="Router/Controller" />
-// @ts-ignore
-import Control = require('Core/Control');
+
+import Control from 'Core/Control';
+
 // @ts-ignore
 import template = require('wml!Router/Controller');
 // @ts-ignore
