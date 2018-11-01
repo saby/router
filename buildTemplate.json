@@ -55,6 +55,10 @@
     {
       "name": "Vdom",
       "path": "%cd%/node_modules/sbis3-ws/Vdom"
+    },
+    {
+      "name": "RouterTest",
+      "path": "%cd%/RouterTest"
     }
 
   ]
