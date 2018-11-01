@@ -1,10 +1,10 @@
 define([
-   'RouterTests/resources/serverRoutingVerifier'
+   'RouterTest/resources/serverRoutingVerifier'
 ], function(srVerifier) {
    describe('Router/ServerRouting', function() {
 
       it('correctly resolves application name by simple url', function() {
-         var resolvedApp = srVerifier.getResolvedApp('/register?from=landing');
+         var resolvedApp = srVerifier.getResolvedApp('/register/?from=landing');
 
          assert.strictEqual(resolvedApp, 'register/Index');
       });

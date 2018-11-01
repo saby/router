@@ -1,5 +1,8 @@
-define('RouterTests/resources/serverRoutingVerifier', ['Router/ServerRouting'], function(ServerRouting) {
+define('RouterTest/resources/serverRoutingVerifier', ['Router/ServerRouting'], function(ServerRouting) {
    function createFakeRequest(url) {
+      if (typeof process === 'undefined') {
+         window.process = {};
+      }
       return { originalUrl: url };
    }
 
