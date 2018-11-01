@@ -1,18 +1,19 @@
 /// <amd-module name="Router/Route" />
 
-import Control from 'Core/Control';
+// @ts-ignore
+import * as Control from 'Core/Control';
 // @ts-ignore
 import template = require('wml!Router/Route');
 
 import RouterHelper from 'Router/Helper';
 import History from 'Router/History';
 
-export default class Router extends Control {
+class Route extends Control {
    private _urlOptions = null;
    private _entered: boolean = false;
    private _index: number = 0;
 
-   public _template: template;
+   public _template: Function = template;
 
    public pathUrlOptionsFromCfg(cfg: object): void {
       for (let i in cfg) {
@@ -120,3 +121,5 @@ export default class Router extends Control {
       this._notify('routerDestroyed', [this], { bubbling: true });
    }
 }
+
+export = Route;
