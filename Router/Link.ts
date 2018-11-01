@@ -1,12 +1,13 @@
 /// <amd-module name="Router/Link" />
 
-import Control from 'Core/Control';
+// @ts-ignore
+import * as Control from 'Core/Control';
 // @ts-ignore
 import template = require('wml!Router/Link');
 
 import RouterHelper from 'Router/Helper';
 
-export default class Link extends Control {
+class Link extends Control {
 
    private _href: string = '';
    private _prettyhref: string = '';
@@ -49,3 +50,5 @@ export default class Link extends Control {
       this._forceUpdate();
    }
 }
+
+export = Link;

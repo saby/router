@@ -8,6 +8,30 @@
    "files": [
       "Router/*"
    ],
+   "config": {
+      "app_port": 1024,
+      "test_server_port": 1023,
+      "test_report": "artifacts/xunit-report.xml",
+      "test_url": {
+         "scheme": "http",
+         "host": "localhost",
+         "port": 1025,
+         "path": "",
+         "query": "reporter=XUnit"
+      },
+      "htmlCoverageReport": "artifacts/coverage/index.html",
+      "jsonCoverageReport": "artifacts/coverage.json"
+   },
+   "scripts": {
+      "start": "node test-server",
+      "start-es": "node test-server-es",
+      "test": "node node_modules/ws-unit-testing/mocha --amd test-isolated",
+      "test:debug": "node node_modules/ws-unit-testing/mocha --amd %NODE_DEBUG_OPTION% test-isolated",
+      "coverage": "node node_modules/ws-unit-testing/cover --amd test-isolated",
+      "require-min": "node node_modules/uglify-js/bin/uglifyjs --compress --mangle -o ws/ext/requirejs/require-min.js -- ws/ext/requirejs/require.js",
+      "lint": "node ./node_modules/eslint/bin/eslint --ext .js --ext .es --color --no-eslintrc -c=.eslintrc.json -f=stylish .",
+      "lint:fix": "node ./node_modules/eslint/bin/eslint --ext .js --ext .es --color --no-eslintrc -c=.eslintrc.json -f=stylish --fix ."
+   },
    "dependencies": {},
    "devDependencies": {
       "@tensor-corp/eslint-config": "^2.0.3",

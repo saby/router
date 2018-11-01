@@ -20,7 +20,7 @@ declare const process: any;
 declare const require: any;
 
 declare module "Core/Control" {
-   export default class Control {
+   class Control {
        public _options: any;
        constructor(cfg:any);
        _notify(...args): any;
@@ -28,6 +28,7 @@ declare module "Core/Control" {
       _forceUpdate(...args): any;
 
    }
+   export = Control;
 }
 
 declare let rk: (key: string, ctx?: string | number, num?: number) => string;
