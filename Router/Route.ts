@@ -81,9 +81,14 @@ class Route extends Control {
       this.pathUrlOptionsFromCfg(this._options);
 
       const currentState = History.getCurrentState();
-      const prevState = History.getPrevState();
+      let prevState = History.getPrevState();
       if (notUndefVal) {
          this._entered = true;
+         if (!prevState) {
+            prevState = {
+               url: RouterHelper.calculateHref(this._options.mask, {clear: true}, undefined)
+            };
+         }
          return this._notify('enter', [currentState, prevState]);
       }
       return new Promise((resolve) => {resolve(); });
