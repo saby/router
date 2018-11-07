@@ -1,15 +1,19 @@
 /// <amd-module name="Router/Controller" />
 
-import Control from 'Core/Control';
-
+// @ts-ignore
+import * as Control from 'Core/Control';
 // @ts-ignore
 import template = require('wml!Router/Controller');
 // @ts-ignore
 import registrar = require('Controls/Event/Registrar');
 import UrlRewriter from 'Router/UrlRewriter';
+
+// @ts-ignore
 import Router from 'Router/Route';
-import History from 'Router/History';
+// @ts-ignore
 import Link from 'Router/Link';
+
+import History from 'Router/History';
 import RouterHelper from 'Router/Helper';
 
 function getStateForNavigate(localState: any, historyState: any, currentUrl: string): any {
@@ -26,7 +30,7 @@ function getStateForNavigate(localState: any, historyState: any, currentUrl: str
    return localState;
 }
 
-export default class Controller extends Control {
+class Controller extends Control {
    private _registrar: registrar = null;
    private _registrarLink: registrar = null;
    private _currentRoute;
@@ -169,3 +173,5 @@ export default class Controller extends Control {
       this._registrarLink.unregister(event, inst);
    }
 }
+
+export = Controller;

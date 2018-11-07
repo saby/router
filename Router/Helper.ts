@@ -188,9 +188,9 @@ function _resolveHref(href, mask, cfg) {
       } else {
          if (toReplace.indexOf('=') !== -1) {
             if (qIndex !== -1) {
-               result = href.replace(/\/$/, '') + '&' + toReplace;
+               result += '&' + toReplace;
             } else {
-               result = href.replace(/\/$/, '') + '?' + toReplace;
+               result += '?' + toReplace;
             }
          } else {
             if (qIndex !== -1) {
