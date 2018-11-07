@@ -10,7 +10,6 @@ import History from 'Router/History';
 export default class Router extends Control {
    private _urlOptions = null;
    private _entered: boolean = false;
-   private _index: number = 0;
 
    public _template: template;
 
@@ -40,7 +39,7 @@ export default class Router extends Control {
    }
 
    public _applyNewUrl(mask: string, cfg: object): boolean {
-      this._urlOptions = RouterHelper.calculateUrlParams(mask, undefined, this._index);
+      this._urlOptions = RouterHelper.calculateUrlParams(mask);
       const notUndefVal = this._wasResolvedParam();
       this.pathUrlOptionsFromCfg(cfg);
       return notUndefVal;
@@ -48,7 +47,7 @@ export default class Router extends Control {
 
    public beforeApplyUrl(newLoc: any, oldLoc: any): Promise<any> {
       let result;
-      this._urlOptions = RouterHelper.calculateUrlParams(this._options.mask, newLoc.url, this._index);
+      this._urlOptions = RouterHelper.calculateUrlParams(this._options.mask, newLoc.url);
       const wasResolvedParam = this._wasResolvedParam();
       if (wasResolvedParam) {
          this.pathUrlOptionsFromCfg(this._options);
@@ -75,14 +74,19 @@ export default class Router extends Control {
    }
 
    public afterUpForNotify(): Promise<any> {
-      this._urlOptions = RouterHelper.calculateUrlParams(this._options.mask, RouterHelper.getRelativeUrl(), this._index);
+      this._urlOptions = RouterHelper.calculateUrlParams(this._options.mask, RouterHelper.getRelativeUrl());
       const notUndefVal = this._wasResolvedParam();
       this.pathUrlOptionsFromCfg(this._options);
 
       const currentState = History.getCurrentState();
-      const prevState = History.getPrevState();
+      let prevState = History.getPrevState();
       if (notUndefVal) {
          this._entered = true;
+         if (!prevState) {
+            prevState = {
+               url: RouterHelper.calculateHref(this._options.mask, {clear: true})
+            };
+         }
          return this._notify('enter', [currentState, prevState]);
       }
       return new Promise((resolve) => {resolve(); });
@@ -90,16 +94,6 @@ export default class Router extends Control {
 
    public applyNewUrl(): void {
       this._forceUpdate();
-   }
-
-   public _reserve(index: number, newUrl: string): number {
-      let res = RouterHelper.findIndex(this._options.mask, index, newUrl);
-      if (res !== -1) {
-         this._index = res - 1;
-      } else {
-         res = index;
-      }
-      return res;
    }
 
    public _beforeMount(cfg: any): void {

@@ -31,9 +31,7 @@ export default class Controller extends Control {
    private _registrarLink: registrar = null;
    private _currentRoute;
    private _registrarUpdate: registrar = null;
-   private _registrarReserving: registrar = null;
    private _navigateProcessed: boolean = false;
-   private _index: number = 0;
    public _template: Function = template;
 
    constructor(cfg: object) {
@@ -45,7 +43,6 @@ export default class Controller extends Control {
          this._registrar = new registrar();
          this._registrarUpdate = new registrar();
          this._registrarLink = new registrar();
-         this._registrarReserving = new registrar();
 
          let skipped = false;
          window.onpopstate = (event: any) => {
@@ -132,7 +129,6 @@ export default class Controller extends Control {
          return;
       }
       this._navigateProcessed = true;
-      //this.startReserving();
       this.beforeApplyUrl(newUrl, prettyUrl).then((accept: boolean) => {
          if (accept) {
             if (callback) {
@@ -156,26 +152,11 @@ export default class Controller extends Control {
       this._registrarUpdate.register(event, inst, (newUrl, oldUrl) => {
          return inst.applyNewUrl();
       });
-
-      this._registrarReserving.register(event, inst, (newUrl) => {
-         const res = inst._reserve(this._index, newUrl);
-         if (res !== -1) {
-            this._index = res;
-         }
-      });
-      //this.startReserving();
    }
-   /*public startReserving() {
-      this._index = 0;
-      // this._registrarReserving.start(newUrl); //todo запуск резервирования кусков url роутами
-   }*/
 
    public routerDestroyed(event: Event, inst: Router, mask: string): void {
       this._registrar.unregister(event, inst);
       this._registrarUpdate.unregister(event, inst);
-      this._registrarReserving.unregister(event, inst);
-
-      //this.startReserving();
    }
 
    public linkCreated(event: Event, inst: Link): void {

@@ -15,8 +15,8 @@ function setRelativeUrl(url: string) {
    currentUrl = url;
 }
 
-function getRelativeUrl() {
-   if (currentUrl) {
+function getRelativeUrl(forceUrl) {
+   if (!forceUrl && currentUrl) {
       return currentUrl;
    }
    let url = getUrl();
@@ -83,14 +83,13 @@ function _generateFullmaskWithoutParams(mask, foundParamCallback) {
 }
 
 function findIndex(mask, index, newUrl) {
-   const fullmask = _generateFullmaskWithoutParams(mask, undefined);
+   const fullmask = _generateFullmaskWithoutParams(mask);
    const url = newUrl || getRelativeUrl();
-   const urlCutted = url.slice(index || 0);
-   const matched = urlCutted.match(fullmask);
+   const matched = url.match(fullmask);
    return matched ? matched[1].length : -1;
 }
 
-function _calculateParams(mask, cfg, forUrl, index) {
+function _calculateParams(mask, cfg, forUrl) {
    const result = [];
    const fullmask = _generateFullmaskWithoutParams(mask, (param) => {
       result.push({
@@ -100,8 +99,7 @@ function _calculateParams(mask, cfg, forUrl, index) {
    });
 
    const url = forUrl || getRelativeUrl();
-   const urlCutted = url.slice(index || 0);
-   const matched = urlCutted.match(fullmask);
+   const matched = url.match(fullmask);
 
    if (matched) {
       for (let j = 2; j < matched.length - 1; j++) { // 0 это вся строка, 1 это префикс; последнее это постфикс
@@ -149,17 +147,17 @@ function _getUrlParams(params) {
    });
    return res;
 }
-function calculateUrlParams(mask, forUrl, index) {
+function calculateUrlParams(mask, forUrl) {
    _validateMask(mask);
-   return _getUrlParams(_calculateParams(mask, {}, forUrl, index));
+   return _getUrlParams(_calculateParams(mask, {}, forUrl));
 }
-function calculateCfgParams(mask, cfg, index) {
+function calculateCfgParams(mask, cfg) {
    _validateMask(mask);
-   return _getCfgParams(_calculateParams(mask, cfg, undefined, index));
+   return _getCfgParams(_calculateParams(mask, cfg));
 }
 
-function _resolveHref(href, mask, cfg, index) {
-   const params = _calculateParams(mask, cfg, undefined, index);
+function _resolveHref(href, mask, cfg) {
+   const params = _calculateParams(mask, cfg);
    const cfgParams = _getCfgParams(params);
    const urlParams = _getUrlParams(params);
 
@@ -205,11 +203,11 @@ function _resolveHref(href, mask, cfg, index) {
    }
    return result;
 }
-function calculateHref(mask, cfg, index) {
+function calculateHref(mask, cfg, forceUrl) {
    _validateMask(mask);
    cfg = cfg.clear ? {} : cfg;
-   const url = getRelativeUrl();
-   const result = _resolveHref(url, mask, cfg, index);
+   const url = getRelativeUrl(forceUrl);
+   const result = _resolveHref(url, mask, cfg);
    return result;
 }
 function getAppNameByUrl(url: string): string {

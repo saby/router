@@ -36,9 +36,9 @@ export default class Link extends Control {
    }
 
    _recalcHref(cfg: any): void {
-      this._href = RouterHelper.calculateHref(cfg.href, cfg, undefined);
+      this._href = RouterHelper.calculateHref(cfg.href, cfg);
       if (cfg.prettyUrl) {
-         this._prettyhref = RouterHelper.calculateHref(cfg.prettyUrl, cfg, undefined);
+         this._prettyhref = RouterHelper.calculateHref(cfg.prettyUrl, cfg, true);
       } else {
          this._prettyhref = undefined;
       }
