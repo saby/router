@@ -7,6 +7,8 @@ import template = require('wml!Router/Link');
 
 import RouterHelper from 'Router/Helper';
 
+import 'css!Router/Link';
+
 class Link extends Control {
 
    private _href: string = '';
