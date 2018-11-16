@@ -176,7 +176,12 @@ function _resolveHref(href, mask, cfg, index) {
          if (href.indexOf('/' + toFind) !== -1) {
             result = href.replace('/' + toFind, '');
          } else if (href.indexOf('?' + toFind) !== -1) {
-            result = href.replace('?' + toFind, '');
+            const hasOtherParams = href.indexOf('?' + toFind + '&') !== -1;
+            if (hasOtherParams) {
+               result = href.replace('?' + toFind + '&', '?');
+            } else {
+               result = href.replace('?' + toFind, '');
+            }
          } else if (href.indexOf('&' + toFind) !== -1) {
             result = href.replace('&' + toFind, '');
          } else {
