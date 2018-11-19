@@ -1,4 +1,4 @@
-var root = process.cwd(),
+let root = process.cwd(),
    fs = require('fs'),
    path = require('path');
 
@@ -7,15 +7,15 @@ var root = process.cwd(),
  * @param {string} src The path to the thing to copy.
  * @param {string} dest The path to the new copy.
  */
-var copyRecursiveSync = function(src, dest) {
-   var exists = fs.existsSync(src);
-   var stats = exists && fs.statSync(src);
-   var isDirectory = exists && stats.isDirectory();
+let copyRecursiveSync = function (src, dest) {
+   const exists = fs.existsSync(src);
+   const stats = exists && fs.statSync(src);
+   const isDirectory = exists && stats.isDirectory();
    if (exists && isDirectory) {
       if (!fs.existsSync(dest)) {
          fs.mkdirSync(dest);
       }
-      fs.readdirSync(src).forEach(function(childItemName) {
+      fs.readdirSync(src).forEach(function (childItemName) {
          copyRecursiveSync(path.join(src, childItemName),
             path.join(dest, childItemName));
       });
@@ -23,34 +23,11 @@ var copyRecursiveSync = function(src, dest) {
       if (!fs.existsSync(dest)) {
          try {
             fs.linkSync(src, dest);
-         }catch(e){}
+         } catch (e) {
+         }
       }
    }
 };
-
-var rmRecursiveSync = function(src) {
-   var exists = fs.existsSync(src);
-   var stats = exists && fs.statSync(src);
-   var isDirectory = exists && stats.isDirectory();
-   if (isDirectory) {
-      fs.readdirSync(src).forEach(function(childItemName) {
-         rmRecursiveSync(path.join(src, childItemName));
-      });
-      try{
-         fs.rmdirSync(src);
-      }catch(e){}
-   } else {
-      try {
-         if (src.indexOf('s3mod') === -1) {
-            fs.unlinkSync(src);
-         }
-      }catch(e){}
-
-   }
-};
-
-// rmRecursiveSync(path.join(root, 'SBIS3.CONTROLS'));
-// copyRecursiveSync(path.join(root, 'components'), path.join(root, 'SBIS3.CONTROLS'));
 
 var gultConfig = JSON.stringify(require('./buildTemplate.json'));
 gultConfig = gultConfig.replace(/%cd%/ig, root).replace(/\\/ig, '/');
@@ -74,59 +51,66 @@ fs.writeFile(path.join(root, 'builderCfg.json'), gultConfig, function(){
    ]);
 
    child.stdout.on('data', (data) => {
-         console.log(`${data}`);
+      console.log(`${data}`);
    });
 
-      child.stderr.on('data', (data) => {
-         console.log(`ERROR: ${data}`);
+   child.stderr.on('data', (data) => {
+      console.log(`ERROR: ${data}`);
    });
 
 
    child.on('exit', function (code, signal) {
-      console.log('child process exited with ' +
-         `code ${code} and signal ${signal}`);
+      console.log('child process exited with ' + `code ${code} and signal ${signal}`);
 
 
       copyRecursiveSync(path.join(root, 'application', 'ws', 'core'), path.join(root, 'application', 'Core'));
 
       gultConfig = JSON.parse(gultConfig);
       gultConfig.modules.forEach((one) => {
-         if (!fs.existsSync(path.join(root, 'application', one.name))) {
-            let oldName = one.path.split('/');
-            oldName = oldName[oldName.length - 1];
-            //fs.symlinkSync(path.join(one.path), path.join(root, 'application', one.name), 'dir');
-            fs.renameSync(path.join(root, 'application', oldName), path.join(root, 'application', one.name));
+         let oldName = one.path.split('/');
+         oldName = oldName[oldName.length - 1];
+         if (one.name !== oldName) {
+            fs.renameSync(path.join(root, 'application', oldName), path.join(root, 'application', 'tempName'));
+            fs.renameSync(path.join(root, 'application', 'tempName'), path.join(root, 'application', one.name));
          }
       });
 
-      var alljson = {links: {}, nodes: {}};
+      const allJson = {links: {}, nodes: {}};
+      const contents = { buildMode: '', modules: {} };
+      const bundles = {};
+
       gultConfig.modules.forEach((one) => {
          if (one.name.indexOf('WS.Core') === -1)
-      {
-         let fileName = path.join(root, 'application', one.name, 'module-dependencies.json');
-         if (fs.existsSync(fileName)) {
-            let oneJson = require(fileName);
+         {
+            let fileName = path.join(root, 'application', one.name, 'module-dependencies.json');
+            if (fs.existsSync(fileName)) {
+               let oneJson = require(fileName);
 
-            for (var i in oneJson.links) {
-               alljson.links[i] = oneJson.links[i];
-            }
+               for (let i in oneJson.links) {
+                  allJson.links[i] = oneJson.links[i];
+               }
 
-            for (var j in oneJson.nodes) {
-               alljson.nodes[j] = oneJson.nodes[j];
+               for (let j in oneJson.nodes) {
+                  allJson.nodes[j] = oneJson.nodes[j];
+               }
             }
          }
-      }
-   });
+      });
+
+      fs.writeFileSync(path.join(root, 'application', 'contents.js'),
+         'contents = ' + JSON.stringify(contents, '', 3)+';' );
+      fs.linkSync(path.join(root, 'application', 'contents.js'), path.join(root, 'application', 'contents.min.js'));
+      fs.writeFileSync(path.join(root, 'application', 'bundles.js'),
+         'bundles = ' + JSON.stringify(bundles, '', 3)+';' );
+
 
       if (!fs.existsSync(path.join(root, 'application', 'resources'))) {
          fs.mkdirSync(path.join(root, 'application', 'resources'));
       }
 
       fs.writeFileSync(path.join(root, 'application', 'resources', 'module-dependencies.json'),
-         JSON.stringify(alljson, '', 3).replace(/ws\/core/ig, 'WS.Core/core').replace(/resources\//i, ''));
+         JSON.stringify(allJson, '', 3).replace(/ws\/core/ig, 'WS.Core/core').replace(/resources\//i, ''));
 
-
-      //spawn('node',[ root+'/app2.js' ]);
    });
 
 });
