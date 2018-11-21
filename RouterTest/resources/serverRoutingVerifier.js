@@ -1,9 +1,12 @@
 define('RouterTest/resources/serverRoutingVerifier', ['Router/ServerRouting'], function(ServerRouting) {
-   function createFakeRequest(url) {
+   function createFakeRequest(path) {
       if (typeof process === 'undefined') {
          window.process = {};
       }
-      return { originalUrl: url };
+      return {
+         path: path,
+         originalUrl: 'https://my-site.ru' + path
+      };
    }
 
    return {
