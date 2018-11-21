@@ -8,4 +8,7 @@ node_modules
 /builderCfg.json
 /package-lock.json
 /SBIS3.CONTROLS
+
 Router/*.js
+.nyc_output/
+artifacts/
