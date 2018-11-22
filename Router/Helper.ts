@@ -158,6 +158,16 @@ function calculateCfgParams(mask, cfg, index) {
    return _getCfgParams(_calculateParams(mask, cfg, undefined, index));
 }
 
+// Adds a forward slash to the end of href if it doesn't end
+// with a slash already
+function appendSlash(href) {
+   if (href[href.length - 1] === '/') {
+      return href;
+   } else {
+      return href + '/';
+   }
+}
+
 function _resolveHref(href, mask, cfg, index) {
    const params = _calculateParams(mask, cfg, undefined, index);
    const cfgParams = _getCfgParams(params);
@@ -201,9 +211,9 @@ function _resolveHref(href, mask, cfg, index) {
             }
          } else {
             if (qIndex !== -1) {
-               result = href.slice(0, qIndex) + '/' + toReplace + href.slice(qIndex);
+               result = appendSlash(href.slice(0, qIndex)) + toReplace + href.slice(qIndex);
             } else {
-               result = href + '/' + toReplace;
+               result = appendSlash(href) + toReplace;
             }
          }
       }
