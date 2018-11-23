@@ -217,8 +217,18 @@ function calculateHref(mask, cfg, index) {
    const result = _resolveHref(url, mask, cfg, index);
    return result;
 }
+function getFolderNameByUrl(url: string): string {
+   let folderName = url.split('/')[1];
+
+   // Folder name for url '/sign_in?return=mainpage' should be 'sign_in'
+   if (folderName.indexOf('?') !== -1) {
+      folderName = folderName.replace(/\?.*/, '');
+   }
+
+   return folderName;
+}
 function getAppNameByUrl(url: string): string {
-   return url.split('/')[1] + '/Index';
+   return getFolderNameByUrl(url) + '/Index';
 }
 
 export default {
