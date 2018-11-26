@@ -3,10 +3,13 @@
 // @ts-ignore
 import * as Control from 'Core/Control';
 // @ts-ignore
+import * as moduleStubs from 'Core/moduleStubs';
+// @ts-ignore
+import IoC = require('Core/IoC');
+// @ts-ignore
 import template = require('wml!Router/Controller');
 // @ts-ignore
 import registrar = require('Controls/Event/Registrar');
-import UrlRewriter from 'Router/UrlRewriter';
 
 // @ts-ignore
 import Router from 'Router/Route';
@@ -109,8 +112,8 @@ class Controller extends Control {
          if (newApp === currentApp) {
             return result;
          } else {
-            return new Promise((resolve) => {
-               require([newApp], () => {
+            return new Promise((resolve, reject) => {
+               moduleStubs.require([newApp]).addCallback(() => {
                   const changed = this._notify('changeApplication', [newApp], {bubbling: true});
                   if (!changed) {
                      this.startAsyncUpdate(newUrl, newPrettyUrl).then((ret) => {
@@ -118,6 +121,9 @@ class Controller extends Control {
                      });
                   }
                   resolve(true);
+               }).addErrback((err) => {
+                  IoC.resolve('ILogger').error('Controller', err);
+                  reject(err);
                });
             });
          }
@@ -129,7 +135,7 @@ class Controller extends Control {
 
    public navigate(event: object, newUrl: string, newPrettyUrl: string, callback: any, errback: any): void {
 
-      const prettyUrl = newPrettyUrl || UrlRewriter.getPrettyUrl(newUrl);
+      const prettyUrl = newPrettyUrl || newUrl;
       const currentState = History.getCurrentState();
 
       if (currentState.url === newUrl || this._navigateProcessed) {
@@ -138,6 +144,7 @@ class Controller extends Control {
       this._navigateProcessed = true;
       //this.startReserving();
       this.beforeApplyUrl(newUrl, prettyUrl).then((accept: boolean) => {
+         this._navigateProcessed = false;
          if (accept) {
             if (callback) {
                callback();
@@ -148,7 +155,9 @@ class Controller extends Control {
          } else {
             errback();
          }
+      }, (err) => {
          this._navigateProcessed = false;
+         errback(err);
       });
    }
 

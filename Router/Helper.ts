@@ -4,6 +4,8 @@ import getUrl = require('Transport/URL/getUrl');
 // @ts-ignore
 import IoC = require('Core/IoC');
 
+import UrlRewriter from 'Router/UrlRewriter';
+
 let currentUrl: string = '';
 
 function _validateMask(mask) {
@@ -23,6 +25,7 @@ function getRelativeUrl() {
    url = url.replace(/^http[s]?:\/\//, '');
    const indexOfSlash = url.indexOf('/');
    url = url.slice(indexOfSlash);
+   url = UrlRewriter.get(url);
    return url;
 }
 function _generateFullmask(mask) {
@@ -238,6 +241,7 @@ function getFolderNameByUrl(url: string): string {
    return folderName;
 }
 function getAppNameByUrl(url: string): string {
+   url = UrlRewriter.get(url);
    return getFolderNameByUrl(url) + '/Index';
 }
 
