@@ -1,7 +1,8 @@
 /// <amd-module name="Router/UrlRewriter" />
 "use strict";
 
-import * as json from 'json!router';
+// @ts-ignore
+import json = require("router.json");
 
 const httpRE = /^http[s]?:\/\//;
 const startSlash = /^\//;

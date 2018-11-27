@@ -3,8 +3,6 @@
 // @ts-ignore
 import * as Control from 'Core/Control';
 // @ts-ignore
-import * as moduleStubs from 'Core/moduleStubs';
-// @ts-ignore
 import IoC = require('Core/IoC');
 // @ts-ignore
 import template = require('wml!Router/Controller');
@@ -113,7 +111,7 @@ class Controller extends Control {
             return result;
          } else {
             return new Promise((resolve, reject) => {
-               moduleStubs.require([newApp]).addCallback(() => {
+               require([newApp], () => {
                   const changed = this._notify('changeApplication', [newApp], {bubbling: true});
                   if (!changed) {
                      this.startAsyncUpdate(newUrl, newPrettyUrl).then((ret) => {
@@ -121,7 +119,7 @@ class Controller extends Control {
                      });
                   }
                   resolve(true);
-               }).addErrback((err) => {
+               }, (err) => {
                   IoC.resolve('ILogger').error('Controller', err);
                   reject(err);
                });

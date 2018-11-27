@@ -17,8 +17,8 @@ class Route extends Control {
 
    public pathUrlOptionsFromCfg(cfg: object): void {
       for (let i in cfg) {
-         if (cfg.hasOwnProperty(i) && i !== 'mask' &&
-            i !== 'content' && i !== '_logicParent') {
+         if (!this._urlOptions.hasOwnProperty(i) && cfg.hasOwnProperty(i) &&
+            i !== 'mask' && i !== 'content' && i !== '_logicParent') {
             this._urlOptions[i] = cfg[i];
          }
       }
