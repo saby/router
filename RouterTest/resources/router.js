@@ -1,4 +1,4 @@
-define('RouterTest/resources/router.json', [], function() {
+define([], function() {
    return {
       '/': 'OnlineSbisRu',
       '/contacts_vdom.html': 'MessageExt',

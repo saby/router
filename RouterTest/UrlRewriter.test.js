@@ -1,6 +1,6 @@
 define([
    'Router/UrlRewriter',
-   'RouterTest/resources/router.json'
+   'RouterTest/resources/router'
 ], function(UrlRewriter, json) {
    var UrlRewriter = UrlRewriter.default;
 
