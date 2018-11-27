@@ -4,7 +4,12 @@ import getUrl = require('Transport/URL/getUrl');
 // @ts-ignore
 import IoC = require('Core/IoC');
 
+// @ts-ignore
+import json = require("router.json");
+
 import UrlRewriter from 'Router/UrlRewriter';
+
+UrlRewriter._prepare(json);
 
 let currentUrl: string = '';
 

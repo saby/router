@@ -1,12 +1,16 @@
 /// <amd-module name="Router/UrlRewriter" />
 "use strict";
 
-// @ts-ignore
-import json = require("router.json");
-
 const httpRE = /^http[s]?:\/\//;
 const startSlash = /^\//;
 const finishSlash = /\/$/;
+
+// tree of paths
+let routeTree;
+// main route
+let rootRoute;
+
+// get path by url and normalize it
 function getPath(url) {
    url = url.replace(httpRE, '');
    const qIndex = url.indexOf('?');
@@ -21,45 +25,59 @@ function getPath(url) {
    return url;
 }
 
-const routeTree = {
-   value: null,
-   tree: {}
-};
-const rootRoute = json.hasOwnProperty('/') ? json['/'] : null;
-delete json['/'];
+// prepare data structure for quick access to it
+function prepare(json) {
+   routeTree = {
+      value: null,
+      tree: {}
+   };
+   rootRoute = null;
 
-for (let routeName in json) {
-   if (json.hasOwnProperty(routeName)) {
-      const routeDest = json[routeName];
+   if (!json) {
+      return;
+   }
 
-      routeName = getPath(routeName);
+   if (json.hasOwnProperty('/')) {
+      rootRoute = '/' + getPath(json['/']);
+   }
 
-      const routeNameArr = routeName.split('/');
-
-      let curTreePoint = routeTree.tree;
-
-      for (let i = 0; i < routeNameArr.length; i++) {
-         const routeNamePart = routeNameArr[i];
-
-         if (!curTreePoint.hasOwnProperty(routeNamePart)) {
-            curTreePoint[routeNamePart] = {
-               value: null,
-               tree: {}
-            };
+   for (let routeName in json) {
+      if (json.hasOwnProperty(routeName)) {
+         if (routeName === '/') {
+            continue;
          }
 
-         if (routeNameArr.length - 1 === i) {
-            curTreePoint[routeNamePart].value = routeDest;
-         }
+         const routeDest = json[routeName];
 
-         curTreePoint = curTreePoint[routeNamePart].tree;
+         routeName = getPath(routeName);
+
+         const routeNameArr = routeName.split('/');
+
+         let curTreePoint = routeTree.tree;
+
+         for (let i = 0; i < routeNameArr.length; i++) {
+            const routeNamePart = routeNameArr[i];
+
+            if (!curTreePoint.hasOwnProperty(routeNamePart)) {
+               curTreePoint[routeNamePart] = {
+                  value: null,
+                  tree: {}
+               };
+            }
+
+            if (routeNameArr.length - 1 === i) {
+               curTreePoint[routeNamePart].value = routeDest;
+            }
+
+            curTreePoint = curTreePoint[routeNamePart].tree;
+         }
       }
-
    }
 }
 
+// get url using rewriting by rules from router.json
 function get(url) {
-   if (url === '/') {
+   if (url === '/' && rootRoute) {
       return rootRoute;
    }
 
@@ -78,6 +96,8 @@ function get(url) {
       }
 
       if (curTreePoint[urlPart].value) {
+         // it's found path what can be used for rewriting
+         // but we must continue process of finding most long matching path
          found = curTreePoint[urlPart].value;
          foundIndex = i;
       }
@@ -95,7 +115,8 @@ function get(url) {
 }
 
 const rewriter = {
-   get: get
+   get: get,
+   _prepare: prepare
 };
 
 export default rewriter;
