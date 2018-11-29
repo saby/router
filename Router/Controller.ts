@@ -121,6 +121,13 @@ class Controller extends Control {
                   resolve(true);
                }, (err) => {
                   IoC.resolve('ILogger').error('Controller', err);
+
+                  // If the folder doesn't have /Index component, it does not
+                  // use new routing. Load the page manually
+                  if (window) {
+                     window.location.href = newPrettyUrl;
+                  }
+
                   reject(err);
                });
             });
