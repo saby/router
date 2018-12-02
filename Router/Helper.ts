@@ -5,7 +5,7 @@ import getUrl = require('Transport/URL/getUrl');
 import IoC = require('Core/IoC');
 
 // @ts-ignore
-import json = require("router");
+import json = require("optional!router");
 
 import UrlRewriter from 'Router/UrlRewriter';
 
