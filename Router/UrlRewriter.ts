@@ -80,38 +80,38 @@ function get(url) {
    if (url === '/' && rootRoute) {
       return rootRoute;
    }
+   if (routeTree) {
+      const urlPatched = getPath(url);
+      const urlArr = urlPatched.split('/');
 
-   const urlPatched = getPath(url);
-   const urlArr = urlPatched.split('/');
-   let curTreePoint = routeTree.tree;
+      let curTreePoint = routeTree.tree;
+      let found = null;
+      let foundIndex = null;
 
-   let found = null;
-   let foundIndex = null;
+      for (let i = 0; i < urlArr.length; i++) {
+         const urlPart = urlArr[i];
 
-   for (let i = 0; i < urlArr.length; i++) {
-      const urlPart = urlArr[i];
+         if (!curTreePoint[urlPart]) {
+            break;
+         }
 
-      if (!curTreePoint[urlPart]) {
-         break;
+         if (curTreePoint[urlPart].value) {
+            // it's found path what can be used for rewriting
+            // but we must continue process of finding most long matching path
+            found = curTreePoint[urlPart].value;
+            foundIndex = i;
+         }
+
+         curTreePoint = curTreePoint[urlPart].tree;
       }
 
-      if (curTreePoint[urlPart].value) {
-         // it's found path what can be used for rewriting
-         // but we must continue process of finding most long matching path
-         found = curTreePoint[urlPart].value;
-         foundIndex = i;
+      if (found) {
+         const prefix = urlArr.slice(0, foundIndex + 1).join('/');
+         const result = url.replace(prefix, found);
+         return result;
       }
-
-      curTreePoint = curTreePoint[urlPart].tree;
    }
-
-   if (found) {
-      const prefix = urlArr.slice(0, foundIndex + 1).join('/');
-      const result = url.replace(prefix, found);
-      return result;
-   } else {
-      return url;
-   }
+   return url;
 }
 
 const rewriter = {

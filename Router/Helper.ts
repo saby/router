@@ -4,12 +4,17 @@ import getUrl = require('Transport/URL/getUrl');
 // @ts-ignore
 import IoC = require('Core/IoC');
 
-// @ts-ignore
-import json = require("optional!router");
-
 import UrlRewriter from 'Router/UrlRewriter';
 
-UrlRewriter._prepare(json);
+function setupUrlRewriter() {
+   require(['router'], (replacementRoutes) => {
+      UrlRewriter._prepare(replacementRoutes);
+   }, () => {
+      // If router.js does not exist, it means that there are no
+      // replaced routes
+      UrlRewriter._prepare({});
+   });
+}
 
 let currentUrl: string = '';
 
@@ -249,6 +254,8 @@ function getAppNameByUrl(url: string): string {
    url = UrlRewriter.get(url);
    return getFolderNameByUrl(url) + '/Index';
 }
+
+setupUrlRewriter();
 
 export default {
    setRelativeUrl,
