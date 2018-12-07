@@ -18,7 +18,6 @@ class Link extends Control {
 
    clickHandler(e:Event): void {
       e.preventDefault();
-      e.stopPropagation();
       this._notify('routerUpdated', [this._href, this._prettyhref], { bubbling: true });
    }
 
