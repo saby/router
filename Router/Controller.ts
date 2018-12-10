@@ -60,10 +60,11 @@ class Controller extends Control {
             }
             const currentState = History.getCurrentState();
 
-            if (!event.state || event.state.id < currentState.id) {
+            if ((!event.state && !History.getPrevState()) ||
+               event.state && (event.state.id < currentState.id)) {
                //back
                const prevState = History.getPrevState();
-               const stateForNavigate = getStateForNavigate(prevState, event.state, RouterHelper.getRelativeUrl());
+               const stateForNavigate = getStateForNavigate(prevState, event.state, RouterHelper.getRelativeUrl(!event.state && !History.getPrevState()));
                this.navigate(event, stateForNavigate.url, stateForNavigate.prettyUrl,
                   () => {
                      History.back();
