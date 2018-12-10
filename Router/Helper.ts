@@ -27,8 +27,8 @@ function setRelativeUrl(url: string) {
    currentUrl = url;
 }
 
-function getRelativeUrl() {
-   if (currentUrl) {
+function getRelativeUrl(forceRecalc?: boolean) {
+   if (currentUrl && !forceRecalc) {
       return currentUrl;
    }
    let url = getUrl();

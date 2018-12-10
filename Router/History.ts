@@ -2,77 +2,118 @@
 
 import RouterHelper from 'Router/Helper';
 
-let localHistory = [];
-let currentPosition = 0;
-
-/*
-* Code is relevant only oin browser,
-* because in browser we can navigate through history
-* */
-if (typeof window !== 'undefined') {
-   let state = {id: 0, url: RouterHelper.getRelativeUrl(), prettyUrl: RouterHelper.getRelativeUrl()};
-   localHistory.push(state);
+interface IHistoryState {
+   id?: number;
+   url: string;
+   prettyUrl?: string;
 }
 
-function getCurrentState():any {
-   return localHistory[currentPosition];
-}
+class RouterHistoryManager {
+   private _localHistory: IHistoryState[] = [];
+   private _currentPosition = 0;
 
-function getPrevState():any {
-   return localHistory[currentPosition-1];
-}
+   constructor() {
+      if (typeof window !== 'undefined') {
+         const currentUrl = RouterHelper.getRelativeUrl();
+         let firstStateId = 0;
 
-function getNextState():any {
-   return localHistory[currentPosition+1];
-}
+         // window can already have state (for example if we reload the page
+         // that has RouterController on it). In this case, copy the state
+         // id and start local history with it
+         if (window.history.state && typeof window.history.state.id === 'number') {
+            firstStateId = window.history.state.id;
+         }
 
-function back(): void {
-   currentPosition--;
-   if (!localHistory[currentPosition]) {
-      const state = _getHistoryObject(RouterHelper.getRelativeUrl(), RouterHelper.getRelativeUrl());
-      currentPosition = 0;
-      state.id = 0;
-      localHistory.forEach((el) => { el.id++; });
-      localHistory = [state].concat(localHistory);
+         // Initialize local history by pushing the current state into it
+         this._pushToHistory(
+            firstStateId,
+            currentUrl,
+            currentUrl
+         );
+
+         // If window doesn't have state, set it to our current state
+         if (!window.history.state) {
+            window.history.replaceState(this.getCurrentState(), currentUrl, currentUrl);
+         }
+      }
    }
-   RouterHelper.setRelativeUrl(localHistory[currentPosition].url);
-}
 
-function forward(): void {
-   currentPosition++;
-   if (!localHistory[currentPosition]) {
-      _pushToHistory(RouterHelper.getRelativeUrl(), RouterHelper.getRelativeUrl());
+   public getCurrentState(): IHistoryState {
+      return this._localHistory[this._currentPosition];
    }
-   RouterHelper.setRelativeUrl(localHistory[currentPosition].url);
+
+   public getPrevState(): IHistoryState {
+      return this._localHistory[this._currentPosition - 1];
+   }
+
+   public getNextState(): IHistoryState {
+      return this._localHistory[this._currentPosition + 1]
+   }
+
+   public back(): void {
+      if (this._currentPosition === 0) {
+         // Make new state the first state in local history and update
+         // (increase) ids of states that are stored already
+         let newState = this._generateHistoryObject(
+            this.getCurrentState().id,
+            RouterHelper.getRelativeUrl(true),
+            RouterHelper.getRelativeUrl(true)
+         );
+         this._localHistory.forEach(state => state.id++);
+
+         // Save the new state in the start of the local history
+         this._localHistory.unshift(newState);
+      } else {
+         this._currentPosition--;
+      }
+
+      RouterHelper.setRelativeUrl(this.getCurrentState().url);
+   }
+
+   public forward(): void {
+      this._currentPosition++;
+      if (this._currentPosition === this._localHistory.length) {
+         this._pushToHistory(
+            this.getPrevState().id,
+            RouterHelper.getRelativeUrl(),
+            RouterHelper.getRelativeUrl()
+         );
+      }
+
+      RouterHelper.setRelativeUrl(this.getCurrentState().url);
+   }
+
+   public push(newUrl: string, newPrettyUrl: string): void {
+      let newStateId;
+      if (this.getCurrentState()) {
+         newStateId = this.getCurrentState().id + 1;
+      } else {
+         newStateId = 0;
+      }
+
+      this._currentPosition++;
+      this._localHistory.splice(this._currentPosition);
+      this._pushToHistory(
+         newStateId,
+         newUrl,
+         newPrettyUrl
+      );
+
+      RouterHelper.setRelativeUrl(newUrl);
+      window.history.pushState(this.getCurrentState(), newPrettyUrl, newPrettyUrl);
+   }
+
+   private _generateHistoryObject(id: number, url: string, prettyUrl: string): IHistoryState {
+      return {
+         id,
+         url,
+         prettyUrl
+      };
+   }
+
+   private _pushToHistory(id: number, url: string, prettyUrl: string): void {
+      this._localHistory.push(this._generateHistoryObject(id, url, prettyUrl));
+   }
 }
 
-function _getHistoryObject(url: string, prettyUrl: string): any {
-   return {
-      id: currentPosition,
-      url: url,
-      prettyUrl: prettyUrl
-   };
-}
-
-function _pushToHistory(url: string, prettyUrl: string): void {
-   localHistory.push(_getHistoryObject(url, prettyUrl));
-}
-
-function push(newUrl: string, prettyUrl: string): void {
-   currentPosition++;
-   localHistory.splice(currentPosition);
-
-   _pushToHistory(newUrl, prettyUrl);
-   RouterHelper.setRelativeUrl(newUrl);
-   window.history.pushState(getCurrentState(), prettyUrl, prettyUrl);
-
-}
-
-export default {
-   getCurrentState,
-   getPrevState,
-   getNextState,
-   back,
-   forward,
-   push
-}
+export default new RouterHistoryManager();
