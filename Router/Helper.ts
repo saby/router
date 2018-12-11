@@ -241,7 +241,13 @@ function calculateHref(mask, cfg, index) {
    return result;
 }
 function getFolderNameByUrl(url: string): string {
-   let folderName = url.split('/')[1];
+   let folderName = url || '';
+
+   // Folder name for '/Tasks/onMe' is 'Tasks', but folder name for
+   // 'tasks.html' is 'tasks.html'
+   if (folderName.indexOf('/') !== -1) {
+      folderName = url.split('/')[1];
+   }
 
    // Folder name for url '/sign_in?return=mainpage' should be 'sign_in'
    if (folderName.indexOf('?') !== -1) {
