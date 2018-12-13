@@ -16,6 +16,7 @@ import Link from 'Router/Link';
 
 import History from 'Router/History';
 import RouterHelper from 'Router/Helper';
+import UrlRewriter from 'Router/UrlRewriter';
 
 function getStateForNavigate(localState: any, historyState: any, currentUrl: string): any {
    if (!localState) {
@@ -23,7 +24,7 @@ function getStateForNavigate(localState: any, historyState: any, currentUrl: str
          return historyState;
       } else {
          return {
-            url: currentUrl,
+            url: UrlRewriter.get(currentUrl),
             prettyUrl: currentUrl
          };
       }
@@ -68,10 +69,6 @@ class Controller extends Control {
                this.navigate(event, stateForNavigate.url, stateForNavigate.prettyUrl,
                   () => {
                      History.back();
-                  },
-                  () => {
-                     skipped = true;
-                     history.forward();
                   });
             } else {
                //forward
@@ -104,10 +101,11 @@ class Controller extends Control {
 
    public beforeApplyUrl(newUrl: string, newPrettyUrl: string): Promise<any> {
       const state = History.getCurrentState();
-      const newApp = RouterHelper.getAppNameByUrl(newUrl);
+      const rewrittenNewUrl = UrlRewriter.get(newUrl);
+      const newApp = RouterHelper.getAppNameByUrl(rewrittenNewUrl);
       const currentApp = RouterHelper.getAppNameByUrl(state.url);
 
-      return this.startAsyncUpdate(newUrl, newPrettyUrl).then((result) => {
+      return this.startAsyncUpdate(rewrittenNewUrl, newPrettyUrl).then((result) => {
          if (newApp === currentApp) {
             return result;
          } else {
@@ -115,18 +113,22 @@ class Controller extends Control {
                require([newApp], () => {
                   const changed = this._notify('changeApplication', [newApp], {bubbling: true});
                   if (!changed) {
-                     this.startAsyncUpdate(newUrl, newPrettyUrl).then((ret) => {
+                     this.startAsyncUpdate(rewrittenNewUrl, newPrettyUrl).then((ret) => {
                         resolve(ret);
                      });
                   }
                   resolve(true);
                }, (err) => {
-                  IoC.resolve('ILogger').error('Controller', err);
+                  IoC.resolve('ILogger').log(
+                     'Router/Controller',
+                     `Unable to load module '${newApp}', starting default redirect`
+                  );
 
                   // If the folder doesn't have /Index component, it does not
                   // use new routing. Load the page manually
                   if (window) {
                      window.location.href = newPrettyUrl;
+                     window.location.reload(); // reload in case only hash changed
                   }
 
                   reject(err);
@@ -139,31 +141,33 @@ class Controller extends Control {
    //co.navigate({}, '(.*)/edo/:idDoc([^/?]*)(.*)?', {idDoc:'8985'})
    //co.navigate({}, '/app/:razd/:idDoc([^/?]*)(.*)?', {razd: 'sda', idDoc:'12315'})
 
-   public navigate(event: object, newUrl: string, newPrettyUrl: string, callback: any, errback: any): void {
-
+   public navigate(event: object, newUrl: string, newPrettyUrl: string, callback?: Function, errback?: Function): void {
+      const rewrittenNewUrl = UrlRewriter.get(newUrl);
       const prettyUrl = newPrettyUrl || newUrl;
       const currentState = History.getCurrentState();
 
-      if (currentState.url === newUrl || this._navigateProcessed) {
+      if (currentState.url === rewrittenNewUrl || this._navigateProcessed) {
          return;
       }
       this._navigateProcessed = true;
       //this.startReserving();
-      this.beforeApplyUrl(newUrl, prettyUrl).then((accept: boolean) => {
+      this.beforeApplyUrl(rewrittenNewUrl, prettyUrl).then((accept: boolean) => {
          this._navigateProcessed = false;
          if (accept) {
             if (callback) {
                callback();
             } else {
-               History.push(newUrl, prettyUrl);
+               History.push(rewrittenNewUrl, prettyUrl);
             }
             this.applyUrl();
-         } else {
+         } else if (errback) {
             errback();
          }
       }, (err) => {
          this._navigateProcessed = false;
-         errback(err);
+         if (errback) {
+            errback(err);
+         }
       });
    }
 
