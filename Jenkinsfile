@@ -17,6 +17,6 @@ def workspace = "/home/sbis/workspace/router_${version}/${BRANCH_NAME}"
                     url: 'git@git.sbis.ru:sbis-ci/jenkins_pipeline.git']]
                                     ])
         start = load "./jenkins_pipeline/platforma/branch/Jenkinsfile"
-        start.start(version, BRANCH_NAME)
+        start.start(version, BRANCH_NAME, env)
     }
 }
