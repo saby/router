@@ -35,7 +35,6 @@ function getRelativeUrl(forceRecalc?: boolean) {
    url = url.replace(/^http[s]?:\/\//, '');
    const indexOfSlash = url.indexOf('/');
    url = url.slice(indexOfSlash);
-   url = UrlRewriter.get(url);
    return url;
 }
 function _generateFullmask(mask) {
@@ -97,7 +96,7 @@ function _generateFullmaskWithoutParams(mask, foundParamCallback) {
 
 function findIndex(mask, index, newUrl) {
    const fullmask = _generateFullmaskWithoutParams(mask, undefined);
-   const url = newUrl || getRelativeUrl();
+   const url = UrlRewriter.get(newUrl || getRelativeUrl());
    const urlCutted = url.slice(index || 0);
    const matched = urlCutted.match(fullmask);
    return matched ? matched[1].length : -1;
@@ -112,7 +111,7 @@ function _calculateParams(mask, cfg, forUrl, index) {
       });
    });
 
-   const url = forUrl || getRelativeUrl();
+   const url = UrlRewriter.get(forUrl || getRelativeUrl());
    const urlCutted = url.slice(index || 0);
    const matched = urlCutted.match(fullmask);
 
@@ -236,22 +235,27 @@ function _resolveHref(href, mask, cfg, index) {
 function calculateHref(mask, cfg, index) {
    _validateMask(mask);
    cfg = cfg.clear ? {} : cfg;
-   const url = getRelativeUrl();
+   const url = UrlRewriter.get(getRelativeUrl());
    const result = _resolveHref(url, mask, cfg, index);
    return result;
 }
 function getFolderNameByUrl(url: string): string {
    let folderName = url || '';
 
-   // Folder name for '/Tasks/onMe' is 'Tasks', but folder name for
-   // 'tasks.html' is 'tasks.html'
-   if (folderName.indexOf('/') !== -1) {
-      folderName = url.split('/')[1];
-   }
-
    // Folder name for url '/sign_in?return=mainpage' should be 'sign_in'
    if (folderName.indexOf('?') !== -1) {
       folderName = folderName.replace(/\?.*/, '');
+   }
+
+   // Folder name for url '/news#group=testGroup' should be 'news'
+   if (folderName.indexOf('#') !== -1) {
+      folderName = folderName.replace(/#.*/, '');
+   }
+
+   // Folder name for '/Tasks/onMe' is 'Tasks', but folder name for
+   // 'tasks.html' is 'tasks.html'
+   if (folderName.indexOf('/') !== -1) {
+      folderName = folderName.split('/')[1];
    }
 
    return folderName;

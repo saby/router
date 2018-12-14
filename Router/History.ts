@@ -1,6 +1,7 @@
 /// <amd-module name="Router/History" />
 
 import RouterHelper from 'Router/Helper';
+import UrlRewriter from 'Router/UrlRewriter';
 
 interface IHistoryState {
    id?: number;
@@ -27,7 +28,7 @@ class RouterHistoryManager {
          // Initialize local history by pushing the current state into it
          this._pushToHistory(
             firstStateId,
-            currentUrl,
+            UrlRewriter.get(currentUrl),
             currentUrl
          );
 
@@ -52,12 +53,14 @@ class RouterHistoryManager {
 
    public back(): void {
       if (this._currentPosition === 0) {
+         const goToUrl = RouterHelper.getRelativeUrl(true);
+
          // Make new state the first state in local history and update
          // (increase) ids of states that are stored already
          let newState = this._generateHistoryObject(
             this.getCurrentState().id,
-            RouterHelper.getRelativeUrl(true),
-            RouterHelper.getRelativeUrl(true)
+            UrlRewriter.get(goToUrl),
+            goToUrl
          );
          this._localHistory.forEach(state => state.id++);
 
@@ -73,10 +76,12 @@ class RouterHistoryManager {
    public forward(): void {
       this._currentPosition++;
       if (this._currentPosition === this._localHistory.length) {
+         const goToUrl = RouterHelper.getRelativeUrl();
+
          this._pushToHistory(
             this.getPrevState().id,
-            RouterHelper.getRelativeUrl(),
-            RouterHelper.getRelativeUrl()
+            UrlRewriter.get(goToUrl),
+            goToUrl
          );
       }
 
