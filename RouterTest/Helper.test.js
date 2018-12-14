@@ -15,6 +15,14 @@ define(['Router/Helper'], function(RouterHelper) {
             assert.strictEqual(Helper.getAppNameByUrl('/ServerStatus?timeout=500'), 'ServerStatus/Index');
          });
 
+         it('ignores hash params if they are separated by slash', function() {
+            assert.strictEqual(Helper.getAppNameByUrl('/MainPage/#waittime=100'), 'MainPage/Index');
+         });
+
+         it('ignores hash params if they are NOT separated by slash', function() {
+            assert.strictEqual(Helper.getAppNameByUrl('/MainPage#waittime=100'), 'MainPage/Index');
+         });
+
          it('allows one-part addresses', function() {
             assert.strictEqual(Helper.getAppNameByUrl('Booking'), 'Booking/Index');
          });
