@@ -128,7 +128,6 @@ class Controller extends Control {
                   // use new routing. Load the page manually
                   if (window) {
                      window.location.href = newPrettyUrl;
-                     window.location.reload(); // reload in case only hash changed
                   }
 
                   reject(err);
