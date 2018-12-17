@@ -4,8 +4,7 @@ def workspace = "/home/sbis/workspace/router_${version}/${BRANCH_NAME}"
     ws (workspace){
         deleteDir()
         checkout([$class: 'GitSCM',
-            branches: [[name: "3.19.100/feature/router-test"]],
-            //branches: [[name: "rc-${version}"]],
+            branches: [[name: "rc-${version}"]],
             doGenerateSubmoduleConfigurations: false,
             extensions: [[
                 $class: 'RelativeTargetDirectory',
@@ -16,7 +15,7 @@ def workspace = "/home/sbis/workspace/router_${version}/${BRANCH_NAME}"
                     credentialsId: 'ae2eb912-9d99-4c34-ace5-e13487a9a20b',
                     url: 'git@git.sbis.ru:sbis-ci/jenkins_pipeline.git']]
                                     ])
-        start = load "./jenkins_pipeline/platforma/branch/Jenkinsfile"
+        start = load "./jenkins_pipeline/platforma/branch/JenkinsfileRouter"
         start.start(version, BRANCH_NAME, env)
     }
 }
