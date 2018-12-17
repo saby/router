@@ -1,8 +1,7 @@
 {
   "ui-modules":
   [
-    "Router",
-    "client/Antibot"
+    "Router"
   ],
   "bl-modules":
   [
