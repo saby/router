@@ -12,7 +12,7 @@ def workspace = "/home/sbis/workspace/router_${version}/${BRANCH_NAME}"
                 ]],
                 submoduleCfg: [],
                 userRemoteConfigs: [[
-                    credentialsId: 'ae2eb912-9d99-4c34-ace5-e13487a9a20b',
+                    credentialsId: CREDENTIAL_ID_GIT,
                     url: 'git@git.sbis.ru:sbis-ci/jenkins_pipeline.git']]
                                     ])
         start = load "./jenkins_pipeline/platforma/branch/JenkinsfileRouter"
