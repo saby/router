@@ -110,25 +110,31 @@ class Controller extends Control {
             return result;
          } else {
             return new Promise((resolve, reject) => {
-               require([newApp], () => {
-                  const changed = this._notify('changeApplication', [newApp], {bubbling: true});
-                  if (!changed) {
-                     this.startAsyncUpdate(rewrittenNewUrl, newPrettyUrl).then((ret) => {
-                        resolve(ret);
-                     });
+               require([newApp], (appComponent) => {
+                  if (!appComponent) {
+                     this._handleAppRequireError(
+                        `requirejs did not report an error, but '${newApp}' component was not loaded. ` +
+                        'This could have happened because of circular dependencies or because ' +
+                        'of the browser behavior. Starting default redirect',
+                        newPrettyUrl
+                     );
+                     reject(new Error('App component is not defined'));
+                  } else {
+                     const changed = this._notify('changeApplication', [newApp], {bubbling: true});
+                     if (!changed) {
+                        this.startAsyncUpdate(rewrittenNewUrl, newPrettyUrl).then((ret) => {
+                           resolve(ret);
+                        });
+                     }
+                     resolve(true);
                   }
-                  resolve(true);
                }, (err) => {
-                  IoC.resolve('ILogger').log(
-                     'Router/Controller',
-                     `Unable to load module '${newApp}', starting default redirect`
-                  );
-
                   // If the folder doesn't have /Index component, it does not
                   // use new routing. Load the page manually
-                  if (window) {
-                     window.location.href = newPrettyUrl;
-                  }
+                  this._handleAppRequireError(
+                     `Unable to load module '${newApp}', starting default redirect`,
+                     newPrettyUrl
+                  );
 
                   reject(err);
                });
@@ -208,6 +214,16 @@ class Controller extends Control {
 
    public linkDestroyed(event: Event, inst: Link): void {
       this._registrarLink.unregister(event, inst);
+   }
+
+   private _handleAppRequireError(errMsg: string, redirectUrl: string): void {
+      IoC.resolve('ILogger').log(
+         'Router/Controller',
+         errMsg
+      );
+      if (window) {
+         window.location.href = redirectUrl;
+      }
    }
 }
 
