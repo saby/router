@@ -1,18 +1,27 @@
 define('RouterTest/resources/serverRoutingVerifier', ['Router/ServerRouting'], function(ServerRouting) {
    function createFakeRequest(path) {
+      var createdProcess = false;
       if (typeof process === 'undefined') {
          window.process = {};
+         createdProcess = true;
       }
       return {
          path: path,
-         originalUrl: 'https://my-site.ru' + path
+         originalUrl: 'https://my-site.ru' + path,
+         destroy: function() {
+            if (createdProcess) {
+               delete window.process;
+            }
+         }
       };
    }
 
    return {
       getResolvedApp: function(url) {
          var fakeReq = createFakeRequest(url);
-         return ServerRouting.getAppName(fakeReq);
+         var result = ServerRouting.getAppName(fakeReq);
+         fakeReq.destroy();
+         return result;
       },
       getRenderedTemplateAndApp: function(appName) {
          var
@@ -26,6 +35,7 @@ define('RouterTest/resources/serverRoutingVerifier', ['Router/ServerRouting'], f
             };
 
          ServerRouting.renderApp(fakeRequest, fakeResponse, appName);
+         fakeRequest.destroy();
 
          return {
             template: renderedTemplate,
