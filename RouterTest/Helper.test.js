@@ -1,3 +1,4 @@
+/* eslint-disable max-nested-callbacks */
 define(['Router/Helper'], function(RouterHelper) {
    var Helper = RouterHelper.default;
 
@@ -27,5 +28,46 @@ define(['Router/Helper'], function(RouterHelper) {
             assert.strictEqual(Helper.getAppNameByUrl('Booking'), 'Booking/Index');
          });
       });
+
+      describe('#calculateUrlParams', function() {
+         describe('one parameter with slash', function() {
+            it('interprets end of url as separator', function() {
+               var
+                  mask = 'tab/:tabName',
+                  url = '/order/tab/taxi',
+                  calculated = Helper.calculateUrlParams(mask, url);
+
+               assert.strictEqual(calculated.tabName, 'taxi');
+            });
+
+            it('interprets start of query as separator', function() {
+               var
+                  mask = 'tab/:tabName',
+                  url = '/order/tab/yacht?price=expensive',
+                  calculated = Helper.calculateUrlParams(mask, url);
+
+               assert.strictEqual(calculated.tabName, 'yacht');
+            });
+
+            it('interprets start of hash as separator', function() {
+               var
+                  mask = 'tab/:tabName',
+                  url = '/order/tab/plane#time_spent=10h',
+                  calculated = Helper.calculateUrlParams(mask, url);
+
+               assert.strictEqual(calculated.tabName, 'plane');
+            });
+
+            it('interprets slash as separator', function() {
+               var
+                  mask = 'tab/:tabName',
+                  url = '/order/tab/train/personal',
+                  calculated = Helper.calculateUrlParams(mask, url);
+
+               assert.strictEqual(calculated.tabName, 'train');
+            });
+         });
+      });
    });
 });
+/* eslint-enable max-nested-callbacks */

@@ -52,9 +52,9 @@ function _generateFullmask(mask) {
    }
 
    if (fullMask.indexOf('=') !== -1) {
-      fullMask = fullMask + '(&.+)?';
+      fullMask = fullMask + '(#.*|&.+)?';
    } else {
-      fullMask = fullMask + '(/.*|\\?.+)?';
+      fullMask = fullMask + '(#.*|/.*|\\?.+)?';
    }
 
    return fullMask;
@@ -89,7 +89,7 @@ function _generateFullmaskWithoutParams(mask, foundParamCallback) {
    });
 
    for (let i = paramIndexes.length - 1; i >= 0; i--) {
-      fullMask = fullMask.slice(0, paramIndexes[i].preffixEnd) + '([^\\/?&]+)' + fullMask.slice(paramIndexes[i].postfixStart);
+      fullMask = fullMask.slice(0, paramIndexes[i].preffixEnd) + '([^\\/?&#]+)' + fullMask.slice(paramIndexes[i].postfixStart);
    }
    return fullMask;
 }
