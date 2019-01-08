@@ -20,7 +20,7 @@ class Registrar {
       event.stopPropagation();
    }
 
-   startAsync(objectNew: any, objectOld: any): Promise<any>{
+   public startAsync(objectNew: any, objectOld: any): Promise<any>{
       if (!this._registry) {
          return;
       }
