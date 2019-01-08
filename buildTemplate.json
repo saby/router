@@ -20,18 +20,6 @@
       "path": "%cd%/Router"
     },
     {
-      "name": "Controls",
-      "path": "%cd%/node_modules/sbis3-controls/Controls"
-    },
-    {
-      "name": "Controls-demo",
-      "path": "%cd%/node_modules/sbis3-controls/Controls-demo"
-    },
-    {
-      "name": "Controls-theme",
-      "path": "%cd%/node_modules/sbis3-controls/Controls-theme"
-    },
-    {
       "name": "Core",
       "path": "%cd%/node_modules/sbis3-ws/Core"
     },
@@ -70,6 +58,10 @@
     {
       "name": "RouterTest",
       "path": "%cd%/RouterTest"
+    },
+    {
+      "name": "RouterDemo",
+      "path": "%cd%/RouterDemo"
     }
 
   ]

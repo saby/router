@@ -57,7 +57,6 @@
       "progress": "^2.0.0",
       "requirejs": "2.1.18",
       "sbis3-builder": "git+https://github.com/saby/Builder.git#rc-19.100",
-      "sbis3-controls": "git+http://git.sbis.ru/sbis/controls.git#rc-19.100",
       "sbis3-ws": "git+https://git.sbis.ru/sbis/ws.git#rc-19.100",
       "serve-static": "1.11.x",
       "saby-types": "git+https://github.com/saby/Types.git#rc-19.100",
