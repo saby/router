@@ -1,12 +1,16 @@
 const root = process.cwd(),
    path = require('path'),
    express = require('express'),
+   fs = require('fs'),
    app = express(),
    resourcesPath = path.join('', 'application');
 
 const global = (function() {
    return this || (0, eval)('this');
 })();
+
+
+const indexFile = fs.readFileSync(path.join(root, 'application', 'RouterDemo', 'index.html'), 'utf8');
 
 const requirejs = require(path.join(root, 'node_modules', 'sbis3-ws', 'ws', 'ext', 'requirejs', 'r.js'));
 global.requirejs = requirejs;
@@ -39,6 +43,10 @@ require(['Core/core-init'], () => {
 
 app.get('/cdn*', (req, res) => {
    res.redirect('http://dev-cdn.wasaby.io' + req.url.slice(4));
+});
+
+app.get('/RouterDemo/*', (req, res) => {
+   res.send(indexFile);
 });
 
 

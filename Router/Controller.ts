@@ -7,7 +7,7 @@ import IoC = require('Core/IoC');
 // @ts-ignore
 import template = require('wml!Router/Controller');
 // @ts-ignore
-import registrar = require('Controls/Event/Registrar');
+import registrar from 'Router/Registrar';
 
 // @ts-ignore
 import Router from 'Router/Route';
@@ -89,14 +89,16 @@ class Controller extends Control {
    }
 
    public applyUrl(): void {
-      this._registrarUpdate.startAsync();
-      this._registrarLink.startAsync();
+      this._registrarUpdate.startAsync({}, {});
+      this._registrarLink.startAsync({}, {});
    }
 
    public startAsyncUpdate(newUrl: string, newPrettyUrl: string): Promise<any> {
       const state = History.getCurrentState();
       return this._registrar.startAsync({url: newUrl, prettyUrl: newPrettyUrl},
-         {url: state.url, prettyUrl: state.prettyUrl}).then((values) => (values.find((value) => {return value === false; }) !== false));
+         {url: state.url, prettyUrl: state.prettyUrl}).then((values) => (values.find((value) => {
+         return value === false;
+      }) !== false));
    }
 
    public beforeApplyUrl(newUrl: string, newPrettyUrl: string): Promise<any> {
