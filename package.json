@@ -9,7 +9,7 @@
       "Router/*"
    ],
    "scripts": {
-      "prepare": "saby-typescript --install --tsconfig=tsconfig.base.json",
+      "postinstall": "saby-typescript --install --tsconfig=tsconfig.base.json",
       "build": "node build-app",
       "compile": "tsc",
       "start": "node node_modules/saby-units/cli/server",
@@ -42,7 +42,9 @@
       "eager": true,
       "report-dir": "./artifacts/coverage"
    },
-   "dependencies": {},
+   "dependencies": {
+      "saby-typescript": "git+https://github.com/saby/TypeScript.git#rc-19.100"
+   },
    "devDependencies": {
       "@tensor-corp/eslint-config": "^2.0.3",
       "body-parser": "^1.18.3",
@@ -60,7 +62,6 @@
       "sbis3-ws": "git+https://git.sbis.ru/sbis/ws.git#rc-19.100",
       "serve-static": "1.11.x",
       "saby-types": "git+https://github.com/saby/Types.git#rc-19.100",
-      "saby-typescript": "git+https://github.com/saby/TypeScript.git#rc-19.100",
       "saby-units": "git+https://github.com/saby/Units.git#rc-19.100",
       "ws-data": "git+http://git.sbis.ru/ws/data.git#rc-19.100"
    }
