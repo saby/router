@@ -1,0 +1,29 @@
+<Router.Controller>
+   <div>
+      This is demo page. <br />
+      We can have SPA anywhere.
+      <div>
+         <strong>It's top level menu:</strong><br />
+         <Router.Link attr:class="topMenu" href="/RouterDemo/page/:pageId" pageId="Page1">
+            <a>FirstPage</a>
+         </Router.Link>
+         <Router.Link attr:class="topMenu" href="/RouterDemo/page/:pageId" pageId="Page2">
+            <a>Some interesting page</a>
+         </Router.Link>
+         <Router.Link attr:class="topMenu" href="/RouterDemo/page/:pageId" pageId="Page3">
+            <a>Page with submenu</a>
+         </Router.Link>
+      </div>
+
+      <div>
+         <Router.Route mask="page/:pageId">
+            <div>
+               <strong>We can use parametr "pageId" right here: {{content.pageId}}</strong>
+               <br />
+               <span>Also it will be transmitted to control RouterDemo.PageLoader</span>
+               <RouterDemo.PageLoader />
+            </div>
+         </Router.Route>
+      </div>
+   </div>
+</Router.Controller>

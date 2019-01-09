@@ -1,12 +1,16 @@
 const root = process.cwd(),
    path = require('path'),
    express = require('express'),
+   fs = require('fs'),
    app = express(),
    resourcesPath = path.join('', 'application');
 
 const global = (function() {
    return this || (0, eval)('this');
 })();
+
+
+const indexFile = fs.readFileSync(path.join(root, 'application', 'RouterDemo', 'index.html'), 'utf8');
 
 const requirejs = require(path.join(root, 'node_modules', 'sbis3-ws', 'ws', 'ext', 'requirejs', 'r.js'));
 global.requirejs = requirejs;
@@ -38,61 +42,11 @@ require(['Core/core-init'], () => {
 });
 
 app.get('/cdn*', (req, res) => {
-   res.redirect('http://dev-cdn.wasaby.io' + req.url);
+   res.redirect('http://dev-cdn.wasaby.io' + req.url.slice(4));
 });
 
-
-const serverRouter = require('Router/ServerRouting');
-const tpl = require('wml!Controls/Application/Route');
-
-/*server side render*/
-app.get('/:moduleName/*', (req, res) => {
-
-   if (!process.domain) {
-      process.domain = {
-         enter: function(){},
-         exit: function(){}
-      };
-   }
-   process.domain.req = req;
-
-   const appName = serverRouter.getAppName(req);
-
-   try {
-      require(appName);
-    /*  res.render = function(template, options) {
-         const tpl = require(template);
-         const html = tpl(options);
-         if (html.addCallback) {
-            html.addCallback((htmlRes) => {
-               this.writeHead(200, {'Content-Type': 'text/html'});
-               this.end(htmlRes);
-            });
-         } else {
-            this.writeHead(200, {'Content-Type': 'text/html'});
-            this.end(html);
-         }
-      };*/
-      const html = tpl({
-         lite: true,
-         wsRoot: '/WS.Core/',
-         resourceRoot: '/',
-         application: appName
-      });
-      if (html.addCallback) {
-         html.addCallback((htmlRes) => {
-            res.writeHead(200, {'Content-Type': 'text/html'});
-            res.end(htmlRes);
-         });
-      } else {
-         res.writeHead(200, {'Content-Type': 'text/html'});
-         res.end(html);
-      }
-   }catch(e){
-      res.writeHead(404, {'Content-Type': 'text/html'});
-      res.end('');
-      return;
-   }
-
+app.get('/RouterDemo/*', (req, res) => {
+   res.send(indexFile);
 });
+
 

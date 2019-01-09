@@ -1,0 +1,44 @@
+/// <amd-module name="RouterDemo/PageLoader" />
+
+// @ts-ignore
+import * as Control from 'Core/Control';
+// @ts-ignore
+import template = require('wml!RouterDemo/PageLoader');
+
+
+class PageLoader extends Control {
+   public _template: Function = template;
+
+   private pageClassLoaded: Function = null;
+   private changePage(newPage: String): Promise<null> {
+      return new Promise((resolve, reject) => {
+         // @ts-ignore
+         require(['RouterDemo/'+newPage], (newPageClass:Function) => {
+            this.pageClassLoaded = newPageClass;
+            resolve(null);
+         })
+      });
+   }
+
+   static getDefaultOptions(): any {
+      return {
+         pageId: 'Page1'
+      };
+   }
+
+   _beforeMount(cfg: any): Promise<null> {
+      return this.changePage(cfg.pageId);
+   }
+
+   _beforeUpdate(newCfg: any): void {
+      // @ts-ignore
+      if (this._options.pageId !== newCfg.pageId) {
+         this.changePage(newCfg.pageId).then(() => {
+            // @ts-ignore
+            this._forceUpdate();
+         });
+      }
+   }
+}
+
+export = PageLoader;
