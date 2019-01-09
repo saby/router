@@ -9,8 +9,9 @@
       "Router/*"
    ],
    "scripts": {
-      "prepare": "saby-typescript --install --tsconfig=tsconfig.base.json",
-      "build": "node build-app",
+      "build": "npm run build:typescript && npm run build:app",
+      "build:typescript": "saby-typescript --install --tsconfig=tsconfig.base.json",
+      "build:app": "node build-app",
       "compile": "tsc",
       "start": "node node_modules/saby-units/cli/server",
       "test": "saby-units --isolated",
@@ -42,7 +43,8 @@
       "eager": true,
       "report-dir": "./artifacts/coverage"
    },
-   "dependencies": {},
+   "dependencies": {
+   },
    "devDependencies": {
       "@tensor-corp/eslint-config": "^2.0.3",
       "body-parser": "^1.18.3",
