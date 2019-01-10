@@ -1,29 +1,25 @@
 <Router.Controller>
    <div>
-      This is demo page. <br />
-      We can have SPA anywhere.
-      <div>
-         <strong>It's top level menu:</strong><br />
-         <Router.Link attr:class="topMenu" href="/RouterDemo/page/:pageId" pageId="Page1">
-            <a>FirstPage</a>
-         </Router.Link>
-         <Router.Link attr:class="topMenu" href="/RouterDemo/page/:pageId" pageId="Page2">
-            <a>Some interesting page</a>
-         </Router.Link>
-         <Router.Link attr:class="topMenu" href="/RouterDemo/page/:pageId" pageId="Page3">
-            <a>Page with submenu</a>
-         </Router.Link>
-      </div>
-
-      <div>
+      <nav>
+         <ul class="TopMenu">
+            <li class="TopMenu__Item">
+               <Router.Link href="/RouterDemo/page/:pageId" pageId="Intro" attr:class="TopMenu__Link"><span>Intro</span></Router.Link>
+            </li>
+            <li class="TopMenu__Item">
+               <Router.Link href="/RouterDemo/page/:pageId" pageId="SPRouting" attr:class="TopMenu__Link"><span>SPA Routing</span></Router.Link>
+            </li>
+            <li class="TopMenu__Item">
+               <Router.Link href="/RouterDemo/page/:pageId" pageId="InCode" attr:class="TopMenu__Link"><span>Parameters in Code</span></Router.Link>
+            </li>
+            <li class="TopMenu__Item">
+               <Router.Link href="/RouterDemo/page/:pageId" pageId="Popups" attr:class="TopMenu__Link"><span>Popups</span></Router.Link>
+            </li>
+         </ul>
+      </nav>
+      <main class="ContentContainer">
          <Router.Route mask="page/:pageId">
-            <div>
-               <strong>We can use parametr "pageId" right here: {{content.pageId}}</strong>
-               <br />
-               <span>Also it will be transmitted to control RouterDemo.PageLoader</span>
-               <RouterDemo.PageLoader />
-            </div>
+            <RouterDemo.PageLoader />
          </Router.Route>
-      </div>
+      </main>
    </div>
 </Router.Controller>

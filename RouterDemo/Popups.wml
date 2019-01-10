@@ -1,0 +1,8 @@
+<div>
+   <h1>Opening and Closing Popups</h1>
+
+   <p>
+      This is an example of how to open and close popups based on the URL change, using <span class="CodeSpan">on:enter</span> and <span class="CodeSpan">on:leave</span>
+      events.
+   </p>
+</div>

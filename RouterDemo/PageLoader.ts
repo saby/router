@@ -5,28 +5,27 @@ import * as Control from 'Core/Control';
 // @ts-ignore
 import template = require('wml!RouterDemo/PageLoader');
 
-
 class PageLoader extends Control {
    public _template: Function = template;
 
    private pageClassLoaded: Function = null;
-   private changePage(newPage: String): Promise<null> {
+   private changePage(newPage: String): Promise<void> {
       return new Promise((resolve, reject) => {
          // @ts-ignore
          require(['RouterDemo/'+newPage], (newPageClass:Function) => {
             this.pageClassLoaded = newPageClass;
-            resolve(null);
+            resolve();
          })
       });
    }
 
    static getDefaultOptions(): any {
       return {
-         pageId: 'Page1'
+         pageId: 'Intro'
       };
    }
 
-   _beforeMount(cfg: any): Promise<null> {
+   _beforeMount(cfg: any): Promise<void> {
       return this.changePage(cfg.pageId);
    }
 

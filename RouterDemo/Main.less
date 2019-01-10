@@ -1,5 +1,53 @@
-.router-Link.topMenu {
-  margin: 0 10px;
-  text-decoration: underline;
-  color: red;
+@font-face {
+  font-family: TensorFont;
+  src: url(/cdn/fonts/TensorFont/1.0.4/TensorFont/TensorFont.woff2);
+}
+
+* {
+  font-family: TensorFont;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+.TopMenu {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #2c3e50;
+}
+
+.TopMenu__Item {
+  float: left;
+}
+
+.TopMenu__Link {
+  display: block;
+  text-align: center;
+  padding: 16px;
+  text-decoration: none;
+}
+
+.TopMenu__Link:hover {
+  background-color: #465e73;
+}
+
+.TopMenu__Link span {
+  color: white;
+}
+
+.TopMenu__Item:focus, .TopMenu__Link:focus, .TopMenu__Link span {
+  outline: none;
+}
+
+.ContentContainer {
+  margin: 0 30px;
+}
+
+.CodeSpan {
+  padding: 1px 2px;
+  background-color: #eee;
 }
