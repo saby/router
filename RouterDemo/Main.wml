@@ -9,10 +9,10 @@
                <Router.Link href="/RouterDemo/page/:pageId" pageId="SPRouting" attr:class="TopMenu__Link"><span>SPA Routing</span></Router.Link>
             </li>
             <li class="TopMenu__Item">
-               <Router.Link href="/RouterDemo/page/:pageId" pageId="InCode" attr:class="TopMenu__Link"><span>Parameters in Code</span></Router.Link>
+               <Router.Link href="/RouterDemo/page/:pageId" pageId="Popups" attr:class="TopMenu__Link"><span>Popups</span></Router.Link>
             </li>
             <li class="TopMenu__Item">
-               <Router.Link href="/RouterDemo/page/:pageId" pageId="Popups" attr:class="TopMenu__Link"><span>Popups</span></Router.Link>
+               <Router.Link href="/RouterDemo/page/:pageId" pageId="PopupsPretty" attr:class="TopMenu__Link"><span>Popups with Pretty URLs</span></Router.Link>
             </li>
          </ul>
       </nav>

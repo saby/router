@@ -1,11 +1,11 @@
-/// <amd-module name="RouterDemo/Popups" />
+/// <amd-module name="RouterDemo/PopupsPretty" />
 
 // @ts-ignore
 import * as Control from 'Core/Control';
 // @ts-ignore
-import template = require('wml!RouterDemo/Popups');
+import template = require('wml!RouterDemo/PopupsPretty');
 
-class Popups extends Control {
+class PopupsPretty extends Control {
    public _template: Function = template;
 
    private _isPopupDisplayed = false;
@@ -17,9 +17,9 @@ class Popups extends Control {
    _hidePopup() {
       this._isPopupDisplayed = false;
       setTimeout(() => {
-         this._notify('routerUpdated', ['/RouterDemo/page/Popups', '/RouterDemo/page/Popups'], { bubbling: true });
+         this._notify('routerUpdated', ['/RouterDemo/page/PopupsPretty', '/RouterDemo/page/PopupsPretty'], { bubbling: true });
       }, 0);
    }
 }
 
-export = Popups;
+export = PopupsPretty;

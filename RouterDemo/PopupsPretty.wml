@@ -1,0 +1,24 @@
+<div>
+   <h1>Using Popups with Pretty URL</h1>
+
+   <p>
+      This example is the same as the other Popups example, but it uses the <span class="CodeSpan">prettyHref</span> option of <span class="CodeSpan">Router.Link</span> component
+      to hide the long generated URL.
+   </p>
+
+   <Router.Link href="panel/0/:panelData" prettyUrl="/RouterDemo/page/PopupsPretty/inPanel" panelData="Hello" attr:class="BigButton">
+      <span>Open the popup</span>
+   </Router.Link>
+
+   <Router.Link href="/RouterDemo/page/PopupsPretty" attr:class="BigButton">
+      <span>Close all popups</span>
+   </Router.Link>
+
+   <Router.Route mask="panel/0/:panelData"
+      on:enter="_displayPopup()"
+      on:leave="_hidePopup()" />
+
+   <ws:if data="{{ _isPopupDisplayed }}">
+      <RouterDemo.resources.RecursivePopup displayDepth="{{ 0 }}" prettyUrl="/RouterDemo/page/PopupsPretty/inPanel" />
+   </ws:if>
+</div>

@@ -1,8 +1,23 @@
 <div>
    <h1>Opening and Closing Popups</h1>
-
    <p>
       This is an example of how to open and close popups based on the URL change, using <span class="CodeSpan">on:enter</span> and <span class="CodeSpan">on:leave</span>
       events.
    </p>
+
+   <Router.Link href="panel/0/:panelData" panelData="Hello" attr:class="BigButton">
+      <span>Open the popup</span>
+   </Router.Link>
+
+   <Router.Link href="/RouterDemo/page/Popups" attr:class="BigButton">
+      <span>Close all popups</span>
+   </Router.Link>
+
+   <Router.Route mask="panel/0/:panelData"
+      on:enter="_displayPopup()"
+      on:leave="_hidePopup()" />
+
+   <ws:if data="{{ _isPopupDisplayed }}">
+      <RouterDemo.resources.RecursivePopup displayDepth="{{ 0 }}" />
+   </ws:if>
 </div>

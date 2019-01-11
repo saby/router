@@ -1,0 +1,25 @@
+<div class="RecursivePopup" style="top: {{ _topCoordinate }}px;">
+   This popup's depth is {{ _options.displayDepth }}
+
+   <Router.Link href="{{ 'panel/' + (_options.displayDepth + 1) + '/:panelData' }}" prettyUrl="{{ _options.prettyUrl }}" panelData="Hello" attr:class="BigButton">
+      <span>Open additional panel</span>
+   </Router.Link>
+
+   <Router.Link
+      href="{{ 'panel/' + (_options.displayDepth) + '/:panelData' }}"
+      prettyUrl="{{ _options.displayDepth != 0 ? _options.prettyUrl }}"
+      clear="{{ true }}"
+      attr:class="RecursivePopup__Close"
+      on:click="_hidePopup()">
+      <span>×</span>
+   </Router.Link>
+
+   <Router.Route
+      mask="{{ 'panel/' + (_options.displayDepth + 1) + '/:panelData' }}"
+      on:enter="_displayPopup()"
+      on:leave="_hidePopup()" />
+
+   <ws:if data="{{ _isPopupDisplayed }}">
+      <ws:partial template="{{ 'RouterDemo/resources/RecursivePopup' }}" displayDepth="{{ _options.displayDepth + 1 }}" prettyUrl="{{ _options.prettyUrl }}" />
+   </ws:if>
+</div>

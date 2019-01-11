@@ -7,7 +7,7 @@ import template = require('wml!RouterDemo/resources/TabsBlock');
 
 import 'css!RouterDemo/resources/TabsBlock';
 
-interface TabsBlockOptions {
+interface ITabsBlockOptions {
    selectedTab?: string;
 }
 
@@ -17,12 +17,12 @@ class TabsBlock extends Control {
    private _tabCount = 3;
    private _selectedTabId = 0;
 
-   _beforeMount(cfg: TabsBlockOptions): void {
+   _beforeMount(cfg: ITabsBlockOptions): void {
       // cfg.selectedTab is passed in options as a string by Router.Route
       this._setSelectedTab(Number.parseInt(cfg.selectedTab, 10));
    }
 
-   _beforeUpdate(cfg: TabsBlockOptions): void {
+   _beforeUpdate(cfg: ITabsBlockOptions): void {
       // whenever the selectedTab in the URL changes, Router.Route triggers
       // an update
       this._setSelectedTab(Number.parseInt(cfg.selectedTab, 10));
