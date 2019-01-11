@@ -1,8 +1,16 @@
 <div>
    <h1>Single Page Routing</h1>
-
    <p>
       This is an example of how to implement a single page redirect, using <span class="CodeSpan">Router.Route</span> and <span class="CodeSpan">Router.Link</span> to
-      switch between different tabs of a block
+      switch between different tabs.
    </p>
+   <p>
+      The block below is a <span class="CodeSpan">RouterDemo.resources.TabsBlock</span> component, which is passed a <span class="CodeSpan">selectedTab</span> option, that
+      is extracted from the URL by the <span class="CodeSpan">Router.Route</span> that is wrapped around the tabs block. It then uses the passed in option to display the
+      currently selected tab.
+   </p>
+
+   <Router.Route mask="selectedTab/:selectedTab">
+      <RouterDemo.resources.TabsBlock />
+   </Router.Route>
 </div>

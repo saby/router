@@ -1,9 +1,9 @@
-/// <amd-module name="RouterDemo/PageLoader" />
+/// <amd-module name="RouterDemo/resources/PageLoader" />
 
 // @ts-ignore
 import * as Control from 'Core/Control';
 // @ts-ignore
-import template = require('wml!RouterDemo/PageLoader');
+import template = require('wml!RouterDemo/resources/PageLoader');
 
 class PageLoader extends Control {
    public _template: Function = template;

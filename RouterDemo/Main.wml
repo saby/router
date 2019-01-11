@@ -18,7 +18,7 @@
       </nav>
       <main class="ContentContainer">
          <Router.Route mask="page/:pageId">
-            <RouterDemo.PageLoader />
+            <RouterDemo.resources.PageLoader />
          </Router.Route>
       </main>
    </div>

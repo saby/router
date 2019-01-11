@@ -1,10 +1,37 @@
 @font-face {
   font-family: TensorFont;
   src: url(/cdn/fonts/TensorFont/1.0.4/TensorFont/TensorFont.woff2);
+  font-weight: normal;
+  font-style: normal
+}
+
+@font-face {
+  font-family: TensorFont;
+  src: url(/cdn/fonts/TensorFont/1.0.4/TensorFontBold/TensorFontBold.woff2);
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: TensorFont;
+  src: url(/cdn/fonts/TensorFont/1.0.4/TensorFontItalic/TensorFontItalic.woff2);
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: TensorFont;
+  src: url(/cdn/fonts/TensorFont/1.0.4/TensorFontBoldItalic/TensorFontBoldItalic.woff2);
+  font-weight: bold;
+  font-style: italic;
 }
 
 * {
-  font-family: TensorFont;
+  font-family: TensorFont, sans-serif;
+}
+
+*:focus {
+  outline: none;
 }
 
 html, body {
@@ -37,10 +64,6 @@ html, body {
 
 .TopMenu__Link span {
   color: white;
-}
-
-.TopMenu__Item:focus, .TopMenu__Link:focus, .TopMenu__Link span {
-  outline: none;
 }
 
 .ContentContainer {

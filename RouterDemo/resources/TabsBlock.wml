@@ -1,0 +1,34 @@
+<div class="TabsBlock">
+   <div class="TabsBlock__Tabs">
+      <ul>
+         <!-- Display 3 Router.Link components with different selectedTab value -->
+         <li class="TabsBlock__Tabs--Item {{ _selectedTabId == 0 ? 'TabsBlock__Tabs--ItemActive' }}">
+            <Router.Link href="selectedTab/:selectedTab" selectedTab="0" attr:class="TabsBlock__Tabs--Link">
+               <span>Tab 0</span>
+            </Router.Link>
+         </li>
+         <li class="TabsBlock__Tabs--Item {{ _selectedTabId == 1 ? 'TabsBlock__Tabs--ItemActive' }}">
+            <Router.Link href="selectedTab/:selectedTab" selectedTab="1" attr:class="TabsBlock__Tabs--Link">
+               <span>Tab 1</span>
+            </Router.Link>
+         </li>
+         <li class="TabsBlock__Tabs--Item {{ _selectedTabId == 2 ? 'TabsBlock__Tabs--ItemActive' }}">
+            <Router.Link href="selectedTab/:selectedTab" selectedTab="2" attr:class="TabsBlock__Tabs--Link">
+               <span>Tab 2</span>
+            </Router.Link>
+         </li>
+      </ul>
+   </div>
+   <div class="TabsBlock__Content">
+      <!-- Based on the value of the _selectedTabId field, display different content -->
+      <ws:if data="{{ _selectedTabId == 0 }}">
+         <p>This is a tab 0 that opens by default and whenever the URL has an incorrect <span class="CodeSpan">selectedTab</span> specified.</p>
+      </ws:if>
+      <ws:else data="{{ _selectedTabId == 1}}">
+         <p>This is a tab 1.</p>
+      </ws:else>
+      <ws:else data="{{ _selectedTabId == 2}}">
+         <p>This is the last tab. Try clicking your browser's back and forward buttons to see single page routing in action.</p>
+      </ws:else>
+   </div>
+</div>
