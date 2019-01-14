@@ -27,6 +27,8 @@ class RecursivePopup extends Control {
       if (!this._isPopupDisplayed) {
          this._isPopupDisplayed = true;
 
+         // Store the current URL before opening the nested popup, so we
+         // could return to it later
          this._returnUrl = oldLocation.url;
          this._returnPrettyUrl = oldLocation.prettyUrl;
       }
@@ -35,6 +37,9 @@ class RecursivePopup extends Control {
    _hidePopup() {
       if (this._isPopupDisplayed) {
          this._isPopupDisplayed = false;
+
+         // Reset the URL to the same state as it was before we opened the nested popup,
+         // so that all the popups with higher depth would as well
          setTimeout(() => {
             this._notify('routerUpdated', [this._returnUrl, this._returnPrettyUrl], { bubbling: true });
          }, 0);

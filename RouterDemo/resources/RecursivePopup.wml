@@ -1,10 +1,22 @@
 <div class="RecursivePopup" style="top: {{ _topCoordinate }}px;">
    This popup's depth is {{ _options.displayDepth }}
 
+   <!--
+      These link and route are used to open the nested popup, which should have a higher depth,
+      so the (_options.displayDepth + 1) is specified
+   -->
    <Router.Link href="{{ 'panel/' + (_options.displayDepth + 1) + '/:panelData' }}" prettyUrl="{{ _options.prettyUrl }}" panelData="Hello" attr:class="BigButton">
       <span>Open additional panel</span>
    </Router.Link>
+   <Router.Route
+      mask="{{ 'panel/' + (_options.displayDepth + 1) + '/:panelData' }}"
+      on:enter="_displayPopup()"
+      on:leave="_hidePopup()" />
 
+   <!--
+      This link is used to close the current popup, it removes the panel part with current
+      displayDepth from the URL
+   -->
    <Router.Link
       href="{{ 'panel/' + (_options.displayDepth) + '/:panelData' }}"
       prettyUrl="{{ _options.displayDepth != 0 ? _options.prettyUrl }}"
@@ -14,11 +26,11 @@
       <span>×</span>
    </Router.Link>
 
-   <Router.Route
-      mask="{{ 'panel/' + (_options.displayDepth + 1) + '/:panelData' }}"
-      on:enter="_displayPopup()"
-      on:leave="_hidePopup()" />
-
+   <!--
+      This popup is implemented as physically nested inside of the current popup, but the same depth based
+      approach can be used with different popup implementations, for example if you use an opener component,
+      you would insert it here instead and pass displayDepth as one of the opened component's options
+   -->
    <ws:if data="{{ _isPopupDisplayed }}">
       <ws:partial template="{{ 'RouterDemo/resources/RecursivePopup' }}" displayDepth="{{ _options.displayDepth + 1 }}" prettyUrl="{{ _options.prettyUrl }}" />
    </ws:if>

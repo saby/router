@@ -14,11 +14,14 @@ class PopupsPretty extends Control {
       this._isPopupDisplayed = true;
    }
 
-   _hidePopup() {
+   _hidePopup(event, newLoc) {
       this._isPopupDisplayed = false;
-      setTimeout(() => {
-         this._notify('routerUpdated', ['/RouterDemo/page/PopupsPretty', '/RouterDemo/page/PopupsPretty'], { bubbling: true });
-      }, 0);
+      if (newLoc.url.startsWith('/RouterDemo/page/PopupsPretty/')) {
+         // When the root popup closes, make sure that all the nested popups get closed by resetting the URL
+         setTimeout(() => {
+            this._notify('routerUpdated', ['/RouterDemo/page/PopupsPretty', '/RouterDemo/page/PopupsPretty'], { bubbling: true });
+         }, 0);
+      }
    }
 }
 

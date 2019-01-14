@@ -9,10 +9,10 @@
   * [Running the Demo](#running-the-demo)
   * [Using Router.Route to Match URLs](#using-routerroute-to-match-urls)
     * [Mask Types](#mask-types)
+    * [Opening and Closing Popups on URL Change](#opening-and-closing-popups-on-url-change)
   * [Using Router.Link to Change URLs](#using-routerlink-to-change-urls)
     * [Specifying a Pretty URL](#specifying-a-pretty-url)
     * [Clearing a Part of the URL](#clearing-a-part-of-the-url)
-  * [How-to](#how-to)
 
 ## Running the Tests
 
@@ -36,15 +36,15 @@ Go to [http://localhost:777/RouterDemo/](http://localhost:777/RouterDemo/) in yo
 
 ## Enabling the Single Page Routing
 
-For **saby-router** components and modules to work, the page has to have a `Router.Controller` component in it. All components nested inside of it will have access to single page routing.
+For **saby-router** components and modules to work, the page has to have a `Router.Controller` component in it. All nested components will have access to the single page routing mechanisms.
 
-If your page is built from a `.html.tmpl`, or your application is rendered inside of a `Controls/Application/Route` template, it already has the controller in it, so you don't have to include it manually.
+The pages built from an `.html.tmpl` file and application components rendered inside of `Controls/Application/Route` already include the controller in it by default, it should not be inserted manually.
 
 ## Using Router.Route to Match URLs
 
-`Router.Route` is a component that lets you match URLs and extract values from them.
+`Router.Route` is a component that matches URLs and extracts values from them.
 
-This component has a `mask` option. Mask is a string that contains a special placeholder that starts with a colon (:) and represents an arbitrary parameter in the URL. The value of this parameter is extracted from the URL when it changes and is passed inside of the `Router.Route` with the same name as the placeholder itself.
+This component has a `mask` option. Mask is a string that contains a special placeholder that starts with a colon character (:) and represents an arbitrary parameter in the URL. The value of this parameter is extracted from the URL when it changes and is passed inside of the `Router.Route` with the same name as the placeholder itself.
 
 **Example:**
 
@@ -52,7 +52,7 @@ This component has a `mask` option. Mask is a string that contains a special pla
        <p>Selected destination: {{ content.myDestination }}</p>
     </Router.Route>
 
-If the URL contains the substring `destination/Italy`, the user will see `Selected destination: Italy`. If the URL doesn't match the mask `destination/*` at all, `myDestination` will be undefined.
+In the example above, if the URL contains the substring `destination/Italy`, the user will see `Selected destination: Italy`. If the URL doesn't match the mask `destination/*` at all, `myDestination` will be undefined.
 
 ### Mask Types
 
@@ -63,7 +63,7 @@ If the URL contains the substring `destination/Italy`, the user will see `Select
 Standard param mask looks like `paramName/:paramValue` and can contain any number of placeholders, for example `tour/:priceMin/:priceMax`. It matches any URL that contains the
 mask.
 
-Placeholder value for standard param mask ends when the URL ends, or when `#`, `/` or `?` character is encountered.
+Placeholder value for standard param mask ends when the URL ends, or when a `#`, `/` or `?` character is encountered.
 
 **Example:**
 
@@ -76,7 +76,7 @@ Placeholder value for standard param mask ends when the URL ends, or when `#`, `
 
 #### Query Param Mask
 
-Query param mask looks like `paramName=:paramValue` and can contain exactly one placeholder. It matches and extracts the placeholder value from any URL that contains the specified query param, for example `/mypurchases?filtered=true&paramName=age&greaterthan=2` would match the mask, and the extracted value would be `age`.
+Query param mask looks like `paramName=:paramValue` and has to contain exactly one placeholder. It matches and extracts the placeholder value from any URL that contains the specified query param, for example the URL `/mypurchases?filtered=true&paramName=age&greaterthan=2` would match the mask, and the extracted value would be `age`.
 
 Placeholder value for query param mask ends when the URL ends, or when `#` or `&` character is encountered.
 
@@ -88,11 +88,50 @@ Placeholder value for query param mask ends when the URL ends, or when `#` or `&
     URL: "/page?paramName=value&two=true" -> paramValue = "value"
     URL: "/page?paramName=value#three"    -> paramValue = "value"
 
+### Opening and Closing Popups on URL Change
+
+`Router.Route` has two events: `on:enter` fires when the current URL starts to match this route's mask, and `on:leave` fires when the current URL no longer matches the specified mask.
+
+**Example:**
+
+    <Router.Route mask="search/:query">...</Router.Route>
+
+    Current URL: "/home"
+    Go to: "/page/search/My+query"           -> on:enter fires
+    Then go to: "/page/search/Another+query" -> no events fired
+    Then go to: "/about"                     -> on:leave fires
+
+These events can be used to perform custom actions when the URL changes, for example to open popup windows.
+
+**Example:**
+
+    <Router.Route mask="alert/:popupInfo" on:enter="showPopup()" on:leave="closePopup()" />
+
+    Current URL: "/home"
+    Go to: "/home/alert/signup" -> showPopup() is executed
+    Go to: "/home"              -> closePopup() is executed
+
+#### Opening Recursive Popups
+
+Sometimes the popup has to be able to open the copy of itself with different parameters. For example the user might want to click on a link inside of a product card to open another card of a related product. For this to work, these popups have to use different URL masks, because they shouldn't open and close simultaneously. This can be done multiple ways, but one of them is implementing a `depth` option for the popup component and using it to generate different route masks for different level popups.
+
+**Example:**
+
+    <!-- inside of the popup template -->
+    <Router.Route mask="alert/{{_options.depth + 1}}/:popupInfo" on:enter="openPopupRecursive()" on:leave="closePopupRecursive()" />
+    <Router.Link mask="alert/{{_options.depth + 1}}/:popupInfo" popupInfo="{{ _productId }}" />
+
+`Router.Link` and `Router.Route` in the root component should open the first popup with the `depth` option set to `0`.
+
+This example is implemented in the `Popups` demo page that [can be seen here](RouterDemo/Popups.ts). However, this implementation leads to a fast growing URL (if the user recursively opens multiple popups). [The prettyUrl option of the Router.Link component](#specifying-a-pretty-url) can be used to hide the full URL from the user. The example that uses this option is implemented in the `PopupsPretty` demo page that [can be seen here](RouterDemo/PopupsPretty.ts).
+
+It is important to note, that if the actual URL is hidden with `prettyUrl` and the user reloads the page in their browser, it will not be possible to restore the same popup structure, because the real URL will be lost. This can be tested by opening multiple popups on the demo page and then pressing F5. The popups on the `Popups` page will reopen automatically, but the ones on the `PopupsPretty` page they will be lost.
+
 ## Using Router.Link to Change URLs
 
-`Router.Link` is a component that lets you change the URL without page reload, while still updating the values for `Router.Route` and redrawing the changed templates.
+`Router.Link` is a component that changes the URL without page reload on click, while still updating the values for `Router.Route`, which causes changed templates to update and redraw.
 
-To change the URL, specify a mask for your change with the `href` option and then specify the values for placeholders. `Router.Link` uses [the same mask types](#mask-types) as `Router.Route` does.
+The `href` option specifies the mask for URL change, and the rest of the options specify the values for the placeholders. `Router.Link` uses [the same mask types](#mask-types) as `Router.Route`.
 
 **Example:**
 
@@ -100,7 +139,7 @@ To change the URL, specify a mask for your change with the `href` option and the
        <span>Go to Italy</span>
     </Router.Link>
 
-Clicking on the link in the example above would add the `destination/Italy` part to the URL if there is no `destination` it in currently, or would change the currently specified destination if it already has one. The rest of the URL stays unchanged.
+Clicking on the link in the example above would add the `destination/Italy` part to the URL if it currently does not contain `destination`, and would change the currently specified destination otherwise. The rest of the URL stays unchanged.
 
     URL: "/book"                                          -> After click: "/book/destination/Italy"
     URL: "/book/destination/Russia"                       -> After click: "/book/destination/Italy"
@@ -109,7 +148,7 @@ Clicking on the link in the example above would add the `destination/Italy` part
 
 ### Specifying a Pretty URL
 
-If you want the user to see a different URL than what it really is, specify the `prettyUrl` option. This string will be displayed in the user's address bar, but `Router.Route` and `Router.Link` components will still work with the *actual* URL.
+The `prettyUrl` option can be specified, if the actual URL should be hidden from the user. This string will be displayed in the user's address bar, but `Router.Route` and `Router.Link` components will still work with the *actual* URL.
 
 **Example:**
 
@@ -119,11 +158,11 @@ If you want the user to see a different URL than what it really is, specify the 
 
 When the user clicks the link in the example above, their URL changes to include `page/register` in it, but they see `/signup` in their address bar.
 
-It is important to note, that if the user reloads the page while pretty URL is displayed, it becomes the *actual* URL after the reload, so `Router.Route`s that match the mask `page/:pageType` will stop matching against it.
+It is important to note, that if the user reloads the page while pretty URL is displayed, it becomes the *actual* URL after the reload. Because of this, `Router.Route`s that match the mask `page/:pageType` in the example above will stop matching against it, since `/signup` becomes the actual URL after reload.
 
 ### Clearing a Part of the URL
 
-If you want `Router.Link` not to add or change the value specified by a mask, but to completely remove it from the URL, set the `clear` option to `true`. The rest of the URL stays unchanged.
+If `Router.Link` should not add or change the value specified by a mask, but completely remove it from the URL, the `clear` option should be set to `true`. The part of the URL that matches the mask will be removed and the rest of it stays unchanged.
 
 **Example:**
 
@@ -133,10 +172,6 @@ If you want `Router.Link` not to add or change the value specified by a mask, bu
 
 <!-- brk -->
 
-    URL: "/signup/type/company" -> After click: "/signup"
-    URL: "/signup" -> After click: "/signup"
+    URL: "/signup/type/company"                    -> After click: "/signup"
+    URL: "/signup"                                 -> After click: "/signup"
     URL: "/signup/type/individual/oauth?ref=email" -> After click: "/signup/oauth?ref=email"
-
-## How-to
-
-This section contains a list of common tasks that **saby-router** helps to accomplish. Each task has a link to the demo code that can be a starting point of your solution. [Follow these steps](#running-the-demo) to run the demo.

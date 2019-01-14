@@ -9,6 +9,7 @@ class PageLoader extends Control {
    public _template: Function = template;
 
    private pageClassLoaded: Function = null;
+
    private changePage(newPage: String): Promise<void> {
       return new Promise((resolve, reject) => {
          // @ts-ignore

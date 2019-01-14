@@ -23,14 +23,14 @@ class TabsBlock extends Control {
    }
 
    _beforeUpdate(cfg: ITabsBlockOptions): void {
-      // whenever the selectedTab in the URL changes, Router.Route triggers
+      // Whenever the selectedTab in the URL changes, Router.Route triggers
       // an update
       this._setSelectedTab(Number.parseInt(cfg.selectedTab, 10));
    }
 
    private _setSelectedTab(selectedTab: number): void {
-      // we have to make sure that the selected tab is valid, because URL can be
-      // changed externally, for example by user manually
+      // We have to make sure that the selected tab is valid, because URL can be
+      // changed externally, for example manually by user
       if (selectedTab >= 0 && selectedTab < this._tabCount) {
          this._selectedTabId = selectedTab;
       } else {
