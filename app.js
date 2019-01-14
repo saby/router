@@ -12,13 +12,13 @@ const global = (function() {
 
 const indexFile = fs.readFileSync(path.join(root, 'application', 'RouterDemo', 'index.html'), 'utf8');
 
-const requirejs = require(path.join(root, 'node_modules', 'sbis3-ws', 'ws', 'ext', 'requirejs', 'r.js'));
+const requirejs = require(path.join(root, 'node_modules', 'sbis3-ws', 'WS.Core', 'ext', 'requirejs', 'r.js'));
 global.requirejs = requirejs;
 
 
-const createConfig = require(path.join(root, 'node_modules', 'sbis3-ws', 'ws', 'ext', 'requirejs', 'config.js'));
-const config = createConfig(path.join(root,'application'),
-   path.join(root, 'application','WS.Core'),
+const createConfig = require(path.join(root, 'node_modules', 'sbis3-ws', 'WS.Core', 'ext', 'requirejs', 'config.js'));
+const config = createConfig(path.join(root, 'application'),
+   path.join(root, 'application', 'WS.Core'),
    path.join(root, 'application'),
    { lite: true });
 

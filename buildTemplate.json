@@ -28,6 +28,10 @@
       "path": "%cd%/node_modules/sbis3-ws/WS.Core"
     },
     {
+      "name": "Transport",
+      "path": "%cd%/node_modules/sbis3-ws/WS.Core/transport"
+    },
+    {
       "name": "View",
       "path": "%cd%/node_modules/sbis3-ws/View"
     },
