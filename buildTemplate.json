@@ -50,7 +50,10 @@
     {
       "name": "RouterDemo",
       "path": "%cd%/RouterDemo"
+    },
+    {
+      "name": "Inferno",
+      "path": "%cd%/node_modules/sbis3-ws/Inferno"
     }
-
   ]
 }
