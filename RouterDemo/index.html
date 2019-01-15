@@ -3,7 +3,8 @@
 <head tabindex="0">
    <meta name="viewport" content="width=480"/>
    <meta charset="utf-8"/>
-   <script key="ws-config"> 
+   <title>saby-router</title>
+   <script key="ws-config">
       window.wsConfig = {
          wsRoot: '/WS.Core/',
          resourceRoot: '/',
@@ -16,7 +17,7 @@
    <script type="text/javascript" src="/cdn/requirejs/2.3.5-p4/require-min.js"></script>
    <script type="text/javascript" src="/WS.Core/ext/requirejs/config.js"></script>
    <div id="root"></div>
-   <script> 
+   <script>
       require(['RouterDemo/Main'], function (Main) {
          Main.createControl(Main, {}, document.getElementById("root"));
       });

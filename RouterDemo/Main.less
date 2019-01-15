@@ -1,5 +1,87 @@
-.router-Link.topMenu {
-  margin: 0 10px;
-  text-decoration: underline;
-  color: red;
+@font-face {
+  font-family: TensorFont;
+  src: url(/cdn/fonts/TensorFont/1.0.4/TensorFont/TensorFont.woff2);
+  font-weight: normal;
+  font-style: normal
+}
+
+@font-face {
+  font-family: TensorFont;
+  src: url(/cdn/fonts/TensorFont/1.0.4/TensorFontBold/TensorFontBold.woff2);
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: TensorFont;
+  src: url(/cdn/fonts/TensorFont/1.0.4/TensorFontItalic/TensorFontItalic.woff2);
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: TensorFont;
+  src: url(/cdn/fonts/TensorFont/1.0.4/TensorFontBoldItalic/TensorFontBoldItalic.woff2);
+  font-weight: bold;
+  font-style: italic;
+}
+
+* {
+  font-family: TensorFont, sans-serif;
+}
+
+*:focus {
+  outline: none;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+.TopMenu {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #2c3e50;
+}
+
+.TopMenu__Item {
+  float: left;
+}
+
+.TopMenu__Link {
+  display: block;
+  text-align: center;
+  padding: 16px;
+  text-decoration: none;
+}
+
+.TopMenu__Link:hover {
+  background-color: #465e73;
+}
+
+.TopMenu__Link span {
+  color: white;
+}
+
+.ContentContainer {
+  margin: 0 30px;
+}
+
+.CodeSpan {
+  padding: 1px 2px;
+  background-color: #eee;
+}
+
+.BigButton {
+  padding: 8px;
+  margin: 4px;
+  background-color: #ff7033;
+  box-shadow: #bbb 1px 1px 1px;
+
+  * {
+    color: white;
+  }
 }
