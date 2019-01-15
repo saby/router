@@ -1,0 +1,7 @@
+<div>
+   <h1>saby-router Demos</h1>
+   <p>
+      Links in the top menu change the pageId parameter in the URL, which causes <span class="CodeSpan">Router.Route</span> to update and update the nested
+      <span class="CodeSpan">RouterDemo.PageLoader</span>, that changes the currently loaded page.
+   </p>
+</div>

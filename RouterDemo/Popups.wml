@@ -1,0 +1,28 @@
+<div>
+   <h1>Opening and Closing Popups</h1>
+   <p>
+      This is an example of how to open and close popups based on the URL change, using <span class="CodeSpan">on:enter</span> and <span class="CodeSpan">on:leave</span>
+      events.
+   </p>
+
+   <!-- These Link and Route are used to open the first popup, so the depth 0 is hardcoded -->
+   <Router.Link href="panel/0/:panelData" panelData="Hello" attr:class="BigButton">
+      <span>Open the popup</span>
+   </Router.Link>
+   <Router.Route mask="panel/0/:panelData"
+      on:enter="_displayPopup()"
+      on:leave="_hidePopup()" />
+
+   <Router.Link href="/RouterDemo/page/Popups" attr:class="BigButton">
+      <span>Close all popups</span>
+   </Router.Link>
+
+   <!--
+      The RecursivePopup is inserted here directly, but the same approach can be used with the different
+      popup opening methods. For example, when using openers, you would pass displayDepth as a component
+      option instead
+   -->
+   <ws:if data="{{ _isPopupDisplayed }}">
+      <RouterDemo.resources.RecursivePopup displayDepth="{{ 0 }}" />
+   </ws:if>
+</div>
