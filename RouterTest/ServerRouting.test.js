@@ -1,6 +1,7 @@
 define([
-   'RouterTest/resources/serverRoutingVerifier'
-], function(srVerifier) {
+   'RouterTest/resources/serverRoutingVerifier',
+   'Router/ServerRouting'
+], function(srVerifier, ServerRouting) {
    describe('Router/ServerRouting', function() {
 
       it('correctly resolves application name by simple url', function() {
@@ -13,6 +14,14 @@ define([
          var rendered = srVerifier.getRenderedTemplateAndApp('register/Index');
 
          assert.strictEqual(rendered.template, 'wml!Controls/Application/Route');
+         assert.strictEqual(rendered.app, 'register/Index');
+      });
+
+      it('calls ServerRouting.setBaseTemplate to change application entry point', function() {
+         ServerRouting.setBaseTemplate('wml!MyWml');
+         var rendered = srVerifier.getRenderedTemplateAndApp('register/Index');
+
+         assert.strictEqual(rendered.template, 'wml!MyWml');
          assert.strictEqual(rendered.app, 'register/Index');
       });
 
