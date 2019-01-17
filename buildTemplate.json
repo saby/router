@@ -20,10 +20,6 @@
       "path": "%cd%/Router"
     },
     {
-      "name": "Core",
-      "path": "%cd%/node_modules/sbis3-ws/Core"
-    },
-    {
       "name": "WS.Core",
       "path": "%cd%/node_modules/sbis3-ws/WS.Core"
     },
