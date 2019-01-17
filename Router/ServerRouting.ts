@@ -1,12 +1,14 @@
 /// <amd-module name="Router/ServerRouting" />
 
-import RouterHelper from 'Router/Helper';
+// TODO Move this file to Presentation Service?
 
-function getAppName(request) {
-   return RouterHelper.getAppNameByUrl(request.path);
+import MaskResolver from 'Router/MaskResolver';
+
+function getAppName(request): string {
+   return MaskResolver.getAppNameByUrl(request.path);
 }
 
-function renderApp(request, response, appName) {
+function renderApp(request, response, appName): void {
    request.compatible = false;
    response.render('wml!Controls/Application/Route', {
       application: appName
