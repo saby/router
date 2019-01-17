@@ -27,6 +27,9 @@
       "moduleType": "amd",
       "root": "application",
       "tests": "RouterTest",
+      "report": "./application/artifacts/xunit-report.xml",
+      "htmlCoverageReport": "./application/artifacts/coverage/index.html",
+      "jsonCoverageReport": "./application/artifacts/coverage.json",
       "url": {
          "port": 1023
       }
@@ -41,7 +44,7 @@
       ],
       "cache": false,
       "eager": true,
-      "report-dir": "./artifacts/coverage"
+      "report-dir": "./application/artifacts/coverage"
    },
    "dependencies": {
    },
