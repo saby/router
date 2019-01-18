@@ -1,27 +1,104 @@
 /// <amd-module name="Router/Controller" />
 
 // @ts-ignore
-import * as Control from 'Core/Control';
-// @ts-ignore
-import IoC = require('Core/IoC');
-// @ts-ignore
-import template = require('wml!Router/Controller');
-// @ts-ignore
-import registrar from 'Router/Registrar';
+import * as IoC from 'Core/IoC';
 
-// @ts-ignore
-import Router from 'Router/Route';
-// @ts-ignore
-import Link from 'Router/Link';
+import Data, { IHistoryState, TStateChangeFunction, IRegisteredRoute } from 'Router/Data';
 
-import History from 'Router/History';
-import RouterHelper from 'Router/Helper';
-import UrlRewriter from 'Router/UrlRewriter';
+import { getAppNameByUrl } from 'Router/MaskResolver';
+import * as History from 'Router/History';
+import * as UrlRewriter from 'Router/UrlRewriter';
 
-function getStateForNavigate(localState: any, historyState: any, currentUrl: string): any {
+let isNavigating = false;
+
+_initializeController();
+
+export function navigate(newState: IHistoryState, callback?: Function, errback?: Function): void {
+   const rewrittenNewUrl = UrlRewriter.get(newState.url);
+   const prettyUrl = newState.prettyUrl || newState.url;
+   const currentState = History.getCurrentState();
+
+   if (currentState.url === rewrittenNewUrl || isNavigating) {
+      return;
+   }
+   const rewrittenNewState: IHistoryState = {
+      url: rewrittenNewUrl,
+      prettyUrl
+   };
+
+   isNavigating = true;
+   _tryApplyNewState(rewrittenNewState).then((accept: boolean) => {
+      isNavigating = false;
+      if (accept) {
+         if (callback) {
+            callback();
+         } else {
+            History.push(rewrittenNewState);
+         }
+         _notifyStateChanged(rewrittenNewState, currentState);
+      } else if (errback) {
+         errback();
+      }
+   }, (err) => {
+      isNavigating = false;
+      errback && errback(err);
+   });
+}
+
+export function addRoute(route, beforeUrlChangeCb: TStateChangeFunction, afterUrlChangeCb: TStateChangeFunction): void {
+   Data.registeredRoutes[route.getInstanceId()] = {
+      beforeUrlChangeCb,
+      afterUrlChangeCb
+   };
+}
+
+export function removeRoute(route): void {
+   delete Data.registeredRoutes[route.getInstanceId()];
+}
+
+export function addReference(reference, afterUrlChangeCb: TStateChangeFunction): void {
+   Data.registeredReferences[reference.getInstanceId()] = {
+      afterUrlChangeCb
+   };
+}
+
+export function removeReference(reference): void {
+   delete Data.registeredReferences[reference.getInstanceId()];
+}
+
+function _initializeController(): void {
+   if (typeof window !== 'undefined') {
+      let skipNextChange = false;
+      window.onpopstate = (event: PopStateEvent) => {
+         if (skipNextChange) {
+            skipNextChange = false;
+            return;
+         }
+
+         const currentState = History.getCurrentState();
+         const prevState = History.getPrevState();
+         if (!event.state && !prevState || event.state && (event.state.id < currentState.id)) {
+            // going back
+            const navigateToState = _getNavigationState(prevState, event.state, Data.relativeUrl);
+            navigate(navigateToState, () => History.back());
+         } else {
+            // going forward
+            const nextState = History.getNextState();
+            const navigateToState = _getNavigationState(nextState, event.state, Data.relativeUrl);
+            navigate(navigateToState, () => History.forward(), () => {
+               // unable to navigate to specified state, going back in history
+               skipNextChange = true;
+               window.history.back();
+            });
+         }
+      };
+   }
+}
+
+function _getNavigationState(localState: IHistoryState, windowState: IHistoryState, currentUrl: string): IHistoryState {
    if (!localState) {
-      if (historyState && historyState.url && historyState.prettyUrl) {
-         return historyState;
+      if (windowState && windowState.url && windowState.prettyUrl) {
+         return windowState;
       } else {
          return {
             url: UrlRewriter.get(currentUrl),
@@ -32,201 +109,92 @@ function getStateForNavigate(localState: any, historyState: any, currentUrl: str
    return localState;
 }
 
-class Controller extends Control {
-   private _registrar: registrar = null;
-   private _registrarLink: registrar = null;
-   private _currentRoute;
-   private _registrarUpdate: registrar = null;
-   private _registrarReserving: registrar = null;
-   private _navigateProcessed: boolean = false;
-   private _index: number = 0;
-   public _template: Function = template;
+function _tryApplyNewState(newState: IHistoryState): Promise<boolean> {
+   const state = History.getCurrentState();
+   const newApp = getAppNameByUrl(newState.url);
+   const currentApp = getAppNameByUrl(state.url);
 
-   constructor(cfg: object) {
-      super(cfg);
-      this._currentRoute = 0;
-
-      /*Controller doesn't work on server*/
-      if (typeof window !== 'undefined') {
-         this._registrar = new registrar();
-         this._registrarUpdate = new registrar();
-         this._registrarLink = new registrar();
-         this._registrarReserving = new registrar();
-
-         let skipped = false;
-         window.onpopstate = (event: any) => {
-            if (skipped) {
-               skipped = false;
-               return;
-            }
-            const currentState = History.getCurrentState();
-
-            if ((!event.state && !History.getPrevState()) ||
-               event.state && (event.state.id < currentState.id)) {
-               //back
-               const prevState = History.getPrevState();
-               const stateForNavigate = getStateForNavigate(prevState, event.state, RouterHelper.getRelativeUrl(!event.state && !History.getPrevState()));
-               this.navigate(event, stateForNavigate.url, stateForNavigate.prettyUrl,
-                  () => {
-                     History.back();
-                  });
-            } else {
-               //forward
-               const nextState = History.getNextState();
-               const stateForNavigate = getStateForNavigate(nextState, event.state, RouterHelper.getRelativeUrl());
-               this.navigate(event, stateForNavigate.url, stateForNavigate.prettyUrl,
-                  () => {
-                     History.forward();
-                  },
-                  () => {
-                     skipped = true;
-                     history.back();
-                  });
-            }
-
-         };
-      }
-   }
-
-   public applyUrl(): void {
-      this._registrarUpdate.startAsync({}, {});
-      this._registrarLink.startAsync({}, {});
-   }
-
-   public startAsyncUpdate(newUrl: string, newPrettyUrl: string): Promise<any> {
-      const state = History.getCurrentState();
-      return this._registrar.startAsync({url: newUrl, prettyUrl: newPrettyUrl},
-         {url: state.url, prettyUrl: state.prettyUrl}).then((values) => (values.find((value) => {
-         return value === false;
-      }) !== false));
-   }
-
-   public beforeApplyUrl(newUrl: string, newPrettyUrl: string): Promise<any> {
-      const state = History.getCurrentState();
-      const rewrittenNewUrl = UrlRewriter.get(newUrl);
-      const newApp = RouterHelper.getAppNameByUrl(rewrittenNewUrl);
-      const currentApp = RouterHelper.getAppNameByUrl(state.url);
-
-      return this.startAsyncUpdate(rewrittenNewUrl, newPrettyUrl).then((result) => {
-         if (newApp === currentApp) {
-            return result;
-         } else {
-            return new Promise((resolve, reject) => {
-               require([newApp], (appComponent) => {
-                  if (!appComponent) {
-                     this._handleAppRequireError(
-                        `requirejs did not report an error, but '${newApp}' component was not loaded. ` +
-                        'This could have happened because of circular dependencies or because ' +
-                        'of the browser behavior. Starting default redirect',
-                        newPrettyUrl
-                     );
-                     reject(new Error('App component is not defined'));
-                  } else {
-                     const changed = this._notify('changeApplication', [newApp], {bubbling: true});
-                     if (!changed) {
-                        this.startAsyncUpdate(rewrittenNewUrl, newPrettyUrl).then((ret) => {
-                           resolve(ret);
-                        });
-                     }
-                     resolve(true);
-                  }
-               }, (err) => {
-                  // If the folder doesn't have /Index component, it does not
-                  // use new routing. Load the page manually
-                  this._handleAppRequireError(
-                     `Unable to load module '${newApp}', starting default redirect`,
-                     newPrettyUrl
+   return _checkRoutesAcceptNewState(newState).then((result) => {
+      if (newApp === currentApp) {
+         return result;
+      } else {
+         return new Promise<boolean>((resolve, reject) => {
+            require([newApp], (appComponent) => {
+               if (!appComponent) {
+                  _handleAppRequireError(
+                     `requirejs did not report an error, but '${newApp}' component was not loaded. ` +
+                     'This could have happened because of circular dependencies or because ' +
+                     'of the browser behavior. Starting default redirect',
+                     newState.prettyUrl
                   );
-
-                  reject(err);
-               });
+                  reject(new Error('App component is not defined'));
+               } else {
+                  const changedApp = _tryChangeApplication(newApp);
+                  if (!changedApp) {
+                     _checkRoutesAcceptNewState(newState).then((ret) => {
+                        resolve(ret);
+                     });
+                  }
+                  resolve(true);
+               }
+            }, (err) => {
+               // If the folder doesn't have /Index component, it does not
+               // use new routing. Load the page manually
+               _handleAppRequireError(
+                  `Unable to load module '${newApp}', starting default redirect`,
+                  newState.prettyUrl
+               );
+               reject(err);
             });
-         }
-      });
-   }
-   //co.navigate({}, '(.*)asda=:cmp([^&]*)(&)?(.*)?', {cmp:'asdasdasd123'})
-   //co.navigate({}, '(.*)/edo/:idDoc([^/?]*)(.*)?', {idDoc:'8985'})
-   //co.navigate({}, '/app/:razd/:idDoc([^/?]*)(.*)?', {razd: 'sda', idDoc:'12315'})
-
-   public navigate(event: object, newUrl: string, newPrettyUrl: string, callback?: Function, errback?: Function): void {
-      const rewrittenNewUrl = UrlRewriter.get(newUrl);
-      const prettyUrl = newPrettyUrl || newUrl;
-      const currentState = History.getCurrentState();
-
-      if (currentState.url === rewrittenNewUrl || this._navigateProcessed) {
-         return;
+         });
       }
-      this._navigateProcessed = true;
-      //this.startReserving();
-      this.beforeApplyUrl(rewrittenNewUrl, prettyUrl).then((accept: boolean) => {
-         this._navigateProcessed = false;
-         if (accept) {
-            if (callback) {
-               callback();
-            } else {
-               History.push(rewrittenNewUrl, prettyUrl);
-            }
-            this.applyUrl();
-         } else if (errback) {
-            errback();
-         }
-      }, (err) => {
-         this._navigateProcessed = false;
-         if (errback) {
-            errback(err);
-         }
-      });
+   });
+}
+
+function _checkRoutesAcceptNewState(newState: IHistoryState): Promise<boolean> {
+   const currentState = History.getCurrentState();
+   const registeredRoutes = Data.registeredRoutes;
+
+   const promises = [];
+   for (let routeId in registeredRoutes) {
+      if (registeredRoutes.hasOwnProperty(routeId)) {
+         const route: IRegisteredRoute = registeredRoutes[routeId];
+         promises.push(route.beforeUrlChangeCb(newState, currentState));
+      }
    }
 
-   public routerCreated(event: Event, inst: Router): void {
-      this._registrar.register(event, inst, (newUrl, oldUrl) => {
-         return inst.beforeApplyUrl(newUrl, oldUrl);
-      });
+   // Make sure none of the registered routes responded with 'false'
+   return Promise.all(promises).then(results => results.indexOf(false) === -1);
+}
 
-      this._registrarUpdate.register(event, inst, (newUrl, oldUrl) => {
-         return inst.applyNewUrl();
-      });
+function _notifyStateChanged(newState: IHistoryState, oldState: IHistoryState): void {
+   const registeredRoutes = Data.registeredRoutes;
+   const registeredReferences = Data.registeredReferences;
 
-      this._registrarReserving.register(event, inst, (newUrl) => {
-         const res = inst._reserve(this._index, newUrl);
-         if (res !== -1) {
-            this._index = res;
-         }
-      });
-      //this.startReserving();
-   }
-   /*public startReserving() {
-      this._index = 0;
-      // this._registrarReserving.start(newUrl); //todo запуск резервирования кусков url роутами
-   }*/
-
-   public routerDestroyed(event: Event, inst: Router, mask: string): void {
-      this._registrar.unregister(event, inst);
-      this._registrarUpdate.unregister(event, inst);
-      this._registrarReserving.unregister(event, inst);
-
-      //this.startReserving();
+   for (let routeId in registeredRoutes) {
+      if (registeredRoutes.hasOwnProperty(routeId)) {
+         registeredRoutes[routeId].afterUrlChangeCb(newState, oldState);
+      }
    }
 
-   public linkCreated(event: Event, inst: Link): void {
-      this._registrarLink.register(event, inst, () => {
-         return inst.recalcHref();
-      });
-   }
-
-   public linkDestroyed(event: Event, inst: Link): void {
-      this._registrarLink.unregister(event, inst);
-   }
-
-   private _handleAppRequireError(errMsg: string, redirectUrl: string): void {
-      IoC.resolve('ILogger').log(
-         'Router/Controller',
-         errMsg
-      );
-      if (window) {
-         window.location.href = redirectUrl;
+   for (let referenceId in registeredReferences) {
+      if (registeredReferences.hasOwnProperty(referenceId)) {
+         registeredReferences[referenceId].afterUrlChangeCb(newState, oldState);
       }
    }
 }
 
-export = Controller;
+function _tryChangeApplication(newAppName: string): boolean {
+   const core = Data.coreInstance;
+   return core && core.changeApplicationHandler(null, newAppName);
+}
+
+function _handleAppRequireError(errMsg: string, redirectUrl: string): void {
+   IoC.resolve('ILogger').log(
+      'Router/Controller',
+      errMsg
+   );
+   if (window) {
+      window.location.href = redirectUrl;
+   }
+}

@@ -4,7 +4,7 @@
 import IoC = require('Core/IoC');
 
 import Data from 'Router/Data';
-import UrlRewriter from 'Router/UrlRewriter';
+import * as UrlRewriter from 'Router/UrlRewriter';
 
 interface IParam {
    name: string;
@@ -18,27 +18,28 @@ interface IMatchPosition {
    name?: string;
 }
 
-export default {
-   calculateUrlParams(mask: string, url?: string): HashMap<any> {
-      _validateMask(mask);
-      return _getUrlParams(_calculateParams(mask, {}, url));
-   },
-   calculateCfgParams(mask: string, cfg: any): HashMap<any> {
-      _validateMask(mask);
-      return _getCfgParams(_calculateParams(mask, cfg));
-   },
-   calculateHref(mask: string, cfg: any): string {
-      _validateMask(mask);
-      cfg = cfg.clear ? {} : cfg;
-      const url = UrlRewriter.get(Data.relativeUrl);
-      return _resolveHref(url, mask, cfg);
-   },
-   // TODO Remove this?
-   getAppNameByUrl(url: string): string {
-      url = UrlRewriter.get(url);
-      return _getFolderNameByUrl(url) + '/Index';
-   }
-};
+export function calculateUrlParams(mask: string, url?: string): HashMap<any> {
+   _validateMask(mask);
+   return _getUrlParams(_calculateParams(mask, {}, url));
+}
+
+export function calculateCfgParams(mask: string, cfg: any): HashMap<any> {
+   _validateMask(mask);
+   return _getCfgParams(_calculateParams(mask, cfg));
+}
+
+export function calculateHref(mask: string, cfg: any): string {
+   _validateMask(mask);
+   cfg = cfg.clear ? {} : cfg;
+   const url = UrlRewriter.get(Data.relativeUrl);
+   return _resolveHref(url, mask, cfg);
+}
+
+// TODO Remove this?
+export function getAppNameByUrl(url: string): string {
+   url = UrlRewriter.get(url);
+   return _getFolderNameByUrl(url) + '/Index';
+}
 
 function _validateMask(mask: string): void {
    if (mask.indexOf('/') !== -1 && mask.indexOf('=') !== -1) {
@@ -71,7 +72,7 @@ function _generateFullMaskWithoutParams(mask: string, matchedParamCb?: (param: I
    let fullMask = _generateFullMask(mask);
 
    const paramIndexes: IMatchPosition[] = [];
-   _matchParams(fullMask, function(param) {
+   _matchParams(fullMask, function (param) {
       paramIndexes.push({
          prefixEnd: param.prefixEnd,
          suffixStart: param.suffixStart
@@ -124,7 +125,7 @@ function _matchParams(mask: string, cb: (param: IMatchPosition) => void): void {
 
 function _getUrlParams(params: IParam[]): HashMap<any> {
    const res: HashMap<any> = {};
-   params.forEach(function(param) {
+   params.forEach(function (param) {
       res[param.name] = param.urlValue === undefined ? undefined : decodeURIComponent(param.urlValue);
    });
    return res;
@@ -132,7 +133,7 @@ function _getUrlParams(params: IParam[]): HashMap<any> {
 
 function _getCfgParams(params: IParam[]): HashMap<any> {
    const res: HashMap<any> = {};
-   params.forEach(function(param) {
+   params.forEach(function (param) {
       res[param.name] = param.value;
    });
    return res;
@@ -193,7 +194,7 @@ function _resolveHref(href: string, mask: string, cfg: any): string {
 
 function _resolveMask(mask: string, params: HashMap<any>): string {
    let paramCount = 0, resolvedCount = 0;
-   _matchParams(mask, function(param) {
+   _matchParams(mask, function (param) {
       paramCount++;
       if (params[param.name] !== undefined) {
          let paramValue = params[param.name];

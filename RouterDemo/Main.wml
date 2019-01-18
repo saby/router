@@ -1,25 +1,23 @@
-<Router.Controller>
-   <div>
-      <nav>
-         <ul class="TopMenu">
-            <li class="TopMenu__Item">
-               <Router.Link href="/RouterDemo/page/:pageId" pageId="Intro" attr:class="TopMenu__Link"><span>Intro</span></Router.Link>
-            </li>
-            <li class="TopMenu__Item">
-               <Router.Link href="/RouterDemo/page/:pageId" pageId="SPRouting" attr:class="TopMenu__Link"><span>SPA Routing</span></Router.Link>
-            </li>
-            <li class="TopMenu__Item">
-               <Router.Link href="/RouterDemo/page/:pageId" pageId="Popups" attr:class="TopMenu__Link"><span>Popups</span></Router.Link>
-            </li>
-            <li class="TopMenu__Item">
-               <Router.Link href="/RouterDemo/page/:pageId" pageId="PopupsPretty" attr:class="TopMenu__Link"><span>Popups with Pretty URLs</span></Router.Link>
-            </li>
-         </ul>
-      </nav>
-      <main class="ContentContainer">
-         <Router.Route mask="page/:pageId">
-            <RouterDemo.resources.PageLoader />
-         </Router.Route>
-      </main>
-   </div>
-</Router.Controller>
+<div>
+   <nav>
+      <ul class="TopMenu">
+         <li class="TopMenu__Item">
+            <Router.Reference state="/RouterDemo/page/:pageId" pageId="Intro" attr:class="TopMenu__Link"><span>Intro</span></Router.Reference>
+         </li>
+         <li class="TopMenu__Item">
+            <Router.Reference state="/RouterDemo/page/:pageId" pageId="SPRouting" attr:class="TopMenu__Link"><span>SPA Routing</span></Router.Reference>
+         </li>
+         <li class="TopMenu__Item">
+            <Router.Reference state="/RouterDemo/page/:pageId" pageId="Popups" attr:class="TopMenu__Link"><span>Popups</span></Router.Reference>
+         </li>
+         <li class="TopMenu__Item">
+            <Router.Reference state="/RouterDemo/page/:pageId" pageId="PopupsPretty" attr:class="TopMenu__Link"><span>Popups with Pretty URLs</span></Router.Reference>
+         </li>
+      </ul>
+   </nav>
+   <main class="ContentContainer">
+      <Router.Route mask="page/:pageId">
+         <RouterDemo.resources.PageLoader />
+      </Router.Route>
+   </main>
+</div>

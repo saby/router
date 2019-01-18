@@ -5,9 +5,9 @@
       These link and route are used to open the nested popup, which should have a higher depth,
       so the (_options.displayDepth + 1) is specified
    -->
-   <Router.Link href="{{ 'panel/' + (_options.displayDepth + 1) + '/:panelData' }}" prettyUrl="{{ _options.prettyUrl }}" panelData="Hello" attr:class="BigButton">
+   <Router.Reference state="{{ 'panel/' + (_options.displayDepth + 1) + '/:panelData' }}" href="{{ _options.prettyUrl }}" panelData="Hello" attr:class="BigButton">
       <span>Open additional panel</span>
-   </Router.Link>
+   </Router.Reference>
    <Router.Route
       mask="{{ 'panel/' + (_options.displayDepth + 1) + '/:panelData' }}"
       on:enter="_displayPopup()"
@@ -17,14 +17,14 @@
       This link is used to close the current popup, it removes the panel part with current
       displayDepth from the URL
    -->
-   <Router.Link
-      href="{{ 'panel/' + (_options.displayDepth) + '/:panelData' }}"
-      prettyUrl="{{ _options.displayDepth != 0 ? _options.prettyUrl }}"
+   <Router.Reference
+      state="{{ 'panel/' + (_options.displayDepth) + '/:panelData' }}"
+      href="{{ _options.displayDepth != 0 ? _options.prettyUrl }}"
       clear="{{ true }}"
       attr:class="RecursivePopup__Close"
       on:click="_hidePopup()">
       <span>×</span>
-   </Router.Link>
+   </Router.Reference>
 
    <!--
       This popup is implemented as physically nested inside of the current popup, but the same depth based

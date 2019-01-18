@@ -2,20 +2,15 @@
 
 // TODO Move this file to Presentation Service?
 
-import MaskResolver from 'Router/MaskResolver';
+import { getAppNameByUrl } from 'Router/MaskResolver';
 
-function getAppName(request): string {
-   return MaskResolver.getAppNameByUrl(request.path);
+export function getAppName(request): string {
+   return getAppNameByUrl(request.path);
 }
 
-function renderApp(request, response, appName): void {
+export function renderApp(request, response, appName): void {
    request.compatible = false;
    response.render('wml!Controls/Application/Route', {
       application: appName
    });
 }
-
-export = {
-   getAppName,
-   renderApp
-};
