@@ -17,12 +17,13 @@ export function back(): void {
    if (Data.historyPosition === 0) {
       Data.history.unshift({
          id: Data.history[0].id - 1,
-         url: UrlRewriter.get(Data.relativeUrl),
-         prettyUrl: Data.relativeUrl
+         url: UrlRewriter.get(Data.visibleRelativeUrl),
+         prettyUrl: Data.visibleRelativeUrl
       });
    } else {
       Data.historyPosition--;
    }
+   _updateRelativeUrl();
 }
 export function forward(): void {
    Data.historyPosition++;
@@ -33,6 +34,7 @@ export function forward(): void {
          prettyUrl: Data.relativeUrl
       });
    }
+   _updateRelativeUrl();
 }
 
 export function push(newState: IHistoryState): void {
@@ -45,6 +47,11 @@ export function push(newState: IHistoryState): void {
    Data.historyPosition++;
 
    // update the URL
+   _updateRelativeUrl();
    const displayUrl = newState.prettyUrl || newState.url;
    window.history.pushState(newState, displayUrl, displayUrl);
+}
+
+function _updateRelativeUrl(): void {
+   Data.relativeUrl = Data.history[Data.historyPosition].url;
 }

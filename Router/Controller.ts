@@ -79,7 +79,7 @@ function _initializeController(): void {
          const prevState = History.getPrevState();
          if (!event.state && !prevState || event.state && (event.state.id < currentState.id)) {
             // going back
-            const navigateToState = _getNavigationState(prevState, event.state, Data.relativeUrl);
+            const navigateToState = _getNavigationState(prevState, event.state, (event.state || prevState) ? Data.relativeUrl : Data.visibleRelativeUrl);
             navigate(navigateToState, () => History.back());
          } else {
             // going forward

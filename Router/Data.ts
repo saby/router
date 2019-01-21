@@ -32,6 +32,7 @@ export interface IRouterData {
    registeredRoutes: HashMap<IRegisteredRoute>;
    registeredReferences: HashMap<IRegisteredReference>;
    coreInstance?: any;
+   relativeUrl: string;
 }
 
 export default {
@@ -48,7 +49,13 @@ export default {
       _setField('historyPosition', value);
    },
    get relativeUrl(): string {
-      return _getRelativeUrl();
+      return _getField('relativeUrl');
+   },
+   get visibleRelativeUrl(): string {
+      return _calculateRelativeUrl();
+   },
+   set relativeUrl(value: string) {
+      _setField('relativeUrl', value);
    },
    get registeredRoutes(): HashMap<IRegisteredRoute> {
       return _getField('registeredRoutes');
@@ -62,7 +69,7 @@ export default {
 };
 
 function _initNewStorage(storage: any): void {
-   const currentUrl = _getRelativeUrl();
+   const currentUrl = _calculateRelativeUrl();
    const initialHistoryState: IHistoryState = {
       id: 0,
       url: UrlRewriter.get(currentUrl),
@@ -82,7 +89,8 @@ function _initNewStorage(storage: any): void {
       history: [initialHistoryState],
       historyPosition: 0,
       registeredRoutes: {},
-      registeredReferences: {}
+      registeredReferences: {},
+      relativeUrl: initialHistoryState.url
    };
    Object.assign(storage, initialStorage);
 }
@@ -96,7 +104,7 @@ function _getStorage(): IRouterData {
    return storage;
 }
 
-function _getRelativeUrl(): string {
+function _calculateRelativeUrl(): string {
    const location = Request.getCurrent().location;
    return location.pathname + location.search + location.hash;
 }
