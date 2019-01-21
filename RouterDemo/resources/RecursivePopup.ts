@@ -36,7 +36,12 @@ class RecursivePopup extends Control {
       }
    }
 
-   _hidePopup() {
+   _hideSelf() {
+      this._isPopupDisplayed = false;
+      this._notify('hideSelf');
+   }
+
+   _hideNestedPopup() {
       if (this._isPopupDisplayed) {
          this._isPopupDisplayed = false;
 

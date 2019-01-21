@@ -11,7 +11,7 @@
    <Router.Route
       mask="{{ 'panel/' + (_options.displayDepth + 1) + '/:panelData' }}"
       on:enter="_displayPopup()"
-      on:leave="_hidePopup()" />
+      on:leave="_hideNestedPopup()" />
 
    <!--
       This link is used to close the current popup, it removes the panel part with current
@@ -22,7 +22,7 @@
       href="{{ _options.displayDepth != 0 ? _options.prettyUrl }}"
       clear="{{ true }}"
       attr:class="RecursivePopup__Close"
-      on:click="_hidePopup()">
+      on:click="_hideSelf()">
       <span>×</span>
    </Router.Reference>
 
@@ -32,6 +32,6 @@
       you would insert it here instead and pass displayDepth as one of the opened component's options
    -->
    <ws:if data="{{ _isPopupDisplayed }}">
-      <ws:partial template="{{ 'RouterDemo/resources/RecursivePopup' }}" displayDepth="{{ _options.displayDepth + 1 }}" prettyUrl="{{ _options.prettyUrl }}" />
+      <ws:partial template="{{ 'RouterDemo/resources/RecursivePopup' }}" displayDepth="{{ _options.displayDepth + 1 }}" prettyUrl="{{ _options.prettyUrl }}" on:hideSelf="_hideNestedPopup()" />
    </ws:if>
 </div>
