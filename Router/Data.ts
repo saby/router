@@ -120,5 +120,5 @@ function _getField(fieldName: string): any {
 
 function _setField(fieldName: string, value: any): any {
    const storage = _getStorage();
-   return storage[fieldName] = value;
+   return (storage[fieldName] = value);
 }

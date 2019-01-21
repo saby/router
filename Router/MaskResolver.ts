@@ -49,7 +49,7 @@ function _validateMask(mask: string): void {
 
 function _calculateParams(mask: string, cfg: any, url?: string): IParam[] {
    const result: IParam[] = [];
-   const fullMask = _generateFullMaskWithoutParams(mask, (param) => {
+   const fullMask = _generateFullMaskWithoutParams(mask, param => {
       result.push({
          name: param.name,
          value: cfg[param.name]
@@ -72,7 +72,7 @@ function _generateFullMaskWithoutParams(mask: string, matchedParamCb?: (param: I
    let fullMask = _generateFullMask(mask);
 
    const paramIndexes: IMatchPosition[] = [];
-   _matchParams(fullMask, function (param) {
+   _matchParams(fullMask, param => {
       paramIndexes.push({
          prefixEnd: param.prefixEnd,
          suffixStart: param.suffixStart
@@ -81,7 +81,8 @@ function _generateFullMaskWithoutParams(mask: string, matchedParamCb?: (param: I
    });
 
    for (let i = paramIndexes.length - 1; i >= 0; i--) {
-      fullMask = fullMask.slice(0, paramIndexes[i].prefixEnd) + '([^\\/?&#]+)' + fullMask.slice(paramIndexes[i].suffixStart);
+      fullMask =
+         fullMask.slice(0, paramIndexes[i].prefixEnd) + '([^\\/?&#]+)' + fullMask.slice(paramIndexes[i].suffixStart);
    }
    return fullMask;
 }
@@ -125,7 +126,7 @@ function _matchParams(mask: string, cb: (param: IMatchPosition) => void): void {
 
 function _getUrlParams(params: IParam[]): HashMap<any> {
    const res: HashMap<any> = {};
-   params.forEach(function (param) {
+   params.forEach(param => {
       res[param.name] = param.urlValue === undefined ? undefined : decodeURIComponent(param.urlValue);
    });
    return res;
@@ -133,7 +134,7 @@ function _getUrlParams(params: IParam[]): HashMap<any> {
 
 function _getCfgParams(params: IParam[]): HashMap<any> {
    const res: HashMap<any> = {};
-   params.forEach(function (param) {
+   params.forEach(param => {
       res[param.name] = param.value;
    });
    return res;
@@ -193,8 +194,10 @@ function _resolveHref(href: string, mask: string, cfg: any): string {
 }
 
 function _resolveMask(mask: string, params: HashMap<any>): string {
-   let paramCount = 0, resolvedCount = 0;
-   _matchParams(mask, function (param) {
+   let
+      paramCount = 0,
+      resolvedCount = 0;
+   _matchParams(mask, param => {
       paramCount++;
       if (params[param.name] !== undefined) {
          let paramValue = params[param.name];

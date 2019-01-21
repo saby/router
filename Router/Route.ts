@@ -13,7 +13,7 @@ import * as History from 'Router/History';
 interface IRouteOptions extends HashMap<any> {
    content?: Function;
    mask?: string;
-};
+}
 
 class Route extends Control {
    public _template: Function = template;
@@ -40,12 +40,16 @@ class Route extends Control {
    }
 
    private _register(): void {
-      Controller.addRoute(this, (newLoc, oldLoc) => {
-         return this._beforeApplyNewUrl(newLoc, oldLoc);
-      }, () => {
-         this._forceUpdate();
-         return Promise.resolve(true);
-      });
+      Controller.addRoute(
+         this,
+         (newLoc, oldLoc) => {
+            return this._beforeApplyNewUrl(newLoc, oldLoc);
+         },
+         () => {
+            this._forceUpdate();
+            return Promise.resolve(true);
+         }
+      );
    }
 
    private _unregister(): void {
@@ -53,7 +57,8 @@ class Route extends Control {
    }
 
    private _beforeApplyNewUrl(newLoc: IHistoryState, oldLoc: IHistoryState): Promise<boolean> {
-      let result;
+      let result: Promise<boolean>;
+      
       this._urlOptions = MaskResolver.calculateUrlParams(this._options.mask, newLoc.url);
       const wasResolvedParam = this._hasResolvedParams();
       this._fillUrlOptionsFromCfg(this._options);
@@ -96,8 +101,13 @@ class Route extends Control {
 
    private _fillUrlOptionsFromCfg(cfg: IRouteOptions): void {
       for (let i in cfg) {
-         if (!this._urlOptions.hasOwnProperty(i) && cfg.hasOwnProperty(i) &&
-            i !== 'mask' && i !== 'content' && i !== '_logicParent') {
+         if (
+            !this._urlOptions.hasOwnProperty(i) &&
+            cfg.hasOwnProperty(i) &&
+            i !== 'mask' &&
+            i !== 'content' &&
+            i !== '_logicParent'
+         ) {
             this._urlOptions[i] = cfg[i];
          }
       }

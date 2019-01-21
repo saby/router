@@ -27,22 +27,25 @@ export function navigate(newState: IHistoryState, callback?: Function, errback?:
    };
 
    isNavigating = true;
-   _tryApplyNewState(rewrittenNewState).then((accept: boolean) => {
-      isNavigating = false;
-      if (accept) {
-         if (callback) {
-            callback();
-         } else {
-            History.push(rewrittenNewState);
+   _tryApplyNewState(rewrittenNewState).then(
+      accept => {
+         isNavigating = false;
+         if (accept) {
+            if (callback) {
+               callback();
+            } else {
+               History.push(rewrittenNewState);
+            }
+            _notifyStateChanged(rewrittenNewState, currentState);
+         } else if (errback) {
+            errback();
          }
-         _notifyStateChanged(rewrittenNewState, currentState);
-      } else if (errback) {
-         errback();
+      },
+      err => {
+         isNavigating = false;
+         errback && errback(err);
       }
-   }, (err) => {
-      isNavigating = false;
-      errback && errback(err);
-   });
+   );
 }
 
 export function addRoute(route, beforeUrlChangeCb: TStateChangeFunction, afterUrlChangeCb: TStateChangeFunction): void {
@@ -77,19 +80,27 @@ function _initializeController(): void {
 
          const currentState = History.getCurrentState();
          const prevState = History.getPrevState();
-         if (!event.state && !prevState || event.state && (event.state.id < currentState.id)) {
+         if ((!event.state && !prevState) || (event.state && event.state.id < currentState.id)) {
             // going back
-            const navigateToState = _getNavigationState(prevState, event.state, (event.state || prevState) ? Data.relativeUrl : Data.visibleRelativeUrl);
+            const navigateToState = _getNavigationState(
+               prevState,
+               event.state,
+               event.state || prevState ? Data.relativeUrl : Data.visibleRelativeUrl
+            );
             navigate(navigateToState, () => History.back());
          } else {
             // going forward
             const nextState = History.getNextState();
             const navigateToState = _getNavigationState(nextState, event.state, Data.relativeUrl);
-            navigate(navigateToState, () => History.forward(), () => {
-               // unable to navigate to specified state, going back in history
-               skipNextChange = true;
-               window.history.back();
-            });
+            navigate(
+               navigateToState,
+               () => History.forward(),
+               () => {
+                  // unable to navigate to specified state, going back in history
+                  skipNextChange = true;
+                  window.history.back();
+               }
+            );
          }
       };
    }
@@ -114,30 +125,30 @@ function _tryApplyNewState(newState: IHistoryState): Promise<boolean> {
    const newApp = getAppNameByUrl(newState.url);
    const currentApp = getAppNameByUrl(state.url);
 
-   return _checkRoutesAcceptNewState(newState).then((result) => {
+   return _checkRoutesAcceptNewState(newState).then(result => {
       if (newApp === currentApp) {
          return result;
       } else {
          return new Promise<boolean>((resolve, reject) => {
-            require([newApp], (appComponent) => {
+            require([newApp], appComponent => {
                if (!appComponent) {
                   _handleAppRequireError(
                      `requirejs did not report an error, but '${newApp}' component was not loaded. ` +
-                     'This could have happened because of circular dependencies or because ' +
-                     'of the browser behavior. Starting default redirect',
+                        'This could have happened because of circular dependencies or because ' +
+                        'of the browser behavior. Starting default redirect',
                      newState.prettyUrl
                   );
                   reject(new Error('App component is not defined'));
                } else {
                   const changedApp = _tryChangeApplication(newApp);
                   if (!changedApp) {
-                     _checkRoutesAcceptNewState(newState).then((ret) => {
+                     _checkRoutesAcceptNewState(newState).then(ret => {
                         resolve(ret);
                      });
                   }
                   resolve(true);
                }
-            }, (err) => {
+            }, err => {
                // If the folder doesn't have /Index component, it does not
                // use new routing. Load the page manually
                _handleAppRequireError(
@@ -190,10 +201,7 @@ function _tryChangeApplication(newAppName: string): boolean {
 }
 
 function _handleAppRequireError(errMsg: string, redirectUrl: string): void {
-   IoC.resolve('ILogger').log(
-      'Router/Controller',
-      errMsg
-   );
+   IoC.resolve('ILogger').log('Router/Controller', errMsg);
    if (window) {
       window.location.href = redirectUrl;
    }
