@@ -76,7 +76,8 @@ function _initializeRewriter(): void {
 }
 
 // prepare data structure for quick access to it
-function _prepareRoutes(json: any): void {
+// exported for unit tests
+export function _prepareRoutes(json: any): void {
    routeTree = {
       value: null,
       tree: {}

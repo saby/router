@@ -1,15 +1,14 @@
-define([
-   'Router/UrlRewriter',
-   'RouterTest/resources/router'
-], function(UrlRewriter, json) {
-   var UrlRewriter = UrlRewriter.default;
-
-   describe('Router/ServerRouting', function() {
+define(['Router/UrlRewriter', 'RouterTest/resources/router'], function(UrlRewriter, json) {
+   describe('Router/UrlRewriter', function() {
       beforeEach(function() {
-         UrlRewriter._prepare(json);
+         UrlRewriter._prepareRoutes(json);
       });
-      it('test rewriter results', function() {
+
+      it('rewrites the index route correctly', function() {
          assert.equal(UrlRewriter.get('/'), '/OnlineSbisRu');
+      });
+
+      it('rewrites other routes correctly', function() {
          assert.equal(UrlRewriter.get('/a'), '/a');
          assert.equal(UrlRewriter.get('/a/b'), '/ab');
          assert.equal(UrlRewriter.get('/a/b/c'), '/ab/c');
