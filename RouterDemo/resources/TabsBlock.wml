@@ -1,7 +1,7 @@
 <div class="TabsBlock">
    <div class="TabsBlock__Tabs">
       <ul>
-         <!-- Display 3 Router.Link components with different selectedTab value -->
+         <!-- Display 3 Router.Reference components with different selectedTab value -->
          <li class="TabsBlock__Tabs--Item {{ _selectedTabId == 0 ? 'TabsBlock__Tabs--ItemActive' }}">
             <Router.Reference state="selectedTab/:selectedTab" selectedTab="0" attr:class="TabsBlock__Tabs--Link">
                <span>Tab 0</span>
