@@ -13,6 +13,12 @@ let isNavigating = false;
 
 _initializeController();
 
+export function canChangeApplication(): boolean {
+   // Router can switch applications when there is an Application/Core
+   // instance on it
+   return !!Data.getCoreInstance();
+}
+
 export function navigate(newState: Data.IHistoryState, callback?: Function, errback?: Function): void {
    const rewrittenNewUrl = UrlRewriter.get(newState.state);
    const prettyUrl = newState.href || newState.state;
