@@ -87,7 +87,7 @@ function _initNewStorage(storage: any): void {
       if (window.history.state && typeof window.history.state.id === 'number') {
          initialHistoryState.id = window.history.state.id;
       } else if (!window.history.state) {
-         window.history.replaceState(initialHistoryState, initialHistoryState.state, initialHistoryState.state);
+         window.history.replaceState(initialHistoryState, initialHistoryState.href, initialHistoryState.href);
       }
    }
 
