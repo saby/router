@@ -3,7 +3,7 @@
 // @ts-ignore
 import * as IoC from 'Core/IoC';
 
-import Data, { IHistoryState, TStateChangeFunction, IRegisteredRoute } from 'Router/Data';
+import * as Data from 'Router/Data';
 
 import { getAppNameByUrl } from 'Router/MaskResolver';
 import * as History from 'Router/History';
@@ -13,7 +13,7 @@ let isNavigating = false;
 
 _initializeController();
 
-export function navigate(newState: IHistoryState, callback?: Function, errback?: Function): void {
+export function navigate(newState: Data.IHistoryState, callback?: Function, errback?: Function): void {
    const rewrittenNewUrl = UrlRewriter.get(newState.state);
    const prettyUrl = newState.href || newState.state;
    const currentState = History.getCurrentState();
@@ -21,7 +21,7 @@ export function navigate(newState: IHistoryState, callback?: Function, errback?:
    if (currentState.state === rewrittenNewUrl || isNavigating) {
       return;
    }
-   const rewrittenNewState: IHistoryState = {
+   const rewrittenNewState: Data.IHistoryState = {
       state: rewrittenNewUrl,
       href: prettyUrl
    };
@@ -48,25 +48,25 @@ export function navigate(newState: IHistoryState, callback?: Function, errback?:
    );
 }
 
-export function addRoute(route, beforeUrlChangeCb: TStateChangeFunction, afterUrlChangeCb: TStateChangeFunction): void {
-   Data.registeredRoutes[route.getInstanceId()] = {
+export function addRoute(route, beforeUrlChangeCb: Data.TStateChangeFunction, afterUrlChangeCb: Data.TStateChangeFunction): void {
+   Data.getRegisteredRoutes()[route.getInstanceId()] = {
       beforeUrlChangeCb,
       afterUrlChangeCb
    };
 }
 
 export function removeRoute(route): void {
-   delete Data.registeredRoutes[route.getInstanceId()];
+   delete Data.getRegisteredRoutes()[route.getInstanceId()];
 }
 
-export function addReference(reference, afterUrlChangeCb: TStateChangeFunction): void {
-   Data.registeredReferences[reference.getInstanceId()] = {
+export function addReference(reference, afterUrlChangeCb: Data.TStateChangeFunction): void {
+   Data.getRegisteredReferences()[reference.getInstanceId()] = {
       afterUrlChangeCb
    };
 }
 
 export function removeReference(reference): void {
-   delete Data.registeredReferences[reference.getInstanceId()];
+   delete Data.getRegisteredReferences()[reference.getInstanceId()];
 }
 
 function _initializeController(): void {
@@ -85,13 +85,13 @@ function _initializeController(): void {
             const navigateToState = _getNavigationState(
                prevState,
                event.state,
-               event.state || prevState ? Data.relativeUrl : Data.visibleRelativeUrl
+               event.state || prevState ? Data.getRelativeUrl() : Data.getVisibleRelativeUrl()
             );
             navigate(navigateToState, () => History.back());
          } else {
             // going forward
             const nextState = History.getNextState();
-            const navigateToState = _getNavigationState(nextState, event.state, Data.relativeUrl);
+            const navigateToState = _getNavigationState(nextState, event.state, Data.getRelativeUrl());
             navigate(
                navigateToState,
                () => History.forward(),
@@ -106,7 +106,7 @@ function _initializeController(): void {
    }
 }
 
-function _getNavigationState(localState: IHistoryState, windowState: IHistoryState, currentUrl: string): IHistoryState {
+function _getNavigationState(localState: Data.IHistoryState, windowState: Data.IHistoryState, currentUrl: string): Data.IHistoryState {
    if (!localState) {
       if (windowState && windowState.state && windowState.href) {
          return windowState;
@@ -120,7 +120,7 @@ function _getNavigationState(localState: IHistoryState, windowState: IHistorySta
    return localState;
 }
 
-function _tryApplyNewState(newState: IHistoryState): Promise<boolean> {
+function _tryApplyNewState(newState: Data.IHistoryState): Promise<boolean> {
    const state = History.getCurrentState();
    const newApp = getAppNameByUrl(newState.state);
    const currentApp = getAppNameByUrl(state.state);
@@ -162,14 +162,14 @@ function _tryApplyNewState(newState: IHistoryState): Promise<boolean> {
    });
 }
 
-function _checkRoutesAcceptNewState(newState: IHistoryState): Promise<boolean> {
+function _checkRoutesAcceptNewState(newState: Data.IHistoryState): Promise<boolean> {
    const currentState = History.getCurrentState();
-   const registeredRoutes = Data.registeredRoutes;
+   const registeredRoutes = Data.getRegisteredRoutes();
 
    const promises = [];
    for (let routeId in registeredRoutes) {
       if (registeredRoutes.hasOwnProperty(routeId)) {
-         const route: IRegisteredRoute = registeredRoutes[routeId];
+         const route: Data.IRegisteredRoute = registeredRoutes[routeId];
          promises.push(route.beforeUrlChangeCb(newState, currentState));
       }
    }
@@ -178,9 +178,9 @@ function _checkRoutesAcceptNewState(newState: IHistoryState): Promise<boolean> {
    return Promise.all(promises).then(results => results.indexOf(false) === -1);
 }
 
-function _notifyStateChanged(newState: IHistoryState, oldState: IHistoryState): void {
-   const registeredRoutes = Data.registeredRoutes;
-   const registeredReferences = Data.registeredReferences;
+function _notifyStateChanged(newState: Data.IHistoryState, oldState: Data.IHistoryState): void {
+   const registeredRoutes = Data.getRegisteredRoutes();
+   const registeredReferences = Data.getRegisteredReferences();
 
    for (let routeId in registeredRoutes) {
       if (registeredRoutes.hasOwnProperty(routeId)) {
@@ -196,7 +196,7 @@ function _notifyStateChanged(newState: IHistoryState, oldState: IHistoryState): 
 }
 
 function _tryChangeApplication(newAppName: string): boolean {
-   const core = Data.coreInstance;
+   const core = Data.getCoreInstance();
    return core && core.changeApplicationHandler(null, newAppName);
 }
 

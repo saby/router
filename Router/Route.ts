@@ -6,7 +6,7 @@ import * as Control from 'Core/Control';
 import template = require('wml!Router/Route');
 
 import * as Controller from 'Router/Controller';
-import Data, { IHistoryState } from 'Router/Data';
+import * as Data from 'Router/Data';
 import * as MaskResolver from 'Router/MaskResolver';
 import * as History from 'Router/History';
 
@@ -56,7 +56,7 @@ class Route extends Control {
       Controller.removeRoute(this);
    }
 
-   private _beforeApplyNewUrl(newLoc: IHistoryState, oldLoc: IHistoryState): Promise<boolean> {
+   private _beforeApplyNewUrl(newLoc: Data.IHistoryState, oldLoc: Data.IHistoryState): Promise<boolean> {
       let result: Promise<boolean>;
 
       this._urlOptions = MaskResolver.calculateUrlParams(this._options.mask, newLoc.state);
@@ -114,7 +114,7 @@ class Route extends Control {
    }
 
    private _checkUrlResolved(): Promise<boolean> {
-      this._urlOptions = MaskResolver.calculateUrlParams(this._options.mask, Data.relativeUrl);
+      this._urlOptions = MaskResolver.calculateUrlParams(this._options.mask, Data.getRelativeUrl());
       const notUndefVal = this._hasResolvedParams();
       this._fillUrlOptionsFromCfg(this._options);
 

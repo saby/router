@@ -3,7 +3,7 @@
 // @ts-ignore
 import IoC = require('Core/IoC');
 
-import Data from 'Router/Data';
+import * as Data from 'Router/Data';
 import * as UrlRewriter from 'Router/UrlRewriter';
 
 interface IParam {
@@ -31,7 +31,7 @@ export function calculateCfgParams(mask: string, cfg: any): HashMap<any> {
 export function calculateHref(mask: string, cfg: any): string {
    _validateMask(mask);
    cfg = cfg.clear ? {} : cfg;
-   const url = UrlRewriter.get(Data.relativeUrl);
+   const url = UrlRewriter.get(Data.getRelativeUrl());
    return _resolveHref(url, mask, cfg);
 }
 
@@ -56,7 +56,7 @@ function _calculateParams(mask: string, cfg: any, url?: string): IParam[] {
       });
    });
 
-   const actualUrl = UrlRewriter.get(url || Data.relativeUrl);
+   const actualUrl = UrlRewriter.get(url || Data.getRelativeUrl());
    const fields = actualUrl.match(fullMask);
 
    if (fields) {

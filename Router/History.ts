@@ -1,50 +1,63 @@
 /// <amd-module name="Router/History" />
 
 import * as UrlRewriter from 'Router/UrlRewriter';
-import Data, { IHistoryState } from 'Router/Data';
+import * as Data from 'Router/Data';
 
-export function getPrevState(): IHistoryState {
-   return Data.history[Data.historyPosition - 1];
+export function getPrevState(): Data.IHistoryState {
+   return Data.getHistory()[Data.getHistoryPosition() - 1];
 }
-export function getCurrentState(): IHistoryState {
-   return Data.history[Data.historyPosition];
+export function getCurrentState(): Data.IHistoryState {
+   return Data.getHistory()[Data.getHistoryPosition()];
 }
-export function getNextState(): IHistoryState {
-   return Data.history[Data.historyPosition + 1];
+export function getNextState(): Data.IHistoryState {
+   return Data.getHistory()[Data.getHistoryPosition() + 1];
 }
 
 export function back(): void {
-   if (Data.historyPosition === 0) {
-      Data.history.unshift({
-         id: Data.history[0].id - 1,
-         state: UrlRewriter.get(Data.visibleRelativeUrl),
-         href: Data.visibleRelativeUrl
+   const history = Data.getHistory();
+   const historyPosition = Data.getHistoryPosition();
+
+   if (historyPosition === 0) {
+      const currentUrl = Data.getVisibleRelativeUrl();
+      history.unshift({
+         id: history[0].id - 1,
+         state: UrlRewriter.get(currentUrl),
+         href: currentUrl
       });
    } else {
-      Data.historyPosition--;
+      Data.setHistoryPosition(historyPosition - 1);
    }
+
    _updateRelativeUrl();
 }
 export function forward(): void {
-   Data.historyPosition++;
-   if (Data.historyPosition === Data.history.length) {
-      Data.history.push({
-         id: Data.history[Data.historyPosition - 1].id + 1,
-         state: UrlRewriter.get(Data.relativeUrl),
-         href: Data.relativeUrl
+   const history = Data.getHistory();
+   const newHistoryPosition = Data.getHistoryPosition() + 1;
+
+   Data.setHistoryPosition(newHistoryPosition);
+   if (newHistoryPosition === history.length) {
+      const currentUrl = Data.getRelativeUrl();
+      history.push({
+         id: history[newHistoryPosition - 1].id + 1,
+         state: UrlRewriter.get(currentUrl),
+         href: currentUrl
       });
    }
+
    _updateRelativeUrl();
 }
 
-export function push(newState: IHistoryState): void {
+export function push(newState: Data.IHistoryState): void {
+   const history = Data.getHistory();
+   const historyPosition = Data.getHistoryPosition();
+
    // remove all states after the current state
-   Data.history.length = Data.historyPosition + 1;
+   history.length = historyPosition + 1;
 
    // add new history state to the store
-   newState.id = Data.history[Data.historyPosition].id + 1;
-   Data.history.push(newState);
-   Data.historyPosition++;
+   newState.id = history[historyPosition].id + 1;
+   history.push(newState);
+   Data.setHistoryPosition(historyPosition + 1);
 
    // update the URL
    _updateRelativeUrl();
@@ -53,5 +66,5 @@ export function push(newState: IHistoryState): void {
 }
 
 function _updateRelativeUrl(): void {
-   Data.relativeUrl = Data.history[Data.historyPosition].state;
+   Data.setRelativeUrl(Data.getHistory()[Data.getHistoryPosition()].state);
 }

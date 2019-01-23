@@ -35,38 +35,45 @@ export interface IRouterData {
    relativeUrl: string;
 }
 
-export default {
-   get history(): IHistoryState[] {
-      return _getField('history');
-   },
-   set history(value: IHistoryState[]) {
-      _setField('history', value);
-   },
-   get historyPosition(): number {
-      return _getField('historyPosition');
-   },
-   set historyPosition(value: number) {
-      _setField('historyPosition', value);
-   },
-   get relativeUrl(): string {
-      return _getField('relativeUrl');
-   },
-   get visibleRelativeUrl(): string {
-      return _calculateRelativeUrl();
-   },
-   set relativeUrl(value: string) {
-      _setField('relativeUrl', value);
-   },
-   get registeredRoutes(): HashMap<IRegisteredRoute> {
-      return _getField('registeredRoutes');
-   },
-   get registeredReferences(): HashMap<IRegisteredReference> {
-      return _getField('registeredReferences');
-   },
-   get coreInstance(): any {
-      return _getCoreInstance();
-   }
-};
+export function getHistory(): IHistoryState[] {
+   return _getField('history');
+}
+
+export function setHistory(value: IHistoryState[]): void {
+   _setField('history', value);
+}
+
+export function getHistoryPosition(): number {
+   return _getField('historyPosition');
+}
+
+export function setHistoryPosition(value: number): void {
+   _setField('historyPosition', value);
+}
+
+export function getRelativeUrl(): string {
+   return _getField('relativeUrl');
+}
+
+export function setRelativeUrl(value: string): void {
+   _setField('relativeUrl', value);
+}
+
+export function getVisibleRelativeUrl(): string {
+   return _calculateRelativeUrl();
+}
+
+export function getRegisteredRoutes(): HashMap<IRegisteredRoute> {
+   return _getField('registeredRoutes');
+}
+
+export function getRegisteredReferences(): HashMap<IRegisteredReference> {
+   return _getField('registeredReferences');
+}
+
+export function getCoreInstance(): any {
+   return _getCoreInstance();
+}
 
 function _initNewStorage(storage: any): void {
    const currentUrl = _calculateRelativeUrl();
@@ -97,20 +104,27 @@ function _initNewStorage(storage: any): void {
 
 function _getStorage(): IRouterData {
    const currentRequest = Request.getCurrent();
-   let storage = currentRequest.getStorage(STORAGE_KEY);
-   if (!storage.IS_ROUTER_STORAGE) {
+   const storage = currentRequest && currentRequest.getStorage(STORAGE_KEY);
+   if ((currentRequest && !storage) || (storage && !storage.IS_ROUTER_STORAGE)) {
       _initNewStorage(storage);
    }
    return storage;
 }
 
 function _calculateRelativeUrl(): string {
-   const location = Request.getCurrent().location;
-   return location.pathname + location.search + location.hash;
+   const currentRequest = Request.getCurrent();
+   const location = currentRequest && currentRequest.location;
+
+   if (location) {
+      return location.pathname + location.search + location.hash;
+   } else {
+      return null;
+   }
 }
 
 function _getCoreInstance(): any {
-   const storage = Request.getCurrent().getStorage(CORE_INSTANCE_KEY);
+   const currentRequest = Request.getCurrent();
+   const storage = currentRequest && currentRequest.getStorage(CORE_INSTANCE_KEY);
    return storage && storage.instance;
 }
 
