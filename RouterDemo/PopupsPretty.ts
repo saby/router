@@ -18,10 +18,10 @@ class PopupsPretty extends Control {
 
    _hidePopup(event, newLoc) {
       this._isPopupDisplayed = false;
-      if (newLoc.url.startsWith('/RouterDemo/page/PopupsPretty/')) {
+      if (newLoc.state.startsWith('/RouterDemo/page/PopupsPretty/')) {
          // When the root popup closes, make sure that all the nested popups get closed by resetting the URL
          setTimeout(() => {
-            navigate({ url: '/RouterDemo/page/PopupsPretty' });
+            navigate({ state: '/RouterDemo/page/PopupsPretty' });
          }, 0);
       }
    }

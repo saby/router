@@ -4,7 +4,6 @@
 
 ## Table of Contents
 
-  * [Enabling the Single Page Routing](#enabling-the-single-page-routing)
   * [Running the Tests](#running-the-tests)
   * [Running the Demo](#running-the-demo)
   * [Using Router.Route to Match URLs](#using-routerroute-to-match-urls)
@@ -33,12 +32,6 @@ To start the demo server, run the following commands:
     node app
 
 Go to [http://localhost:777/RouterDemo/](http://localhost:777/RouterDemo/) in your browser to see the demo page. The demo itself is located in `RouterDemo` folder, with an entry file of `index.html` that loads the module `RouterDemo/Main`.
-
-## Enabling the Single Page Routing
-
-For **saby-router** components and modules to work, the page has to have a `Router.Controller` component in it. All nested components will have access to the single page routing mechanisms.
-
-The pages built from an `.html.tmpl` file and application components rendered inside of `Controls/Application/Route` already include the controller in it by default, it should not be inserted manually.
 
 ## Using Router.Route to Match URLs
 

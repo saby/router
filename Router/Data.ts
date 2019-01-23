@@ -10,8 +10,8 @@ const CORE_INSTANCE_KEY = 'CoreInstance';
 
 export interface IHistoryState {
    id?: number;
-   url: string;
-   prettyUrl?: string;
+   state: string;
+   href?: string;
 }
 
 export type TStateChangeFunction = (newLoc: IHistoryState, oldLoc: IHistoryState) => Promise<any>;
@@ -72,15 +72,15 @@ function _initNewStorage(storage: any): void {
    const currentUrl = _calculateRelativeUrl();
    const initialHistoryState: IHistoryState = {
       id: 0,
-      url: UrlRewriter.get(currentUrl),
-      prettyUrl: currentUrl
+      state: UrlRewriter.get(currentUrl),
+      href: currentUrl
    };
 
    if (typeof window !== 'undefined') {
       if (window.history.state && typeof window.history.state.id === 'number') {
          initialHistoryState.id = window.history.state.id;
       } else if (!window.history.state) {
-         window.history.replaceState(initialHistoryState, initialHistoryState.url, initialHistoryState.url);
+         window.history.replaceState(initialHistoryState, initialHistoryState.state, initialHistoryState.state);
       }
    }
 
@@ -90,7 +90,7 @@ function _initNewStorage(storage: any): void {
       historyPosition: 0,
       registeredRoutes: {},
       registeredReferences: {},
-      relativeUrl: initialHistoryState.url
+      relativeUrl: initialHistoryState.state
    };
    Object.assign(storage, initialStorage);
 }

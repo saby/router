@@ -64,8 +64,8 @@ class Reference extends Control {
    private _clickHandler(e: Event): void {
       e.preventDefault();
       this._changeUrlState({
-         url: this._state,
-         prettyUrl: this._href
+         state: this._state,
+         href: this._href
       });
    }
 

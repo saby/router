@@ -31,8 +31,8 @@ class RecursivePopup extends Control {
 
          // Store the current URL before opening the nested popup, so we
          // could return to it later
-         this._returnUrl = oldLocation.url;
-         this._returnPrettyUrl = oldLocation.prettyUrl;
+         this._returnUrl = oldLocation.state;
+         this._returnPrettyUrl = oldLocation.href;
       }
    }
 
@@ -48,7 +48,7 @@ class RecursivePopup extends Control {
          // Reset the URL to the same state as it was before we opened the nested popup,
          // so that all the popups with higher depth would as well
          setTimeout(() => {
-            navigate({ url: this._returnUrl, prettyUrl: this._returnPrettyUrl });
+            navigate({ state: this._returnUrl, href: this._returnPrettyUrl });
          }, 0);
       }
    }

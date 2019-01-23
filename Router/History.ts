@@ -17,8 +17,8 @@ export function back(): void {
    if (Data.historyPosition === 0) {
       Data.history.unshift({
          id: Data.history[0].id - 1,
-         url: UrlRewriter.get(Data.visibleRelativeUrl),
-         prettyUrl: Data.visibleRelativeUrl
+         state: UrlRewriter.get(Data.visibleRelativeUrl),
+         href: Data.visibleRelativeUrl
       });
    } else {
       Data.historyPosition--;
@@ -30,8 +30,8 @@ export function forward(): void {
    if (Data.historyPosition === Data.history.length) {
       Data.history.push({
          id: Data.history[Data.historyPosition - 1].id + 1,
-         url: UrlRewriter.get(Data.relativeUrl),
-         prettyUrl: Data.relativeUrl
+         state: UrlRewriter.get(Data.relativeUrl),
+         href: Data.relativeUrl
       });
    }
    _updateRelativeUrl();
@@ -48,10 +48,10 @@ export function push(newState: IHistoryState): void {
 
    // update the URL
    _updateRelativeUrl();
-   const displayUrl = newState.prettyUrl || newState.url;
+   const displayUrl = newState.href || newState.state;
    window.history.pushState(newState, displayUrl, displayUrl);
 }
 
 function _updateRelativeUrl(): void {
-   Data.relativeUrl = Data.history[Data.historyPosition].url;
+   Data.relativeUrl = Data.history[Data.historyPosition].state;
 }

@@ -14,16 +14,16 @@ let isNavigating = false;
 _initializeController();
 
 export function navigate(newState: IHistoryState, callback?: Function, errback?: Function): void {
-   const rewrittenNewUrl = UrlRewriter.get(newState.url);
-   const prettyUrl = newState.prettyUrl || newState.url;
+   const rewrittenNewUrl = UrlRewriter.get(newState.state);
+   const prettyUrl = newState.href || newState.state;
    const currentState = History.getCurrentState();
 
-   if (currentState.url === rewrittenNewUrl || isNavigating) {
+   if (currentState.state === rewrittenNewUrl || isNavigating) {
       return;
    }
    const rewrittenNewState: IHistoryState = {
-      url: rewrittenNewUrl,
-      prettyUrl
+      state: rewrittenNewUrl,
+      href: prettyUrl
    };
 
    isNavigating = true;
@@ -108,12 +108,12 @@ function _initializeController(): void {
 
 function _getNavigationState(localState: IHistoryState, windowState: IHistoryState, currentUrl: string): IHistoryState {
    if (!localState) {
-      if (windowState && windowState.url && windowState.prettyUrl) {
+      if (windowState && windowState.state && windowState.href) {
          return windowState;
       } else {
          return {
-            url: UrlRewriter.get(currentUrl),
-            prettyUrl: currentUrl
+            state: UrlRewriter.get(currentUrl),
+            href: currentUrl
          };
       }
    }
@@ -122,8 +122,8 @@ function _getNavigationState(localState: IHistoryState, windowState: IHistorySta
 
 function _tryApplyNewState(newState: IHistoryState): Promise<boolean> {
    const state = History.getCurrentState();
-   const newApp = getAppNameByUrl(newState.url);
-   const currentApp = getAppNameByUrl(state.url);
+   const newApp = getAppNameByUrl(newState.state);
+   const currentApp = getAppNameByUrl(state.state);
 
    return _checkRoutesAcceptNewState(newState).then(result => {
       if (newApp === currentApp) {
@@ -136,7 +136,7 @@ function _tryApplyNewState(newState: IHistoryState): Promise<boolean> {
                      `requirejs did not report an error, but '${newApp}' component was not loaded. ` +
                         'This could have happened because of circular dependencies or because ' +
                         'of the browser behavior. Starting default redirect',
-                     newState.prettyUrl
+                     newState.href
                   );
                   reject(new Error('App component is not defined'));
                } else {
@@ -153,7 +153,7 @@ function _tryApplyNewState(newState: IHistoryState): Promise<boolean> {
                // use new routing. Load the page manually
                _handleAppRequireError(
                   `Unable to load module '${newApp}', starting default redirect`,
-                  newState.prettyUrl
+                  newState.href
                );
                reject(err);
             });

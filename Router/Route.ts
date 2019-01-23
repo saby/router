@@ -58,8 +58,8 @@ class Route extends Control {
 
    private _beforeApplyNewUrl(newLoc: IHistoryState, oldLoc: IHistoryState): Promise<boolean> {
       let result: Promise<boolean>;
-      
-      this._urlOptions = MaskResolver.calculateUrlParams(this._options.mask, newLoc.url);
+
+      this._urlOptions = MaskResolver.calculateUrlParams(this._options.mask, newLoc.state);
       const wasResolvedParam = this._hasResolvedParams();
       this._fillUrlOptionsFromCfg(this._options);
 
@@ -124,7 +124,7 @@ class Route extends Control {
          this._isResolved = true;
          if (!prevState) {
             prevState = {
-               url: MaskResolver.calculateHref(this._options.mask, { clear: true })
+               state: MaskResolver.calculateHref(this._options.mask, { clear: true })
             };
          }
          return this._notify('enter', [currentState, prevState]);
