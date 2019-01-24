@@ -86,7 +86,9 @@ class Controller extends Control {
 
          };
       }
+   }
 
+   protected _beforeMount(): Promise<any> {
       return new Promise((resolve, reject) => {
          require(['router'], (replacementRoutes) => {
             UrlRewriter._prepare(replacementRoutes);
