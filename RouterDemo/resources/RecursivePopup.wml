@@ -6,7 +6,7 @@
       so the (_options.displayDepth + 1) is specified
    -->
    <Router.Reference state="{{ 'panel/' + (_options.displayDepth + 1) + '/:panelData' }}" href="{{ _options.prettyUrl }}" panelData="Hello" attr:class="BigButton">
-      <span>Open additional panel</span>
+      <a href="{{ content.href }}">Open additional panel</a>
    </Router.Reference>
    <Router.Route
       mask="{{ 'panel/' + (_options.displayDepth + 1) + '/:panelData' }}"
@@ -23,7 +23,7 @@
       clear="{{ true }}"
       attr:class="RecursivePopup__Close"
       on:click="_hideSelf()">
-      <span>×</span>
+      <a href="{{ content.href }}">×</a>
    </Router.Reference>
 
    <!--

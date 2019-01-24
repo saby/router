@@ -2,16 +2,24 @@
    <nav>
       <ul class="TopMenu">
          <li class="TopMenu__Item">
-            <Router.Reference state="/RouterDemo/page/:pageId" pageId="Intro" attr:class="TopMenu__Link"><span>Intro</span></Router.Reference>
+            <Router.Reference state="/RouterDemo/page/:pageId" pageId="Intro" attr:class="TopMenu__Link">
+               <a href="{{ content.href }}">Intro</a>
+            </Router.Reference>
          </li>
          <li class="TopMenu__Item">
-            <Router.Reference state="/RouterDemo/page/:pageId" pageId="SPRouting" attr:class="TopMenu__Link"><span>SPA Routing</span></Router.Reference>
+            <Router.Reference state="/RouterDemo/page/:pageId" pageId="SPRouting" attr:class="TopMenu__Link">
+               <a href="{{ content.href }}">SPA Routing</a>
+            </Router.Reference>
          </li>
          <li class="TopMenu__Item">
-            <Router.Reference state="/RouterDemo/page/:pageId" pageId="Popups" attr:class="TopMenu__Link"><span>Popups</span></Router.Reference>
+            <Router.Reference state="/RouterDemo/page/:pageId" pageId="Popups" attr:class="TopMenu__Link">
+               <a href="{{ content.href }}">Popups</a>
+            </Router.Reference>
          </li>
          <li class="TopMenu__Item">
-            <Router.Reference state="/RouterDemo/page/:pageId" pageId="PopupsPretty" attr:class="TopMenu__Link"><span>Popups with Pretty URLs</span></Router.Reference>
+            <Router.Reference state="/RouterDemo/page/:pageId" pageId="PopupsPretty" attr:class="TopMenu__Link">
+               <a href="{{ content.href }}">Popups with Pretty URLs</a>
+            </Router.Reference>
          </li>
       </ul>
    </nav>

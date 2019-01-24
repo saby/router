@@ -1,5 +1,4 @@
-<a href="{{ _href || _state }}"
-   class="router-Reference"
-   on:click="_clickHandler()">
-   <ws:partial template="{{ _options.content }}"/>
-</a>
+<ws:partial
+   template="{{ _options.content }}"
+   href="{{ _href || _state }}"
+   on:click="_clickHandler()" />

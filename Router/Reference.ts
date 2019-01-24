@@ -9,8 +9,6 @@ import * as Controller from 'Router/Controller';
 import * as MaskResolver from 'Router/MaskResolver';
 import { IHistoryState } from 'Router/Data';
 
-import 'css!Router/Reference';
-
 interface IReferenceOptions extends HashMap<any> {
    content?: Function;
    state?: string;

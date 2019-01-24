@@ -112,7 +112,9 @@ Sometimes the popup has to be able to open the copy of itself with different par
 
     <!-- inside of the popup template -->
     <Router.Route mask="alert/{{_options.depth + 1}}/:popupInfo" on:enter="openPopupRecursive()" on:leave="closePopupRecursive()" />
-    <Router.Reference mask="alert/{{_options.depth + 1}}/:popupInfo" popupInfo="{{ _productId }}" />
+    <Router.Reference mask="alert/{{_options.depth + 1}}/:popupInfo" popupInfo="{{ _productId }}">
+       <a href="{{ content.href }}>Open a new popup</a>
+    </Router.Reference>
 
 `Router.Reference` and `Router.Route` in the root component should open the first popup with the `depth` option set to `0`.
 
@@ -122,14 +124,14 @@ It is important to note, that if the actual URL is hidden with `href` and the us
 
 ## Using Router.Reference to Change URLs
 
-`Router.Reference` is a component that changes the URL without page reload on click, while still updating the values for `Router.Route`, which causes changed templates to update and redraw.
+`Router.Reference` is a component that changes the URL without page reload on click, while still updating the values for `Router.Route`, which causes changed templates to update and redraw. It calculates the resulting url based on the options passed to it and passes the resulting `href` string parameter inside its content.
 
 The `state` option specifies the mask for URL change, and the rest of the options specify the values for the placeholders. `Router.Reference` uses [the same mask types](#mask-types) as `Router.Route`.
 
 **Example:**
 
     <Router.Reference state="destination/:country" country="Italy">
-       <span>Go to Italy</span>
+       <a href="{{ content.href }}">Go to Italy</a>
     </Router.Reference>
 
 Clicking on the link in the example above would add the `destination/Italy` part to the URL if it currently does not contain `destination`, and would change the currently specified destination otherwise. The rest of the URL stays unchanged.
@@ -146,7 +148,7 @@ The `href` option can be specified, if the actual URL should be hidden from the 
 **Example:**
 
     <Router.Reference state="page/:pageType" pageType="register" href="/signup">
-      <span>Sign Up</span>
+       <a href="{{ content.href }}">Sign up</a>
     </Router.Reference>
 
 When the user clicks the link in the example above, their URL changes to include `page/register` in it, but they see `/signup` in their address bar.
@@ -160,7 +162,7 @@ If `Router.Reference` should not add or change the value specified by a mask, bu
 **Example:**
 
     <Router.Reference state="type/:regType" clear="{{true}}">
-    	<span>Choose registration type</span>
+       <a href="{{ content.href }}">Change registration type</a>
     </Router.Reference>
 
 <!-- brk -->
