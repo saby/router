@@ -5,6 +5,8 @@ import * as Control from 'Core/Control';
 // @ts-ignore
 import IoC = require('Core/IoC');
 // @ts-ignore
+import Deferred = require('Core/Deferred');
+// @ts-ignore
 import template = require('wml!Router/Controller');
 // @ts-ignore
 import registrar = require('Controls/Event/Registrar');
@@ -89,17 +91,17 @@ class Controller extends Control {
    }
 
    protected _beforeMount(): Promise<any> {
-      return new Promise((resolve, reject) => {
-         require(['router'], (replacementRoutes) => {
-            UrlRewriter._prepare(replacementRoutes);
-            resolve();
-         }, () => {
-            // If router.js does not exist, it means that there are no
-            // replaced routes
-            UrlRewriter._prepare({});
-            resolve();
-         });
+      var def = new Deferred();
+      require(['router'], (replacementRoutes) => {
+         UrlRewriter._prepare(replacementRoutes);
+         def.callback();
+      }, () => {
+         // If router.js does not exist, it means that there are no
+         // replaced routes
+         UrlRewriter._prepare({});
+         def.callback();
       });
+      return def;
    }
 
    public applyUrl(): void {
