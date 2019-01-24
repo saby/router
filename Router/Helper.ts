@@ -6,16 +6,6 @@ import IoC = require('Core/IoC');
 
 import UrlRewriter from 'Router/UrlRewriter';
 
-function setupUrlRewriter() {
-   require(['router'], (replacementRoutes) => {
-      UrlRewriter._prepare(replacementRoutes);
-   }, () => {
-      // If router.js does not exist, it means that there are no
-      // replaced routes
-      UrlRewriter._prepare({});
-   });
-}
-
 let currentUrl: string = '';
 
 function _validateMask(mask) {
@@ -264,8 +254,6 @@ function getAppNameByUrl(url: string): string {
    url = UrlRewriter.get(url);
    return getFolderNameByUrl(url) + '/Index';
 }
-
-setupUrlRewriter();
 
 export default {
    setRelativeUrl,
