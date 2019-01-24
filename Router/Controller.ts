@@ -88,6 +88,20 @@ class Controller extends Control {
       }
    }
 
+   protected _beforeMount(): Promise<any> {
+      return new Promise((resolve, reject) => {
+         require(['router'], (replacementRoutes) => {
+            UrlRewriter._prepare(replacementRoutes);
+            resolve();
+         }, () => {
+            // If router.js does not exist, it means that there are no
+            // replaced routes
+            UrlRewriter._prepare({});
+            resolve();
+         });
+      });
+   }
+
    public applyUrl(): void {
       this._registrarUpdate.startAsync({}, {});
       this._registrarLink.startAsync({}, {});
