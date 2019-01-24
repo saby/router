@@ -1,8 +1,5 @@
 /// <amd-module name="Router/UrlRewriter" />
 
-// @ts-ignore
-import replacementRoutes = require('router');
-
 const httpRE = /^http[s]?:\/\//;
 const startSlash = /^\//;
 const finishSlash = /\/$/;
@@ -11,8 +8,6 @@ const finishSlash = /\/$/;
 let routeTree;
 // main route
 let rootRoute;
-
-_prepare(replacementRoutes || {});
 
 // get path by url and normalize it
 function getPath(url) {
