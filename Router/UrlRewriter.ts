@@ -1,5 +1,7 @@
 /// <amd-module name="Router/UrlRewriter" />
-"use strict";
+
+// @ts-ignore
+import replacementRoutes = require('router');
 
 const httpRE = /^http[s]?:\/\//;
 const startSlash = /^\//;
@@ -9,6 +11,8 @@ const finishSlash = /\/$/;
 let routeTree;
 // main route
 let rootRoute;
+
+_prepare(replacementRoutes || {});
 
 // get path by url and normalize it
 function getPath(url) {
@@ -26,7 +30,7 @@ function getPath(url) {
 }
 
 // prepare data structure for quick access to it
-function prepare(json) {
+function _prepare(json) {
    routeTree = {
       value: null,
       tree: {}
@@ -115,8 +119,8 @@ function get(url) {
 }
 
 const rewriter = {
-   get: get,
-   _prepare: prepare
+   get,
+   _prepare // exported for tests
 };
 
 export default rewriter;
