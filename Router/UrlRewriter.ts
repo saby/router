@@ -9,7 +9,9 @@ let routeTree: any;
 // main route
 let rootRoute: string;
 
-_initializeRewriter();
+// @ts-ignore
+import replacementRoutes = require('router');
+_prepareRoutes(replacementRoutes || {});
 
 // get url using rewriting by rules from router.json
 export function get(url: string): string {
@@ -63,16 +65,6 @@ function _getPath(url: string): string {
    }
    url = url.replace(startSlash, '').replace(finishSlash, '');
    return url;
-}
-
-function _initializeRewriter(): void {
-   require(['router'], (replacementRoutes: any) => {
-      _prepareRoutes(replacementRoutes);
-   }, () => {
-      // If router.js does not exist, it means that there are no
-      // replaced routes
-      _prepareRoutes({});
-   });
 }
 
 // prepare data structure for quick access to it
