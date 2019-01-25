@@ -12,6 +12,7 @@
   * [Using Router.Reference to Change URLs](#using-routerreference-to-change-urls)
     * [Specifying a Pretty URL](#specifying-a-pretty-url)
     * [Clearing a Part of the URL](#clearing-a-part-of-the-url)
+  * [Using Router/Controller to Change URLs in TS/JS](#using-routercontroller-to-change-urls-in-tsjs)
 
 ## Running the Tests
 
@@ -170,3 +171,17 @@ If `Router.Reference` should not add or change the value specified by a mask, bu
     URL: "/signup/type/company"                    -> After click: "/signup"
     URL: "/signup"                                 -> After click: "/signup"
     URL: "/signup/type/individual/oauth?ref=email" -> After click: "/signup/oauth?ref=email"
+
+## Using Router/Controller to Change URLs in TS/JS
+
+`Router/Controller` is a module that exports the `navigate({ state, href })` function which can be used to change the current URL and update `Router.Route`s and `Router.Reference`s without reloading the page. `state` is the URL to navigate to excluding the protocol, host and port. It should begin with a forward slash (/). `href` is an optional parameter, it specifies the pretty URL that will be displayed to the user instead of `state`. [As with the href option of Router.Reference](#specifying-a-pretty-url), `Router.Route` and `Router.Reference` components will still work with the *actual* `state` URL.
+
+**Example:**
+
+    Current URL: "/signup"
+
+    RouterController.navigate({ state: "/signup/verify" })
+    Current URL: "/signup/verify", user sees: "/signup/verify"
+
+    RouterController.navigate({ state: "/signup/oauth/saby", href: "/sabylogin" })
+    Current URL: "/signup/oauth/saby", user sees: "/sabylogin"
