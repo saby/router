@@ -52,7 +52,7 @@ export function setHistoryPosition(value: number): void {
 }
 
 export function getRelativeUrl(): string {
-   return _getField('relativeUrl');
+   return _getField('relativeUrl') || _calculateRelativeUrl();
 }
 
 export function setRelativeUrl(value: string): void {
