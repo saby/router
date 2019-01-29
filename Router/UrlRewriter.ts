@@ -10,8 +10,8 @@ let routeTree: any;
 let rootRoute: string;
 
 // @ts-ignore
-import replacementRoutes = require('router');
-_prepareRoutes(replacementRoutes || {});
+// import replacementRoutes = require('router');
+// _prepareRoutes(replacementRoutes || {});
 
 // get url using rewriting by rules from router.json
 export function get(url: string): string {
