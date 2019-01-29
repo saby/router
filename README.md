@@ -4,15 +4,15 @@
 
 ## Table of Contents
 
-  * [Enabling the Single Page Routing](#enabling-the-single-page-routing)
   * [Running the Tests](#running-the-tests)
   * [Running the Demo](#running-the-demo)
   * [Using Router.Route to Match URLs](#using-routerroute-to-match-urls)
     * [Mask Types](#mask-types)
     * [Opening and Closing Popups on URL Change](#opening-and-closing-popups-on-url-change)
-  * [Using Router.Link to Change URLs](#using-routerlink-to-change-urls)
+  * [Using Router.Reference to Change URLs](#using-routerreference-to-change-urls)
     * [Specifying a Pretty URL](#specifying-a-pretty-url)
     * [Clearing a Part of the URL](#clearing-a-part-of-the-url)
+  * [Using Router/Controller to Change URLs in TS/JS](#using-routercontroller-to-change-urls-in-tsjs)
 
 ## Running the Tests
 
@@ -33,12 +33,6 @@ To start the demo server, run the following commands:
     node app
 
 Go to [http://localhost:777/RouterDemo/](http://localhost:777/RouterDemo/) in your browser to see the demo page. The demo itself is located in `RouterDemo` folder, with an entry file of `index.html` that loads the module `RouterDemo/Main`.
-
-## Enabling the Single Page Routing
-
-For **saby-router** components and modules to work, the page has to have a `Router.Controller` component in it. All nested components will have access to the single page routing mechanisms.
-
-The pages built from an `.html.tmpl` file and application components rendered inside of `Controls/Application/Route` already include the controller in it by default, it should not be inserted manually.
 
 ## Using Router.Route to Match URLs
 
@@ -119,25 +113,27 @@ Sometimes the popup has to be able to open the copy of itself with different par
 
     <!-- inside of the popup template -->
     <Router.Route mask="alert/{{_options.depth + 1}}/:popupInfo" on:enter="openPopupRecursive()" on:leave="closePopupRecursive()" />
-    <Router.Link mask="alert/{{_options.depth + 1}}/:popupInfo" popupInfo="{{ _productId }}" />
+    <Router.Reference mask="alert/{{_options.depth + 1}}/:popupInfo" popupInfo="{{ _productId }}">
+       <a href="{{ content.href }}>Open a new popup</a>
+    </Router.Reference>
 
-`Router.Link` and `Router.Route` in the root component should open the first popup with the `depth` option set to `0`.
+`Router.Reference` and `Router.Route` in the root component should open the first popup with the `depth` option set to `0`.
 
-This example is implemented in the `Popups` demo page that [can be seen here](RouterDemo/Popups.ts). However, this implementation leads to a fast growing URL (if the user recursively opens multiple popups). [The prettyUrl option of the Router.Link component](#specifying-a-pretty-url) can be used to hide the full URL from the user. The example that uses this option is implemented in the `PopupsPretty` demo page that [can be seen here](RouterDemo/PopupsPretty.ts).
+This example is implemented in the `Popups` demo page that [can be seen here](RouterDemo/Popups.ts). However, this implementation leads to a fast growing URL (if the user recursively opens multiple popups). [The href option of the Router.Reference component](#specifying-a-pretty-url) can be used to hide the full URL from the user. The example that uses this option is implemented in the `PopupsPretty` demo page that [can be seen here](RouterDemo/PopupsPretty.ts).
 
-It is important to note, that if the actual URL is hidden with `prettyUrl` and the user reloads the page in their browser, it will not be possible to restore the same popup structure, because the real URL will be lost. This can be tested by opening multiple popups on the demo page and then pressing F5. The popups on the `Popups` page will reopen automatically, but the ones on the `PopupsPretty` page they will be lost.
+It is important to note, that if the actual URL is hidden with `href` and the user reloads the page in their browser, it will not be possible to restore the same popup structure, because the real URL will be lost. This can be tested by opening multiple popups on the demo page and then pressing F5. The popups on the `Popups` page will reopen automatically, but the ones on the `PopupsPretty` page they will be lost.
 
-## Using Router.Link to Change URLs
+## Using Router.Reference to Change URLs
 
-`Router.Link` is a component that changes the URL without page reload on click, while still updating the values for `Router.Route`, which causes changed templates to update and redraw.
+`Router.Reference` is a component that changes the URL without page reload on click, while still updating the values for `Router.Route`, which causes changed templates to update and redraw. It calculates the resulting url based on the options passed to it and passes the resulting `href` string parameter inside its content.
 
-The `href` option specifies the mask for URL change, and the rest of the options specify the values for the placeholders. `Router.Link` uses [the same mask types](#mask-types) as `Router.Route`.
+The `state` option specifies the mask for URL change, and the rest of the options specify the values for the placeholders. `Router.Reference` uses [the same mask types](#mask-types) as `Router.Route`.
 
 **Example:**
 
-    <Router.Link href="destination/:country" country="Italy">
-       <span>Go to Italy</span>
-    </Router.Link>
+    <Router.Reference state="destination/:country" country="Italy">
+       <a href="{{ content.href }}">Go to Italy</a>
+    </Router.Reference>
 
 Clicking on the link in the example above would add the `destination/Italy` part to the URL if it currently does not contain `destination`, and would change the currently specified destination otherwise. The rest of the URL stays unchanged.
 
@@ -148,13 +144,13 @@ Clicking on the link in the example above would add the `destination/Italy` part
 
 ### Specifying a Pretty URL
 
-The `prettyUrl` option can be specified, if the actual URL should be hidden from the user. This string will be displayed in the user's address bar, but `Router.Route` and `Router.Link` components will still work with the *actual* URL.
+The `href` option can be specified, if the actual URL should be hidden from the user. This string will be displayed in the user's address bar, but `Router.Route` and `Router.Reference` components will still work with the *actual* URL.
 
 **Example:**
 
-    <Router.Link href="page/:pageType" pageType="register" prettyUrl="/signup">
-      <span>Sign Up</span>
-    </Router.Link>
+    <Router.Reference state="page/:pageType" pageType="register" href="/signup">
+       <a href="{{ content.href }}">Sign up</a>
+    </Router.Reference>
 
 When the user clicks the link in the example above, their URL changes to include `page/register` in it, but they see `/signup` in their address bar.
 
@@ -162,16 +158,30 @@ It is important to note, that if the user reloads the page while pretty URL is d
 
 ### Clearing a Part of the URL
 
-If `Router.Link` should not add or change the value specified by a mask, but completely remove it from the URL, the `clear` option should be set to `true`. The part of the URL that matches the mask will be removed and the rest of it stays unchanged.
+If `Router.Reference` should not add or change the value specified by a mask, but completely remove it from the URL, the `clear` option should be set to `true`. The part of the URL that matches the mask will be removed and the rest of it stays unchanged.
 
 **Example:**
 
-    <Router.Link href="type/:regType" clear="{{true}}">
-    	<span>Choose registration type</span>
-    </Router.Link>
+    <Router.Reference state="type/:regType" clear="{{true}}">
+       <a href="{{ content.href }}">Change registration type</a>
+    </Router.Reference>
 
 <!-- brk -->
 
     URL: "/signup/type/company"                    -> After click: "/signup"
     URL: "/signup"                                 -> After click: "/signup"
     URL: "/signup/type/individual/oauth?ref=email" -> After click: "/signup/oauth?ref=email"
+
+## Using Router/Controller to Change URLs in TS/JS
+
+`Router/Controller` is a module that exports the `navigate({ state, href })` function which can be used to change the current URL and update `Router.Route`s and `Router.Reference`s without reloading the page. `state` is the URL to navigate to excluding the protocol, host and port. It should begin with a forward slash (/). `href` is an optional parameter, it specifies the pretty URL that will be displayed to the user instead of `state`. [As with the href option of Router.Reference](#specifying-a-pretty-url), `Router.Route` and `Router.Reference` components will still work with the *actual* `state` URL.
+
+**Example:**
+
+    Current URL: "/signup"
+
+    RouterController.navigate({ state: "/signup/verify" })
+    Current URL: "/signup/verify", user sees: "/signup/verify"
+
+    RouterController.navigate({ state: "/signup/oauth/saby", href: "/sabylogin" })
+    Current URL: "/signup/oauth/saby", user sees: "/sabylogin"

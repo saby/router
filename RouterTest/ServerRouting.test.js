@@ -3,8 +3,11 @@ define([
    'Router/ServerRouting'
 ], function(srVerifier, ServerRouting) {
    describe('Router/ServerRouting', function() {
+      beforeEach(function() {
+         ServerRouting.setBaseTemplate('wml!Controls/Application/Route');
+      });
 
-      it('correctly resolves application name by simple url', function() {
+      it('resolves application name by url correctly', function() {
          var resolvedApp = srVerifier.getResolvedApp('/register/?from=landing');
 
          assert.strictEqual(resolvedApp, 'register/Index');

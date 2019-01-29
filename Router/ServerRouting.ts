@@ -1,37 +1,21 @@
 /// <amd-module name="Router/ServerRouting" />
 
-import RouterHelper from 'Router/Helper';
-import UrlRewriter from 'Router/UrlRewriter';
+// TODO Move this file to Presentation Service?
+import { getAppNameByUrl } from 'Router/MaskResolver';
 
-// Always load router.json on the server, presentation service
-// runs after the build was completed, so router.json file is
-// already built. It has to be loaded before handling the first
-// request, so it has to be a dependency of Router/ServerRouting
-// @ts-ignore
-import replacementRoutes = require('router');
-UrlRewriter._prepare(replacementRoutes || {});
+let _baseTemplate = 'wml!Controls/Application/Route';
 
-let baseTemplate = 'wml!Controls/Application/Route';
-
-let baseTemplate = 'wml!Controls/Application/Route';
-
-function getAppName(request) {
-   return RouterHelper.getAppNameByUrl(request.path);
+export function getAppName(request): string {
+   return getAppNameByUrl(request.path);
 }
 
-function renderApp(request, response, appName) {
+export function renderApp(request, response, appName): void {
    request.compatible = false;
-   response.render(baseTemplate, {
+   response.render(_baseTemplate, {
       application: appName
    });
 }
 
-function setBaseTemplate(newBaseTemplate) {
-   baseTemplate = newBaseTemplate
+export function setBaseTemplate(newBaseTemplate) {
+   _baseTemplate = newBaseTemplate;
 }
-
-export = {
-   getAppName,
-   setBaseTemplate,
-   renderApp
-};

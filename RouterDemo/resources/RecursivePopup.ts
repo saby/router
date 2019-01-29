@@ -5,6 +5,8 @@ import * as Control from 'Core/Control';
 // @ts-ignore
 import template = require('wml!RouterDemo/resources/RecursivePopup');
 
+import { navigate } from 'Router/Controller';
+
 import 'css!RouterDemo/resources/RecursivePopup';
 
 interface IRecursivePopupOptions {
@@ -29,19 +31,24 @@ class RecursivePopup extends Control {
 
          // Store the current URL before opening the nested popup, so we
          // could return to it later
-         this._returnUrl = oldLocation.url;
-         this._returnPrettyUrl = oldLocation.prettyUrl;
+         this._returnUrl = oldLocation.state;
+         this._returnPrettyUrl = oldLocation.href;
       }
    }
 
-   _hidePopup() {
+   _hideSelf() {
+      this._isPopupDisplayed = false;
+      this._notify('hideSelf');
+   }
+
+   _hideNestedPopup() {
       if (this._isPopupDisplayed) {
          this._isPopupDisplayed = false;
 
          // Reset the URL to the same state as it was before we opened the nested popup,
          // so that all the popups with higher depth would as well
          setTimeout(() => {
-            this._notify('routerUpdated', [this._returnUrl, this._returnPrettyUrl], { bubbling: true });
+            navigate({ state: this._returnUrl, href: this._returnPrettyUrl });
          }, 0);
       }
    }
