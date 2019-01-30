@@ -74,13 +74,29 @@ function _prepare(json) {
    }
 }
 
+function _splitQueryAndHash(url: string): { path: string, misc: string } {
+   const splitMatch = url.match(/[?#]/);
+   if (splitMatch) {
+      const index = splitMatch.index;
+      return {
+         path: url.substring(0, index),
+         misc: url.slice(index)
+      };
+   }
+   return {
+      path: url,
+      misc: ''
+   };
+}
+
 // get url using rewriting by rules from router.json
-function get(url) {
-   if (url === '/' && rootRoute) {
-      return rootRoute;
+function get(originalUrl: string): string {
+   const { path, misc } = _splitQueryAndHash(originalUrl);
+   if (path === '/' && rootRoute) {
+      return rootRoute + misc;
    }
    if (routeTree) {
-      const urlPatched = getPath(url);
+      const urlPatched = getPath(path);
       const urlArr = urlPatched.split('/');
 
       let curTreePoint = routeTree.tree;
@@ -106,11 +122,11 @@ function get(url) {
 
       if (found) {
          const prefix = urlArr.slice(0, foundIndex + 1).join('/');
-         const result = url.replace(prefix, found);
-         return result;
+         const result = path.replace(prefix, found);
+         return result + misc;
       }
    }
-   return url;
+   return path + misc;
 }
 
 const rewriter = {
