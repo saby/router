@@ -12,7 +12,7 @@ const global = (function() {
 
 const indexFile = fs.readFileSync(path.join(root, 'application', 'RouterDemo', 'index.html'), 'utf8');
 
-var requirejs = require(path.join(root, 'node_modules', 'saby-units', 'lib', 'requirejs', 'r.js'));
+const requirejs = require(path.join(root, 'node_modules', 'saby-units', 'lib', 'requirejs', 'r.js'));
 global.requirejs = requirejs;
 
 

@@ -14,12 +14,13 @@ import replacementRoutes = require('router');
 _prepareRoutes(replacementRoutes || {});
 
 // get url using rewriting by rules from router.json
-export function get(url: string): string {
-   if (url === '/' && rootRoute) {
-      return rootRoute;
+export function get(originalUrl: string): string {
+   const { path, misc } = _splitQueryAndHash(originalUrl);
+   if (path === '/' && rootRoute) {
+      return rootRoute + misc;
    }
    if (routeTree) {
-      const urlPatched = _getPath(url);
+      const urlPatched = _getPath(path);
       const urlArr = urlPatched.split('/');
 
       let curTreePoint = routeTree.tree;
@@ -45,11 +46,26 @@ export function get(url: string): string {
 
       if (found) {
          const prefix = urlArr.slice(0, foundIndex + 1).join('/');
-         const result = url.replace(prefix, found);
-         return result;
+         const result = path.replace(prefix, found);
+         return result + misc;
       }
    }
-   return url;
+   return path + misc;
+}
+
+function _splitQueryAndHash(url: string): { path: string, misc: string } {
+   const splitMatch = url.match(/[?#]/);
+   if (splitMatch) {
+      const index = splitMatch.index;
+      return {
+         path: url.substring(0, index),
+         misc: url.slice(index)
+      };
+   }
+   return {
+      path: url,
+      misc: ''
+   };
 }
 
 // get path by url and normalize it
