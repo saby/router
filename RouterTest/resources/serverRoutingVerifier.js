@@ -18,14 +18,17 @@ define('RouterTest/resources/serverRoutingVerifier', ['Router/ServerRouting'], f
 
    return {
       getResolvedApp: function(url) {
-         var fakeReq = createFakeRequest(url);
-         var result = ServerRouting.getAppName(fakeReq);
+         var
+            fakeReq = createFakeRequest(url),
+            result = ServerRouting.getAppName(fakeReq);
+
          fakeReq.destroy();
          return result;
       },
       getRenderedTemplateAndApp: function(appName) {
          var
-            renderedTemplate, renderedApp,
+            renderedTemplate,
+            renderedApp,
             fakeRequest = createFakeRequest('/'),
             fakeResponse = {
                render: function(template, options) {

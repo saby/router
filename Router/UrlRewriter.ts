@@ -5,98 +5,22 @@ const startSlash = /^\//;
 const finishSlash = /\/$/;
 
 // tree of paths
-let routeTree;
+let routeTree: any;
 // main route
-let rootRoute;
+let rootRoute: string;
 
-// get path by url and normalize it
-function getPath(url) {
-   url = url.replace(httpRE, '');
-   const qIndex = url.indexOf('?');
-   const pIndex = url.indexOf('#');
-   if (qIndex !== -1) {
-      url = url.slice(0, qIndex);
-   }
-   if (pIndex !== -1) {
-      url = url.slice(0, pIndex);
-   }
-   url = url.replace(startSlash, '').replace(finishSlash, '');
-   return url;
-}
-
-// prepare data structure for quick access to it
-function _prepare(json) {
-   routeTree = {
-      value: null,
-      tree: {}
-   };
-   rootRoute = null;
-
-   if (!json) {
-      return;
-   }
-
-   if (json.hasOwnProperty('/')) {
-      rootRoute = '/' + getPath(json['/']);
-   }
-
-   for (let routeName in json) {
-      if (json.hasOwnProperty(routeName)) {
-         if (routeName === '/') {
-            continue;
-         }
-
-         const routeDest = json[routeName];
-
-         routeName = getPath(routeName);
-
-         const routeNameArr = routeName.split('/');
-
-         let curTreePoint = routeTree.tree;
-
-         for (let i = 0; i < routeNameArr.length; i++) {
-            const routeNamePart = routeNameArr[i];
-
-            if (!curTreePoint.hasOwnProperty(routeNamePart)) {
-               curTreePoint[routeNamePart] = {
-                  value: null,
-                  tree: {}
-               };
-            }
-
-            if (routeNameArr.length - 1 === i) {
-               curTreePoint[routeNamePart].value = routeDest;
-            }
-
-            curTreePoint = curTreePoint[routeNamePart].tree;
-         }
-      }
-   }
-}
-
-function _splitQueryAndHash(url: string): { path: string, misc: string } {
-   const splitMatch = url.match(/[?#]/);
-   if (splitMatch) {
-      const index = splitMatch.index;
-      return {
-         path: url.substring(0, index),
-         misc: url.slice(index)
-      };
-   }
-   return {
-      path: url,
-      misc: ''
-   };
-}
+// @ts-ignore
+import replacementRoutes = require('router');
+_prepareRoutes(replacementRoutes || {});
 
 // get url using rewriting by rules from router.json
-function get(originalUrl: string): string {
+export function get(originalUrl: string): string {
    const { path, misc } = _splitQueryAndHash(originalUrl);
    if (path === '/' && rootRoute) {
       return rootRoute + misc;
    }
    if (routeTree) {
-      const urlPatched = getPath(path);
+      const urlPatched = _getPath(path);
       const urlArr = urlPatched.split('/');
 
       let curTreePoint = routeTree.tree;
@@ -129,9 +53,83 @@ function get(originalUrl: string): string {
    return path + misc;
 }
 
-const rewriter = {
-   get,
-   _prepare // exported for tests
-};
+function _splitQueryAndHash(url: string): { path: string, misc: string } {
+   const splitMatch = url.match(/[?#]/);
+   if (splitMatch) {
+      const index = splitMatch.index;
+      return {
+         path: url.substring(0, index),
+         misc: url.slice(index)
+      };
+   }
+   return {
+      path: url,
+      misc: ''
+   };
+}
 
-export default rewriter;
+// get path by url and normalize it
+function _getPath(url: string): string {
+   url = url.replace(httpRE, '');
+   const qIndex = url.indexOf('?');
+   const pIndex = url.indexOf('#');
+   if (qIndex !== -1) {
+      url = url.slice(0, qIndex);
+   }
+   if (pIndex !== -1) {
+      url = url.slice(0, pIndex);
+   }
+   url = url.replace(startSlash, '').replace(finishSlash, '');
+   return url;
+}
+
+// prepare data structure for quick access to it
+// exported for unit tests
+export function _prepareRoutes(json: any): void {
+   routeTree = {
+      value: null,
+      tree: {}
+   };
+   rootRoute = null;
+
+   if (!json) {
+      return;
+   }
+
+   if (json.hasOwnProperty('/')) {
+      rootRoute = '/' + _getPath(json['/']);
+   }
+
+   for (let routeName in json) {
+      if (json.hasOwnProperty(routeName)) {
+         if (routeName === '/') {
+            continue;
+         }
+
+         const routeDest = json[routeName];
+
+         routeName = _getPath(routeName);
+
+         const routeNameArr = routeName.split('/');
+
+         let curTreePoint = routeTree.tree;
+
+         for (let i = 0; i < routeNameArr.length; i++) {
+            const routeNamePart = routeNameArr[i];
+
+            if (!curTreePoint.hasOwnProperty(routeNamePart)) {
+               curTreePoint[routeNamePart] = {
+                  value: null,
+                  tree: {}
+               };
+            }
+
+            if (routeNameArr.length - 1 === i) {
+               curTreePoint[routeNamePart].value = routeDest;
+            }
+
+            curTreePoint = curTreePoint[routeNamePart].tree;
+         }
+      }
+   }
+}

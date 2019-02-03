@@ -2,22 +2,22 @@
    <h1>Using Popups with Pretty URL</h1>
 
    <p>
-      This example is the same as the other Popups example, but it uses the <span class="CodeSpan">prettyHref</span> option of <span class="CodeSpan">Router.Link</span> component
+      This example is the same as the other Popups example, but it uses the <span class="CodeSpan">href</span> option of <span class="CodeSpan">Router.Reference</span> component
       to hide the long generated URL.
    </p>
 
    <!-- These Link and Route are used to open the first popup, so the depth 0 is hardcoded -->
-   <!-- The difference is that the prettyUrl option is specified to hide the real growing URL -->
-   <Router.Link href="panel/0/:panelData" prettyUrl="/RouterDemo/page/PopupsPretty/inPanel" panelData="Hello" attr:class="BigButton">
-      <span>Open the popup</span>
-   </Router.Link>
+   <!-- The difference is that the href option is specified to hide the real growing URL -->
+   <Router.Reference state="panel/0/:panelData" href="/RouterDemo/page/PopupsPretty/inPanel" panelData="Hello" attr:class="BigButton">
+      <a href="{{ content.href }}">Open the popup</a>
+   </Router.Reference>
    <Router.Route mask="panel/0/:panelData"
       on:enter="_displayPopup()"
       on:leave="_hidePopup()" />
 
-   <Router.Link href="/RouterDemo/page/PopupsPretty" attr:class="BigButton">
-      <span>Close all popups</span>
-   </Router.Link>
+   <Router.Reference state="/RouterDemo/page/PopupsPretty" attr:class="BigButton">
+      <a href="{{ content.href }}">Close all popups</a>
+   </Router.Reference>
 
    <!--
       The RecursivePopup is inserted here directly, but the same approach can be used with the different
@@ -25,7 +25,7 @@
       option instead
    -->
    <!--
-      We specify a prettyUrl option for RecursivePopup that will use it for inner Router.Links to hide the
+      We specify a prettyUrl option for RecursivePopup that will use it for inner Router.Reference to hide the
       real growing URL
    -->
    <ws:if data="{{ _isPopupDisplayed }}">

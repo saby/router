@@ -1,7 +1,7 @@
 <div>
    <h1>Single Page Routing</h1>
    <p>
-      This is an example of how to implement a single page redirect, using <span class="CodeSpan">Router.Route</span> and <span class="CodeSpan">Router.Link</span> to
+      This is an example of how to implement a single page redirect, using <span class="CodeSpan">Router.Route</span> and <span class="CodeSpan">Router.Reference</span> to
       switch between different tabs.
    </p>
    <p>

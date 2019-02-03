@@ -2,8 +2,6 @@ define([
    'Router/UrlRewriter',
    'RouterTest/resources/router'
 ], function(UrlRewriter, json) {
-   var UrlRewriter = UrlRewriter.default;
-
    const tests = [
       {
          url: '/',
@@ -37,9 +35,9 @@ define([
       });
    }
 
-   describe('Router/ServerRouting', function() {
+   describe('Router/UrlRewriter', function() {
       beforeEach(function() {
-         UrlRewriter._prepare(json);
+         UrlRewriter._prepareRoutes(json);
       });
       it('rewrites the url', function() {
          runTests(tests);
