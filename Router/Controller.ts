@@ -92,6 +92,7 @@ class Controller extends Control {
 
    protected _beforeMount(): Promise<any> {
       var def = new Deferred();
+      this._forceUpdate = function() {};
       require(['router'], (replacementRoutes) => {
          UrlRewriter._prepare(replacementRoutes);
          def.callback();
