@@ -1,7 +1,7 @@
 /// <amd-module name="Router/Controller" />
 
 // @ts-ignore
-import * as IoC from 'Core/IoC';
+import { IoC } from 'Env/Env';
 
 import * as Data from 'Router/Data';
 
