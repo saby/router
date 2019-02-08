@@ -60,6 +60,17 @@ define(['Router/MaskResolver'], function(MaskResolver) {
 
                assert.strictEqual(calculated.tabName, 'train');
             });
+
+            it('mask with many parameters', function() {
+               var
+                  mask = 'tab/:tabName/:secondary/:thirdly',
+                  url = '/order/tab/train',
+                  calculated = MaskResolver.calculateUrlParams(mask, url);
+
+               assert.strictEqual(calculated.tabName, 'train');
+               assert.strictEqual(calculated.secondary, undefined);
+               assert.strictEqual(calculated.thirdly, undefined);
+            });
          });
       });
    });
