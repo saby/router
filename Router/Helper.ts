@@ -92,6 +92,7 @@ function findIndex(mask, index, newUrl) {
    return matched ? matched[1].length : -1;
 }
 
+const postfix = '/undefined/undefined/undefined/undefined/undefined/undefined/undefined/undefined/undefined/undefined';
 function _calculateParams(mask, cfg, forUrl, index) {
    const result = [];
    const fullmask = _generateFullmaskWithoutParams(mask, (param) => {
@@ -101,6 +102,13 @@ function _calculateParams(mask, cfg, forUrl, index) {
       });
    });
 
+   const qIndex = forUrl.indexOf('?');
+   if (qIndex !== -1) {
+      forUrl = forUrl.slice(0, qIndex).replace(/\/$/, '') + postfix + (qIndex !== -1 ? forUrl.slice(qIndex) : '');
+   } else {
+      forUrl = forUrl.replace(/\/$/, '') + postfix;
+   }
+
    const url = UrlRewriter.get(forUrl || getRelativeUrl());
    const urlCutted = url.slice(index || 0);
    const matched = urlCutted.match(fullmask);
@@ -108,6 +116,11 @@ function _calculateParams(mask, cfg, forUrl, index) {
    if (matched) {
       for (let j = 2; j < matched.length - 1; j++) { // 0 это вся строка, 1 это префикс; последнее это постфикс
          result[j - 2].urlValue = decodeURIComponent(matched[j]);
+
+         // convert 'undefined' to undefined
+         if (result[j - 2].urlValue === 'undefined') {
+            result[j - 2].urlValue = undefined;
+         }
       }
    }
    return result;
