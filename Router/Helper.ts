@@ -93,6 +93,20 @@ function findIndex(mask, index, newUrl) {
 }
 
 const postfix = '/undefined/undefined/undefined/undefined/undefined/undefined/undefined/undefined/undefined/undefined';
+function _splitQueryAndHash(url: string): { path: string, misc: string } {
+   const splitMatch = url.match(/[?#]/);
+   if (splitMatch) {
+      const index = splitMatch.index;
+      return {
+         path: url.substring(0, index).replace(/\/$/, ''),
+         misc: url.slice(index)
+      };
+   }
+   return {
+      path: url,
+      misc: ''
+   };
+}
 function _calculateParams(mask, cfg, forUrl, index) {
    const result = [];
    const fullmask = _generateFullmaskWithoutParams(mask, (param) => {
@@ -102,14 +116,11 @@ function _calculateParams(mask, cfg, forUrl, index) {
       });
    });
 
-   const qIndex = forUrl.indexOf('?');
-   if (qIndex !== -1) {
-      forUrl = forUrl.slice(0, qIndex).replace(/\/$/, '') + postfix + (qIndex !== -1 ? forUrl.slice(qIndex) : '');
-   } else {
-      forUrl = forUrl.replace(/\/$/, '') + postfix;
-   }
+   let originUrl = forUrl || getRelativeUrl();
+   const { path, misc } = _splitQueryAndHash(originUrl);
+   originUrl = path + postfix + misc;
 
-   const url = UrlRewriter.get(forUrl || getRelativeUrl());
+   const url = UrlRewriter.get(originUrl);
    const urlCutted = url.slice(index || 0);
    const matched = urlCutted.match(fullmask);
 
