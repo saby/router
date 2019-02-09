@@ -47,6 +47,21 @@ function _validateMask(mask: string): void {
    }
 }
 
+const postfix = '/undefined/undefined/undefined/undefined/undefined/undefined/undefined/undefined/undefined/undefined';
+function _splitQueryAndHash(url: string): { path: string, misc: string } {
+   const splitMatch = url.match(/[?#]/);
+   if (splitMatch) {
+      const index = splitMatch.index;
+      return {
+         path: url.substring(0, index).replace(/\/$/, ''),
+         misc: url.slice(index)
+      };
+   }
+   return {
+      path: url,
+      misc: ''
+   };
+}
 function _calculateParams(mask: string, cfg: any, url?: string): IParam[] {
    const result: IParam[] = [];
    const fullMask = _generateFullMaskWithoutParams(mask, param => {
@@ -56,13 +71,22 @@ function _calculateParams(mask: string, cfg: any, url?: string): IParam[] {
       });
    });
 
-   const actualUrl = UrlRewriter.get(url || Data.getRelativeUrl());
+   let originUrl = url || Data.getRelativeUrl();
+   const { path, misc } = _splitQueryAndHash(originUrl);
+   originUrl = path + postfix + misc;
+
+   const actualUrl = UrlRewriter.get(originUrl);
    const fields = actualUrl.match(fullMask);
 
    if (fields) {
       // fields[0] is the full url, fields[1] is prefix and fields[fields.length - 1] is suffix
       for (let j = 2; j < fields.length - 1; j++) {
          result[j - 2].urlValue = decodeURIComponent(fields[j]);
+
+         // convert 'undefined' to undefined
+         if (result[j - 2].urlValue === 'undefined') {
+            result[j - 2].urlValue = undefined;
+         }
       }
    }
    return result;
