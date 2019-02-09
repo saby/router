@@ -66,6 +66,17 @@ define(['Router/Helper'], function(RouterHelper) {
 
                assert.strictEqual(calculated.tabName, 'train');
             });
+
+            it('mask with many parameters', function() {
+               var
+                  mask = 'tab/:tabName/:secondary/:thirdly',
+                  url = '/order/tab/train',
+                  calculated = Helper.calculateUrlParams(mask, url);
+
+               assert.strictEqual(calculated.tabName, 'train');
+               assert.strictEqual(calculated.secondary, undefined);
+               assert.strictEqual(calculated.thirdly, undefined);
+            });
          });
       });
    });
