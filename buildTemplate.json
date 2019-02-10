@@ -61,6 +61,16 @@
       "name": "Inferno",
       "path": "%cd%/node_modules/sbis3-ws/Inferno",
       "required": true
+    },
+    {
+      "name": "Env",
+      "path": "%cd%/node_modules/rmi/src/client/Env",
+      "required": true
+    },
+    {
+      "name": "Browser",
+      "path": "%cd%/node_modules/rmi/src/client/Browser",
+      "required": true
     }
   ]
 }
