@@ -58,7 +58,7 @@ function _splitQueryAndHash(url: string): { path: string, misc: string } {
       };
    }
    return {
-      path: url,
+      path: url.replace(/\/$/, ''),
       misc: ''
    };
 }
