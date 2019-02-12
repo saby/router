@@ -237,11 +237,6 @@ function _resolveMask(mask: string, params: HashMap<any>): string {
    let result = '';
    if (resolvedCount === paramCount) {
       result = mask;
-   } else if (resolvedCount !== 0) {
-      IoC.resolve('ILogger').error(
-         'Router/MaskResolver',
-         `Resolved parameters cound does not match total parameters count for mask "${mask}"`
-      );
    }
    return result;
 }
