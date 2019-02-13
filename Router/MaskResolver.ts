@@ -1,7 +1,7 @@
 /// <amd-module name="Router/MaskResolver" />
 
 // @ts-ignore
-import IoC = require('Core/IoC');
+import { IoC } from 'Env/Env';
 
 import * as Data from 'Router/Data';
 import * as UrlRewriter from 'Router/UrlRewriter';
