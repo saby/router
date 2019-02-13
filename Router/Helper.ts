@@ -155,8 +155,6 @@ function _resolveMask(mask, params) {
    let result = '';
    if (resolvedCount === paramCount) {
       result = mask;
-   } else if (resolvedCount !== 0) {
-      IoC.resolve('ILogger').error('RouterHelper', 'wrong resolvedCount, check it');
    }
    return result;
 }
