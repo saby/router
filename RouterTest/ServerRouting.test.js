@@ -1,3 +1,4 @@
+/* global assert */
 define([
    'RouterTest/resources/serverRoutingVerifier',
    'Router/ServerRouting'

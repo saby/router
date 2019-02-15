@@ -1,3 +1,4 @@
+/* global assert */
 define([
    'Router/UrlRewriter',
    'RouterTest/resources/router'
@@ -39,9 +40,11 @@ define([
       beforeEach(function() {
          UrlRewriter._prepareRoutes(json);
       });
+
       it('rewrites the url', function() {
          runTests(tests);
       });
+
       it('ignores query in the url', function() {
          var
             queryString = '?paramA=true&paramB=false',
@@ -54,6 +57,7 @@ define([
 
          runTests(queryTests);
       });
+
       it('ignores hash in the url', function() {
          var
             hashString = '#userid=00000111',
@@ -66,6 +70,7 @@ define([
 
          runTests(hashTests);
       });
+
       it('ignores query and hash in the url if both are present', function() {
          var
             combinedString = '?paramA=true&paramB=false#userid=00000111',
@@ -73,10 +78,29 @@ define([
                return {
                   url: test.url + combinedString,
                   result: test.result + combinedString
-               }
+               };
             });
 
          runTests(combinedTests);
+      });
+
+      it('does not throw if routes.json did not load', function() {
+         assert.doesNotThrow(UrlRewriter._prepareRoutes.bind(UrlRewriter, null));
+         assert.doesNotThrow(UrlRewriter._prepareRoutes.bind(UrlRewriter, undefined));
+         assert.doesNotThrow(UrlRewriter._prepareRoutes.bind(UrlRewriter, {}));
+      });
+
+      it('returns urls as is if routes.json did not load', function() {
+         UrlRewriter._prepareRoutes(null);
+
+         var resEqUrl = tests.map(function(test) {
+            return {
+               url: test.url,
+               result: test.url
+            };
+         });
+
+         runTests(resEqUrl);
       });
    });
 });
