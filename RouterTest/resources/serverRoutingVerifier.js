@@ -10,7 +10,7 @@ define('RouterTest/resources/serverRoutingVerifier', ['Router/ServerRouting'], f
          originalUrl: 'https://my-site.ru' + path,
          destroy: function() {
             if (createdProcess) {
-               delete window.process;
+               window.process = undefined;
             }
          }
       };
