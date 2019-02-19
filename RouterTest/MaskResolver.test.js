@@ -249,6 +249,170 @@ define(['Router/MaskResolver', 'Router/Data'], function(MaskResolver, RouterData
          // 1. Changing the existing value
          // 2. Adding a new value
          // 3. No changes
+         describe('simple masks', function() {
+            describe('starting at root url', function() {
+               beforeEach(function() {
+                  RouterData.setRelativeUrl('/');
+               });
+               it('can add a new value', function() {
+                  var newUrl = MaskResolver.calculateHref('first/:value', { value: 'fvalue' });
+                  assert.strictEqual(newUrl, '/first/fvalue');
+               });
+            });
+            describe('starting with simple params', function() {
+               beforeEach(function() {
+                  RouterData.setRelativeUrl('/first/fvalue/second/svalue/');
+               });
+               it('can change an existing value', function() {
+                  var newUrl = MaskResolver.calculateHref('second/:value', { value: 'abc' });
+                  assert.strictEqual(newUrl, '/first/fvalue/second/abc/');
+               });
+               it('can add a new value', function() {
+                  var newUrl = MaskResolver.calculateHref('newval/:value', { value: 'supernew' });
+                  assert.strictEqual(newUrl, '/first/fvalue/second/svalue/newval/supernew');
+               });
+               it('can remove an existing value', function() {
+                  var newUrl = MaskResolver.calculateHref('first/:value', { clear: true });
+                  assert.strictEqual(newUrl, '/second/svalue/');
+               });
+            });
+            describe('starting with query', function() {
+               beforeEach(function() {
+                  RouterData.setRelativeUrl('/?qfrst=fvalue&qscnd=svalue');
+               });
+               it('can add a new value', function() {
+                  var newUrl = MaskResolver.calculateHref('newval/:value', { value: 'supernew' });
+                  assert.strictEqual(newUrl, '/newval/supernew?qfrst=fvalue&qscnd=svalue');
+               });
+            });
+            describe('starting with simple params and query', function() {
+               beforeEach(function() {
+                  RouterData.setRelativeUrl('/first/fvalue/second/svalue/?qfrst=fvalue&qscnd=svalue');
+               });
+               it('can change an existing value', function() {
+                  var newUrl = MaskResolver.calculateHref('second/:value', { value: 'abc' });
+                  assert.strictEqual(newUrl, '/first/fvalue/second/abc/?qfrst=fvalue&qscnd=svalue');
+               });
+               it('can add a new value', function() {
+                  var newUrl = MaskResolver.calculateHref('newval/:value', { value: 'supernew' });
+                  assert.strictEqual(newUrl, '/first/fvalue/second/svalue/newval/supernew?qfrst=fvalue&qscnd=svalue');
+               });
+               it('can remove an existing value', function() {
+                  var newUrl = MaskResolver.calculateHref('first/:value', { clear: true });
+                  assert.strictEqual(newUrl, '/second/svalue/?qfrst=fvalue&qscnd=svalue');
+               });
+            });
+         });
+
+         describe('multiparam masks', function() {
+            describe('starting at root url', function() {
+               beforeEach(function() {
+                  RouterData.setRelativeUrl('/');
+               });
+               it('can add a new value', function() {
+                  var newUrl = MaskResolver.calculateHref('newname/:first/:second', { first: 'a', second: 'b' });
+                  assert.strictEqual(newUrl, '/newname/a/b');
+               });
+            });
+            describe('starting with simple params', function() {
+               beforeEach(function() {
+                  RouterData.setRelativeUrl('/first/fvalue/second/svalue/');
+               });
+               it('can change an existing value', function() {
+                  var newUrl = MaskResolver.calculateHref('first/:a/:b/:c', { a: 'ast', b: 'bst', c: 'cst' });
+                  assert.strictEqual(newUrl, '/first/ast/bst/cst/');
+               });
+               it('can add a new value', function() {
+                  var newUrl = MaskResolver.calculateHref('newname/:first/:second', { first: 'a', second: 'b' });
+                  assert.strictEqual(newUrl, '/first/fvalue/second/svalue/newname/a/b');
+               });
+               it('can remove an existing value', function() {
+                  var newUrl = MaskResolver.calculateHref('first/:a/:b', { clear: true });
+                  assert.strictEqual(newUrl, '/svalue/');
+               });
+            });
+            describe('starting with query', function() {
+               beforeEach(function() {
+                  RouterData.setRelativeUrl('/?qfrst=fvalue&qscnd=svalue');
+               });
+               it('can add a new value', function() {
+                  var newUrl = MaskResolver.calculateHref('newname/:first/:second', { first: 'a', second: 'b' });
+                  assert.strictEqual(newUrl, '/newname/a/b?qfrst=fvalue&qscnd=svalue');
+               });
+            });
+            describe('starting with simple params and query', function() {
+               beforeEach(function() {
+                  RouterData.setRelativeUrl('/first/fvalue/second/svalue/?qfrst=fvalue&qscnd=svalue');
+               });
+               it('can change an existing value', function() {
+                  var newUrl = MaskResolver.calculateHref('first/:a/:b/:c', { a: 'ast', b: 'bst', c: 'cst' });
+                  assert.strictEqual(newUrl, '/first/ast/bst/cst/?qfrst=fvalue&qscnd=svalue');
+               });
+               it('can add a new value', function() {
+                  var newUrl = MaskResolver.calculateHref('newname/:first/:second', { first: 'a', second: 'b' });
+                  assert.strictEqual(newUrl, '/first/fvalue/second/svalue/newname/a/b?qfrst=fvalue&qscnd=svalue');
+               });
+               it('can remove an existing value', function() {
+                  var newUrl = MaskResolver.calculateHref('first/:a/:b', { clear: true });
+                  assert.strictEqual(newUrl, '/svalue/?qfrst=fvalue&qscnd=svalue');
+               });
+            });
+         });
+
+         describe('query masks', function() {
+            describe('starting at root url', function() {
+               beforeEach(function() {
+                  RouterData.setRelativeUrl('/');
+               });
+               it('can add a new value', function() {
+                  var newUrl = MaskResolver.calculateHref('qfrst=:value', { value: 'abc' });
+                  assert.strictEqual(newUrl, '/?qfrst=abc');
+               });
+            });
+            describe('starting with simple params', function() {
+               beforeEach(function() {
+                  RouterData.setRelativeUrl('/first/fvalue/second/svalue/');
+               });
+               it('can add a new value', function() {
+                  var newUrl = MaskResolver.calculateHref('qfrst=:value', { value: 'abc' });
+                  assert.strictEqual(newUrl, '/first/fvalue/second/svalue/?qfrst=abc');
+               });
+            });
+            describe('starting with query', function() {
+               beforeEach(function() {
+                  RouterData.setRelativeUrl('/?qfrst=fvalue&qscnd=svalue');
+               });
+               it('can change an existing value', function() {
+                  var newUrl = MaskResolver.calculateHref('qfrst=:value', { value: 'abc' });
+                  assert.strictEqual(newUrl, '/?qfrst=abc&qscnd=svalue');
+               });
+               it('can add a new value', function() {
+                  var newUrl = MaskResolver.calculateHref('qthrd=:value', { value: 'abc' });
+                  assert.strictEqual(newUrl, '/?qfrst=fvalue&qscnd=svalue&qthrd=abc');
+               });
+               it('can remove an existing value', function() {
+                  var newUrl = MaskResolver.calculateHref('qfrst=:value', { clear: true });
+                  assert.strictEqual(newUrl, '/?qscnd=svalue');
+               });
+            });
+            describe('starting with simple params and query', function() {
+               beforeEach(function() {
+                  RouterData.setRelativeUrl('/first/fvalue/second/svalue/?qfrst=fvalue&qscnd=svalue');
+               });
+               it('can change an existing value', function() {
+                  var newUrl = MaskResolver.calculateHref('qfrst=:value', { value: 'abc' });
+                  assert.strictEqual(newUrl, '/first/fvalue/second/svalue/?qfrst=abc&qscnd=svalue');
+               });
+               it('can add a new value', function() {
+                  var newUrl = MaskResolver.calculateHref('qthrd=:value', { value: 'abc' });
+                  assert.strictEqual(newUrl, '/first/fvalue/second/svalue/?qfrst=fvalue&qscnd=svalue&qthrd=abc');
+               });
+               it('can remove an existing value', function() {
+                  var newUrl = MaskResolver.calculateHref('qscnd=:value', { clear: true });
+                  assert.strictEqual(newUrl, '/first/fvalue/second/svalue/?qfrst=fvalue');
+               });
+            });
+         });
       });
    });
 });
