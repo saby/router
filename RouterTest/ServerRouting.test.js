@@ -28,6 +28,5 @@ define([
          assert.strictEqual(rendered.template, 'wml!MyWml');
          assert.strictEqual(rendered.app, 'register/Index');
       });
-
    });
 });
