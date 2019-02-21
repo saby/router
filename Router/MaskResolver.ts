@@ -190,27 +190,21 @@ function _resolveHref(href: string, mask: string, cfg: any): string {
             }
          } else if (href.indexOf('&' + toFind) !== -1) {
             result = href.replace('&' + toFind, '');
-         } else {
-            result = href.replace(toFind, '');
          }
       }
    } else if (toReplace) {
       const qIndex = href.indexOf('?');
-      if (toReplace[0] === '/') {
-         result = toReplace;
-      } else {
-         if (toReplace.indexOf('=') !== -1) {
-            if (qIndex !== -1) {
-               result += '&' + toReplace;
-            } else {
-               result += '?' + toReplace;
-            }
+      if (toReplace.indexOf('=') !== -1) {
+         if (qIndex !== -1) {
+            result += '&' + toReplace;
          } else {
-            if (qIndex !== -1) {
-               result = _appendSlash(href.slice(0, qIndex)) + toReplace + href.slice(qIndex);
-            } else {
-               result = _appendSlash(href) + toReplace;
-            }
+            result += '?' + toReplace;
+         }
+      } else {
+         if (qIndex !== -1) {
+            result = _appendSlash(href.slice(0, qIndex)) + toReplace + href.slice(qIndex);
+         } else {
+            result = _appendSlash(href) + toReplace;
          }
       }
    }

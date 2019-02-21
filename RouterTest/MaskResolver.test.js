@@ -301,6 +301,10 @@ define(['Router/MaskResolver', 'Router/Data'], function(MaskResolver, RouterData
                   var newUrl = MaskResolver.calculateHref('first/:value', { clear: true });
                   assert.strictEqual(newUrl, '/second/svalue/?qfrst=fvalue&qscnd=svalue');
                });
+               it('can replace value', function() {
+                  var newUrl = MaskResolver.calculateHref('/test/:value', { value: 'abc' });
+                  assert.strictEqual(newUrl, '/test/abc');
+               });
             });
          });
 
@@ -356,6 +360,10 @@ define(['Router/MaskResolver', 'Router/Data'], function(MaskResolver, RouterData
                   var newUrl = MaskResolver.calculateHref('first/:a/:b', { clear: true });
                   assert.strictEqual(newUrl, '/svalue/?qfrst=fvalue&qscnd=svalue');
                });
+               it('can replace value', function() {
+                  var newUrl = MaskResolver.calculateHref('/a/:bv/:cv', { bv: 'b', cv: 35 });
+                  assert.strictEqual(newUrl, '/a/b/35');
+               });
             });
          });
 
@@ -370,12 +378,15 @@ define(['Router/MaskResolver', 'Router/Data'], function(MaskResolver, RouterData
                });
             });
             describe('starting with simple params', function() {
-               beforeEach(function() {
-                  RouterData.setRelativeUrl('/first/fvalue/second/svalue/');
-               });
                it('can add a new value', function() {
+                  RouterData.setRelativeUrl('/first/fvalue/second/svalue/');
                   var newUrl = MaskResolver.calculateHref('qfrst=:value', { value: 'abc' });
                   assert.strictEqual(newUrl, '/first/fvalue/second/svalue/?qfrst=abc');
+               });
+               it('can add a new value with forward slash', function() {
+                  RouterData.setRelativeUrl('/first/fvalue/second/svalue');
+                  var newUrl = MaskResolver.calculateHref('qfrst=:value', { value: 'abc' });
+                  assert.strictEqual(newUrl, '/first/fvalue/second/svalue?qfrst=abc');
                });
             });
             describe('starting with query', function() {
@@ -393,6 +404,11 @@ define(['Router/MaskResolver', 'Router/Data'], function(MaskResolver, RouterData
                it('can remove an existing value', function() {
                   var newUrl = MaskResolver.calculateHref('qfrst=:value', { clear: true });
                   assert.strictEqual(newUrl, '/?qscnd=svalue');
+               });
+               it('can remove the only value', function() {
+                  RouterData.setRelativeUrl('/?qfrst=fvalue');
+                  var newUrl = MaskResolver.calculateHref('qfrst=:value', { clear: true });
+                  assert.strictEqual(newUrl, '/');
                });
             });
             describe('starting with simple params and query', function() {

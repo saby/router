@@ -1,5 +1,5 @@
-/* global assert */
-define(['Router/Reference', 'RouterTest/resources/controlManager', 'Router/Data'], function(Reference, CM, RouterData) {
+/* global assert, sinon */
+define(['Router/Reference', 'RouterTest/resources/controlManager', 'Router/Data', 'Router/Controller'], function(Reference, CM, Data, Controller) {
    var defaultOptions = {
       state: 'name/:value',
       value: 'test',
@@ -28,29 +28,30 @@ define(['Router/Reference', 'RouterTest/resources/controlManager', 'Router/Data'
       });
 
       it('registers when created', function(done) {
-         var registeredReferences = RouterData.getRegisteredReferences();
-         assert.isEmpty(registeredReferences);
+         var registeredReferences = Data.getRegisteredReferences();
 
          createdReference = createReference();
          waitForLifecycle().then(function() {
-            assert.isNotEmpty(registeredReferences);
+            assert.property(registeredReferences, createdReference.getInstanceId());
          }).then(done, done);
       });
       it('unregisters when destroyed', function(done) {
-         var registeredReferences = RouterData.getRegisteredReferences();
+         var registeredReferences = Data.getRegisteredReferences(),
+            instanceId;
 
          createdReference = createReference();
          waitForLifecycle().then(function() {
+            instanceId = createdReference.getInstanceId();
             destroyReference(createdReference);
             createdReference = null;
             return waitForLifecycle();
          }).then(function() {
-            assert.isEmpty(registeredReferences);
+            assert.notProperty(registeredReferences, instanceId);
          }).then(done, done);
       });
 
       it('correctly calculates the state', function(done) {
-         RouterData.setRelativeUrl('/name/value');
+         Data.setRelativeUrl('/name/value');
 
          createdReference = createReference({ state: 'test/:tvalue', tvalue: 'true' });
          waitForLifecycle().then(function() {
@@ -59,11 +60,11 @@ define(['Router/Reference', 'RouterTest/resources/controlManager', 'Router/Data'
       });
       it('updates the state when url changes', function(done) {
          var options = { state: 'test/:tvalue', tvalue: 'true' };
-         RouterData.setRelativeUrl('/name/value');
+         Data.setRelativeUrl('/name/value');
 
          createdReference = createReference(options);
          waitForLifecycle().then(function() {
-            RouterData.setRelativeUrl('/my/test/false/abc');
+            Data.setRelativeUrl('/my/test/false/abc');
             createdReference._beforeUpdate(options);
          }).then(function() {
             assert.strictEqual(createdReference._state, '/my/test/true/abc');
@@ -71,7 +72,7 @@ define(['Router/Reference', 'RouterTest/resources/controlManager', 'Router/Data'
       });
 
       it('correctly calculates the href', function(done) {
-         RouterData.setRelativeUrl('/random/url/here?test=true');
+         Data.setRelativeUrl('/random/url/here?test=true');
 
          createdReference = createReference({ state: 'url/:location', href: '/:location', location: 'website' });
          waitForLifecycle().then(function() {
@@ -79,7 +80,7 @@ define(['Router/Reference', 'RouterTest/resources/controlManager', 'Router/Data'
          }).then(done, done);
       });
       it('updates the href when option changes', function(done) {
-         RouterData.setRelativeUrl('/random/url/here?test=true');
+         Data.setRelativeUrl('/random/url/here?test=true');
 
          createdReference = createReference({ state: 'url/:location', href: '/:location', location: 'website' });
          waitForLifecycle().then(function() {
@@ -89,6 +90,20 @@ define(['Router/Reference', 'RouterTest/resources/controlManager', 'Router/Data'
             return waitForLifecycle();
          }).then(function() {
             assert.strictEqual(createdReference._href, '/book');
+         }).then(done, done);
+      });
+
+      it('prevents default and navigates when clicked', function(done) {
+         var eventObject = { preventDefault: sinon.spy() },
+            navigateStub = sinon.stub(Controller, 'navigate');
+
+         createdReference = createReference();
+         waitForLifecycle().then(function() {
+            createdReference._clickHandler(eventObject);
+            return waitForLifecycle(50);
+         }).then(function() {
+            assert(eventObject.preventDefault.calledOnce, 'expected preventDefault to be called for click event');
+            assert(navigateStub.calledOnce, 'expected Controller.navigate to be called on click');
          }).then(done, done);
       });
    });

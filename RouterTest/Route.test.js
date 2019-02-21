@@ -27,27 +27,28 @@ define(['Router/Route', 'RouterTest/resources/controlManager', 'Router/Data'], f
 
       it('registers when created', function(done) {
          var registeredRoutes = RouterData.getRegisteredRoutes();
-         assert.isEmpty(registeredRoutes);
 
          createdRoute = createRoute();
          waitForLifecycle()
             .then(function() {
-               assert.isNotEmpty(registeredRoutes);
+               assert.property(registeredRoutes, createdRoute.getInstanceId());
             })
             .then(done, done);
       });
       it('unregisters when destroyed', function(done) {
-         var registeredRoutes = RouterData.getRegisteredRoutes();
+         var registeredRoutes = RouterData.getRegisteredRoutes(),
+            instanceId;
 
          createdRoute = createRoute();
          waitForLifecycle()
             .then(function() {
+               instanceId = createdRoute.getInstanceId();
                destroyRoute(createdRoute);
                createdRoute = null;
                return waitForLifecycle();
             })
             .then(function() {
-               assert.isEmpty(registeredRoutes);
+               assert.notProperty(registeredRoutes, instanceId);
             })
             .then(done, done);
       });
