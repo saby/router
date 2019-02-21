@@ -30,6 +30,11 @@ define(['Router/Controller', 'Router/Data', 'Router/History', 'Router/UrlRewrite
       }
 
       describe('Router/Controller', function() {
+         before(function() {
+            // define a fake ctestapp/Index component so tests
+            // do not do redirects
+            fakeAppManager.createFakeApp('ctestapp');
+         });
          after(function() {
             stubSandbox.restore();
          });
@@ -86,9 +91,6 @@ define(['Router/Controller', 'Router/Data', 'Router/History', 'Router/UrlRewrite
             var fakeRoute, fakeReference, historyPushStub;
 
             before(function() {
-               // define a fake ctestapp/Index component so tests
-               // do not do redirects
-               fakeAppManager.createFakeApp('ctestapp');
                historyPushStub = stubSandbox.stub(History, 'push');
             });
 
@@ -224,6 +226,130 @@ define(['Router/Controller', 'Router/Data', 'Router/History', 'Router/UrlRewrite
                      done(e);
                   } finally {
                      UrlRewriter.get.restore();
+                  }
+               }, navigationDelay);
+            });
+
+            it('loads new application and calls changeApplicationHandler', function(done) {
+               fakeAppManager.createFakeApp('anotherapp');
+
+               var
+                  fakeCoreInstance = {
+                     changeApplicationHandler: stubSandbox.spy()
+                  },
+                  getCoreInstanceStub = stubSandbox.stub(Data, 'getCoreInstance');
+
+               getCoreInstanceStub.returns(fakeCoreInstance);
+
+               Controller.navigate({ state: '/anotherapp/test/url' });
+               setTimeout(function() {
+                  try {
+                     assert(fakeCoreInstance.changeApplicationHandler.calledOnceWith(null, 'anotherapp/Index'), 'expected changeApplicationHandler to be called');
+                     done();
+                  } catch (e) {
+                     done(e);
+                  } finally {
+                     Data.getCoreInstance.restore();
+                  }
+               }, navigationDelay * 2);
+            });
+         });
+
+         describe('onpopstate handler', function() {
+            var historyBackStub, historyForwardStub;
+
+            before(function() {
+               if (typeof window === 'undefined') {
+                  this.skip();
+               }
+            });
+
+            beforeEach(function() {
+               Data.setHistory([
+                  {
+                     id: 0,
+                     state: '/ctestapp/page/first',
+                     href: '/ctestapp/page/first'
+                  },
+                  {
+                     id: 1,
+                     state: '/ctestapp/page/second',
+                     href: '/ctestapp/page/second'
+                  }
+               ]);
+               Data.setHistoryPosition(1);
+               Data.setRelativeUrl('/ctestapp/page/second');
+               historyBackStub = stubSandbox.stub(History, 'back');
+               historyForwardStub = stubSandbox.stub(History, 'forward');
+            });
+
+            afterEach(function() {
+               historyBackStub.restore();
+               historyForwardStub.restore();
+            });
+
+            it('can go back in history', function(done) {
+               var fakeEvent = new PopStateEvent('popstate', { state: History.getPrevState() });
+               window.onpopstate(fakeEvent);
+               setTimeout(function() {
+                  try {
+                     assert(historyBackStub.called, 'expected History.back to be called');
+                     done();
+                  } catch (e) {
+                     done(e);
+                  }
+               }, navigationDelay);
+            });
+            it('can go forward in history', function(done) {
+               Data.setHistoryPosition(0);
+               var fakeEvent = new PopStateEvent('popstate', { state: History.getNextState() });
+               window.onpopstate(fakeEvent);
+               setTimeout(function() {
+                  try {
+                     assert(historyForwardStub.called, 'expected History.forward to be called');
+                     done();
+                  } catch (e) {
+                     done(e);
+                  }
+               }, navigationDelay);
+            });
+
+            it('can successfully create new state going back', function(done) {
+               Data.setHistoryPosition(0);
+               var
+                  fakeEvent = new PopStateEvent('popstate', { state: null }),
+                  getVisibleUrlStub = stubSandbox.stub(Data, 'getVisibleRelativeUrl');
+
+               getVisibleUrlStub.returns('/ctestapp/gobackpage');
+               historyBackStub.restore();
+               window.onpopstate(fakeEvent);
+               setTimeout(function() {
+                  try {
+                     var createdState = History.getCurrentState();
+                     assert.strictEqual(createdState.state, '/ctestapp/gobackpage');
+                     assert.strictEqual(createdState.id, History.getNextState().id - 1);
+                     done();
+                  } catch (e) {
+                     done(e);
+                  }
+               }, navigationDelay);
+            });
+            it('can successfully create new state going forward', function(done) {
+               Data.setHistoryPosition(1);
+               var
+                  fakeEvent = new PopStateEvent('popstate', { state: { id: 3, state: '/ctestapp/goforwardpage', href: '/ctestapp/goforwardpage' } });
+
+               historyForwardStub.restore();
+               Data.setRelativeUrl('/ctestapp/goforwardpage');
+               window.onpopstate(fakeEvent);
+               setTimeout(function() {
+                  try {
+                     var createdState = History.getCurrentState();
+                     assert.strictEqual(createdState.state, '/ctestapp/goforwardpage');
+                     assert.strictEqual(createdState.id, History.getPrevState().id + 1);
+                     done();
+                  } catch (e) {
+                     done(e);
                   }
                }, navigationDelay);
             });
