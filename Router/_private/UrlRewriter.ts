@@ -1,4 +1,4 @@
-/// <amd-module name="Router/UrlRewriter" />
+/// <amd-module name="Router/_private/UrlRewriter" />
 
 const httpRE = /^http[s]?:\/\//;
 const startSlash = /^\//;

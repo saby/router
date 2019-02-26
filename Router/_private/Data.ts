@@ -1,9 +1,9 @@
-/// <amd-module name="Router/Data" />
+/// <amd-module name="Router/_private/Data" />
 
 // @ts-ignore
 import Request = require('View/Request');
 
-import * as UrlRewriter from 'Router/UrlRewriter';
+import * as UrlRewriter from './UrlRewriter';
 
 const STORAGE_KEY = 'RouterData';
 const CORE_INSTANCE_KEY = 'CoreInstance';

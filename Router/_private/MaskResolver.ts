@@ -1,10 +1,10 @@
-/// <amd-module name="Router/MaskResolver" />
+/// <amd-module name="Router/_private/MaskResolver" />
 
 // @ts-ignore
 import { IoC } from 'Env/Env';
 
-import * as Data from 'Router/Data';
-import * as UrlRewriter from 'Router/UrlRewriter';
+import * as Data from './Data';
+import * as UrlRewriter from './UrlRewriter';
 
 interface IParam {
    name: string;

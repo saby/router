@@ -1,7 +1,7 @@
-/// <amd-module name="Router/History" />
+/// <amd-module name="Router/_private/History" />
 
-import * as UrlRewriter from 'Router/UrlRewriter';
-import * as Data from 'Router/Data';
+import * as UrlRewriter from './UrlRewriter';
+import * as Data from './Data';
 
 export function getPrevState(): Data.IHistoryState {
    return Data.getHistory()[Data.getHistoryPosition() - 1];

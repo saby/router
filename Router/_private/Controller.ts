@@ -1,13 +1,13 @@
-/// <amd-module name="Router/Controller" />
+/// <amd-module name="Router/_private/Controller" />
 
 // @ts-ignore
 import { IoC } from 'Env/Env';
 
-import * as Data from 'Router/Data';
+import * as Data from './Data';
 
-import { getAppNameByUrl } from 'Router/MaskResolver';
-import * as History from 'Router/History';
-import * as UrlRewriter from 'Router/UrlRewriter';
+import { getAppNameByUrl } from './MaskResolver';
+import * as History from './History';
+import * as UrlRewriter from './UrlRewriter';
 
 let isNavigating = false;
 
