@@ -10,6 +10,9 @@ node_modules
 /tsconfig.base.json
 /SBIS3.CONTROLS
 
-Router/*.js
 .nyc_output/
 artifacts/
+
+Router/router.js
+Router/ServerRouting.js
+Router/_private/**/*.js

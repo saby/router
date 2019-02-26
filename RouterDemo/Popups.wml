@@ -6,16 +6,16 @@
    </p>
 
    <!-- These Link and Route are used to open the first popup, so the depth 0 is hardcoded -->
-   <Router.Reference state="panel/0/:panelData" panelData="Hello" attr:class="BigButton">
+   <Router.router:Reference state="panel/0/:panelData" panelData="Hello" attr:class="BigButton">
       <a href="{{ content.href }}">Open the popup</a>
-   </Router.Reference>
-   <Router.Route mask="panel/0/:panelData"
+   </Router.router:Reference>
+   <Router.router:Route mask="panel/0/:panelData"
       on:enter="_displayPopup()"
       on:leave="_hidePopup()" />
 
-   <Router.Reference state="/RouterDemo/page/Popups" attr:class="BigButton">
+   <Router.router:Reference state="/RouterDemo/page/Popups" attr:class="BigButton">
       <a href="{{ content.href }}">Close all popups</a>
-   </Router.Reference>
+   </Router.router:Reference>
 
    <!--
       The RecursivePopup is inserted here directly, but the same approach can be used with the different

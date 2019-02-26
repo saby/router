@@ -1,13 +1,13 @@
-/// <amd-module name="Router/Controller" />
+/// <amd-module name="Router/_private/Controller" />
 
 // @ts-ignore
 import { IoC } from 'Env/Env';
 
-import * as Data from 'Router/Data';
+import * as Data from './Data';
 
-import { getAppNameByUrl } from 'Router/MaskResolver';
-import * as History from 'Router/History';
-import * as UrlRewriter from 'Router/UrlRewriter';
+import { getAppNameByUrl } from './MaskResolver';
+import * as History from './History';
+import * as UrlRewriter from './UrlRewriter';
 
 let isNavigating = false;
 
@@ -54,7 +54,11 @@ export function navigate(newState: Data.IHistoryState, callback?: Function, errb
    );
 }
 
-export function addRoute(route, beforeUrlChangeCb: Data.TStateChangeFunction, afterUrlChangeCb: Data.TStateChangeFunction): void {
+export function addRoute(
+   route,
+   beforeUrlChangeCb: Data.TStateChangeFunction,
+   afterUrlChangeCb: Data.TStateChangeFunction
+): void {
    Data.getRegisteredRoutes()[route.getInstanceId()] = {
       beforeUrlChangeCb,
       afterUrlChangeCb
@@ -112,7 +116,11 @@ function _initializeController(): void {
    }
 }
 
-function _getNavigationState(localState: Data.IHistoryState, windowState: Data.IHistoryState, currentUrl: string): Data.IHistoryState {
+function _getNavigationState(
+   localState: Data.IHistoryState,
+   windowState: Data.IHistoryState,
+   currentUrl: string
+): Data.IHistoryState {
    if (!localState) {
       if (windowState && windowState.state && windowState.href) {
          return windowState;
@@ -157,10 +165,7 @@ function _tryApplyNewState(newState: Data.IHistoryState): Promise<boolean> {
             }, err => {
                // If the folder doesn't have /Index component, it does not
                // use new routing. Load the page manually
-               _handleAppRequireError(
-                  `Unable to load module '${newApp}', starting default redirect`,
-                  newState.href
-               );
+               _handleAppRequireError(`Unable to load module '${newApp}', starting default redirect`, newState.href);
                reject(err);
             });
          });

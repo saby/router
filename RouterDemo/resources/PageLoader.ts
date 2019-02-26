@@ -13,10 +13,10 @@ class PageLoader extends Control {
    private changePage(newPage: String): Promise<void> {
       return new Promise((resolve, reject) => {
          // @ts-ignore
-         require(['RouterDemo/'+newPage], (newPageClass:Function) => {
+         require(['RouterDemo/' + newPage], (newPageClass: Function) => {
             this.pageClassLoaded = newPageClass;
             resolve();
-         })
+         });
       });
    }
 

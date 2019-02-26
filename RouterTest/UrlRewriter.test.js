@@ -1,33 +1,36 @@
-define([
-   'Router/UrlRewriter',
-   'RouterTest/resources/router'
-], function(UrlRewriter, json) {
-   const tests = [
-      {
-         url: '/',
-         result: '/OnlineSbisRu'
-      },
-      {
-         url: '/a',
-         result: '/a'
-      },
-      {
-         url: '/a/b',
-         result: '/ab'
-      },
-      {
-         url: '/a/b/c',
-         result: '/ab/c'
-      },
-      {
-         url: '/a/b/c/d',
-         result: '/abcd'
-      },
-      {
-         url: '/a/b/c/d/e',
-         result: '/abcd/e'
-      }
-   ];
+/* global assert */
+define(['Router/router', 'RouterTest/resources/router'], /**
+ * @param { import('../Router/router') } Router
+ * @param { import('./resources/router') } json
+ */
+function(Router, json) {
+   var UrlRewriter = Router.UrlRewriter,
+      tests = [
+         {
+            url: '/',
+            result: '/OnlineSbisRu'
+         },
+         {
+            url: '/a',
+            result: '/a'
+         },
+         {
+            url: '/a/b',
+            result: '/ab'
+         },
+         {
+            url: '/a/b/c',
+            result: '/ab/c'
+         },
+         {
+            url: '/a/b/c/d',
+            result: '/abcd'
+         },
+         {
+            url: '/a/b/c/d/e',
+            result: '/abcd/e'
+         }
+      ];
 
    function runTests(testArr) {
       testArr.forEach(function(test) {
@@ -39,12 +42,13 @@ define([
       beforeEach(function() {
          UrlRewriter._prepareRoutes(json);
       });
+
       it('rewrites the url', function() {
          runTests(tests);
       });
+
       it('ignores query in the url', function() {
-         var
-            queryString = '?paramA=true&paramB=false',
+         var queryString = '?paramA=true&paramB=false',
             queryTests = tests.map(function(test) {
                return {
                   url: test.url + queryString,
@@ -54,9 +58,9 @@ define([
 
          runTests(queryTests);
       });
+
       it('ignores hash in the url', function() {
-         var
-            hashString = '#userid=00000111',
+         var hashString = '#userid=00000111',
             hashTests = tests.map(function(test) {
                return {
                   url: test.url + hashString,
@@ -66,17 +70,36 @@ define([
 
          runTests(hashTests);
       });
+
       it('ignores query and hash in the url if both are present', function() {
-         var
-            combinedString = '?paramA=true&paramB=false#userid=00000111',
+         var combinedString = '?paramA=true&paramB=false#userid=00000111',
             combinedTests = tests.map(function(test) {
                return {
                   url: test.url + combinedString,
                   result: test.result + combinedString
-               }
+               };
             });
 
          runTests(combinedTests);
+      });
+
+      it('does not throw if routes.json did not load', function() {
+         assert.doesNotThrow(UrlRewriter._prepareRoutes.bind(UrlRewriter, null));
+         assert.doesNotThrow(UrlRewriter._prepareRoutes.bind(UrlRewriter, undefined));
+         assert.doesNotThrow(UrlRewriter._prepareRoutes.bind(UrlRewriter, {}));
+      });
+
+      it('returns urls as is if routes.json did not load', function() {
+         UrlRewriter._prepareRoutes(null);
+
+         var resEqUrl = tests.map(function(test) {
+            return {
+               url: test.url,
+               result: test.url
+            };
+         });
+
+         runTests(resEqUrl);
       });
    });
 });

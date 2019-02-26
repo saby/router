@@ -1,4 +1,4 @@
-/// <amd-module name="Router/UrlRewriter" />
+/// <amd-module name="Router/_private/UrlRewriter" />
 
 const httpRE = /^http[s]?:\/\//;
 const startSlash = /^\//;
@@ -53,7 +53,7 @@ export function get(originalUrl: string): string {
    return path + misc;
 }
 
-function _splitQueryAndHash(url: string): { path: string, misc: string } {
+function _splitQueryAndHash(url: string): { path: string; misc: string } {
    const splitMatch = url.match(/[?#]/);
    if (splitMatch) {
       const index = splitMatch.index;

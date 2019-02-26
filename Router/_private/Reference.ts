@@ -1,13 +1,13 @@
-/// <amd-module name="Router/Reference" />
+/// <amd-module name="Router/_private/Reference" />
 
 // @ts-ignore
 import * as Control from 'Core/Control';
 // @ts-ignore
-import template = require('wml!Router/Reference');
+import template = require('wml!Router/_private/Reference');
 
-import * as Controller from 'Router/Controller';
-import * as MaskResolver from 'Router/MaskResolver';
-import { IHistoryState } from 'Router/Data';
+import * as Controller from './Controller';
+import * as MaskResolver from './MaskResolver';
+import { IHistoryState } from './Data';
 
 interface IReferenceOptions extends HashMap<any> {
    content?: Function;
