@@ -14,21 +14,12 @@ import * as Reference from './_private/Reference';
 // @ts-ignore
 import * as Route from './_private/Route';
 
-export {
-   Controller,
-   Data,
-   History,
-   MaskResolver,
-   UrlRewriter,
-
-   Reference,
-   Route
-};
+export { Controller, Data, History, MaskResolver, UrlRewriter, Reference, Route };
 
 export function logDeprecatedWrapper(oldModuleName, newFieldName) {
    IoC.resolve('ILogger').log(
       'Router/router',
       `"${oldModuleName}" wrapper is deprecated and will be removed. Require ` +
-      `"Router/router" library and use ${newFieldName} from it instead.`
+         `"Router/router" library and use ${newFieldName} from it instead.`
    );
 }

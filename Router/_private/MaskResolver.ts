@@ -48,7 +48,7 @@ function _validateMask(mask: string): void {
 }
 
 const postfix = '/undefined/undefined/undefined/undefined/undefined/undefined/undefined/undefined/undefined/undefined';
-function _splitQueryAndHash(url: string): { path: string, misc: string } {
+function _splitQueryAndHash(url: string): { path: string; misc: string } {
    const splitMatch = url.match(/[?#]/);
    if (splitMatch) {
       const index = splitMatch.index;
@@ -212,8 +212,7 @@ function _resolveHref(href: string, mask: string, cfg: any): string {
 }
 
 function _resolveMask(mask: string, params: HashMap<any>): string {
-   let
-      paramCount = 0,
+   let paramCount = 0,
       resolvedCount = 0;
    _matchParams(mask, param => {
       paramCount++;

@@ -1,16 +1,10 @@
 /* global assert */
-define([
-   'Router/router',
-   'RouterTest/resources/router'
-],
-
-/**
+define(['Router/router', 'RouterTest/resources/router'], /**
  * @param { import('../Router/router') } Router
  * @param { import('./resources/router') } json
  */
 function(Router, json) {
-   var
-      UrlRewriter = Router.UrlRewriter,
+   var UrlRewriter = Router.UrlRewriter,
       tests = [
          {
             url: '/',
@@ -54,8 +48,7 @@ function(Router, json) {
       });
 
       it('ignores query in the url', function() {
-         var
-            queryString = '?paramA=true&paramB=false',
+         var queryString = '?paramA=true&paramB=false',
             queryTests = tests.map(function(test) {
                return {
                   url: test.url + queryString,
@@ -67,8 +60,7 @@ function(Router, json) {
       });
 
       it('ignores hash in the url', function() {
-         var
-            hashString = '#userid=00000111',
+         var hashString = '#userid=00000111',
             hashTests = tests.map(function(test) {
                return {
                   url: test.url + hashString,
@@ -80,8 +72,7 @@ function(Router, json) {
       });
 
       it('ignores query and hash in the url if both are present', function() {
-         var
-            combinedString = '?paramA=true&paramB=false#userid=00000111',
+         var combinedString = '?paramA=true&paramB=false#userid=00000111',
             combinedTests = tests.map(function(test) {
                return {
                   url: test.url + combinedString,

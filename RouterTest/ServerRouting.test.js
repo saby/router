@@ -1,10 +1,5 @@
 /* global assert */
-define([
-   'RouterTest/resources/serverRoutingVerifier',
-   'Router/ServerRouting'
-],
-
-/**
+define(['RouterTest/resources/serverRoutingVerifier', 'Router/ServerRouting'], /**
  * @param { import('./resources/serverRoutingVerifier') } srVerifier
  * @param { import('../Router/ServerRouting') } ServerRouting
  */
