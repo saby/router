@@ -4,8 +4,8 @@
 import * as Control from 'Core/Control';
 // @ts-ignore
 import template = require('wml!RouterDemo/PopupsPretty');
-
-import { navigate } from 'Router/Controller';
+// @ts-ignore
+import { Controller } from 'Router/router';
 
 class PopupsPretty extends Control {
    public _template: Function = template;
@@ -21,7 +21,7 @@ class PopupsPretty extends Control {
       if (newLoc.state.startsWith('/RouterDemo/page/PopupsPretty/')) {
          // When the root popup closes, make sure that all the nested popups get closed by resetting the URL
          setTimeout(() => {
-            navigate({ state: '/RouterDemo/page/PopupsPretty' });
+            Controller.navigate({ state: '/RouterDemo/page/PopupsPretty' });
          }, 0);
       }
    }
