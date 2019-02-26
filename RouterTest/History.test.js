@@ -1,140 +1,149 @@
 /* global assert, sinon */
-define(['Router/History', 'Router/Data'], function(History, RouterData) {
-   function getFakeHistoryState(id, url) {
-      return {
-         id: id,
-         state: url,
-         href: url
-      };
-   }
-   describe('Router/History', function() {
-      var getVisibleUrlStub;
+define(['Router/router'],
 
-      beforeEach(function() {
-         RouterData.setHistory([
-            getFakeHistoryState(0, '/'),
-            getFakeHistoryState(1, '/login'),
-            getFakeHistoryState(2, '/login?oauth=saby')
-         ]);
-         RouterData.setHistoryPosition(1);
-         RouterData.setRelativeUrl('/login');
-         getVisibleUrlStub = sinon.stub(RouterData, 'getVisibleRelativeUrl');
-         getVisibleUrlStub.returns('/signup');
-      });
+   /**
+    * @param { import('../Router/router') } Router
+    */
+   function(Router) {
+      var
+         History = Router.History,
+         Data = Router.Data;
 
-      afterEach(function() {
-         RouterData.getVisibleRelativeUrl.restore();
-      });
-
-      it('returns the current history state', function() {
-         var hstate = History.getCurrentState();
-         assert.strictEqual(hstate.id, 1);
-         assert.strictEqual(hstate.state, '/login');
-         assert.strictEqual(hstate.href, '/login');
-      });
-
-      it('returns the previous history state', function() {
-         var hstate = History.getPrevState();
-         assert.strictEqual(hstate.id, 0);
-         assert.strictEqual(hstate.state, '/');
-         assert.strictEqual(hstate.href, '/');
-      });
-
-      it('returns the next history state', function() {
-         var hstate = History.getNextState();
-         assert.strictEqual(hstate.id, 2);
-         assert.strictEqual(hstate.state, '/login?oauth=saby');
-         assert.strictEqual(hstate.href, '/login?oauth=saby');
-      });
-
-      describe('#back', function() {
-         it('goes to the previous state when possible', function() {
-            History.back();
-            var hstate = History.getCurrentState();
-            assert.strictEqual(hstate.id, 0);
-            assert.strictEqual(RouterData.getRelativeUrl(), hstate.state);
-         });
-         it('creates a new starting state if called in first position', function() {
-            RouterData.setHistoryPosition(0);
-            var startingState = History.getCurrentState();
-            assert.notExists(History.getPrevState());
-
-            History.back();
-            var hstate = History.getCurrentState();
-            assert.strictEqual(hstate.id, -1);
-            assert.strictEqual(hstate.state, RouterData.getVisibleRelativeUrl());
-            assert.strictEqual(hstate.href, RouterData.getVisibleRelativeUrl());
-
-            assert.strictEqual(History.getNextState(), startingState);
-         });
-      });
-
-      describe('#forward', function() {
-         it('goes to the next state when possible', function() {
-            History.forward();
-            var hstate = History.getCurrentState();
-            assert.strictEqual(hstate.id, 2);
-            assert.strictEqual(RouterData.getRelativeUrl(), hstate.state);
-         });
-         it('creates a new state if called in last position', function() {
-            RouterData.setHistoryPosition(2);
-            var startingState = History.getCurrentState();
-            assert.notExists(History.getNextState());
-
-            History.forward();
-            var hstate = History.getCurrentState();
-            assert.strictEqual(hstate.id, 3);
-
-            assert.strictEqual(History.getPrevState(), startingState);
-         });
-      });
-
-      describe('#push', function() {
-         var pushStateStub;
-
-         before(function() {
-            if (typeof window === 'undefined') {
-               this.skip();
-            }
-         });
+      function getFakeHistoryState(id, url) {
+         return {
+            id: id,
+            state: url,
+            href: url
+         };
+      }
+      describe('Router/History', function() {
+         var getVisibleUrlStub;
 
          beforeEach(function() {
-            pushStateStub = sinon.stub(window.history, 'pushState');
+            Data.setHistory([
+               getFakeHistoryState(0, '/'),
+               getFakeHistoryState(1, '/login'),
+               getFakeHistoryState(2, '/login?oauth=saby')
+            ]);
+            Data.setHistoryPosition(1);
+            Data.setRelativeUrl('/login');
+            getVisibleUrlStub = sinon.stub(Data, 'getVisibleRelativeUrl');
+            getVisibleUrlStub.returns('/signup');
          });
 
          afterEach(function() {
-            window.history.pushState.restore();
+            Data.getVisibleRelativeUrl.restore();
          });
 
-         it('adds a new state if current position is the last one', function() {
-            RouterData.setHistoryPosition(2);
-            History.push({ state: '/upage?navigation=profile', href: '/profile' });
-
-            var hstate = History.getCurrentState();
-            assert.strictEqual(hstate.id, 3);
-            assert.strictEqual(hstate.state, '/upage?navigation=profile');
-            assert.strictEqual(hstate.href, '/profile');
-
-            assert.strictEqual(RouterData.getRelativeUrl(), '/upage?navigation=profile');
-
-            assert(pushStateStub.calledOnce, 'expected window.history.pushState to be called');
-            var pushStateArgs = pushStateStub.getCall(0).args;
-            assert.deepEqual(pushStateArgs[0], hstate);
-            assert.strictEqual(pushStateArgs[2], '/profile');
-         });
-
-         it('replaces the states after the current one with the new state', function() {
-            RouterData.setHistoryPosition(0);
-            History.push({ state: '/upage?navigation=profile', href: '/profile' });
-
+         it('returns the current history state', function() {
             var hstate = History.getCurrentState();
             assert.strictEqual(hstate.id, 1);
-            assert.strictEqual(hstate.state, '/upage?navigation=profile');
-            assert.strictEqual(hstate.href, '/profile');
+            assert.strictEqual(hstate.state, '/login');
+            assert.strictEqual(hstate.href, '/login');
+         });
 
-            assert(pushStateStub.calledOnce);
-            assert.notExists(History.getNextState());
+         it('returns the previous history state', function() {
+            var hstate = History.getPrevState();
+            assert.strictEqual(hstate.id, 0);
+            assert.strictEqual(hstate.state, '/');
+            assert.strictEqual(hstate.href, '/');
+         });
+
+         it('returns the next history state', function() {
+            var hstate = History.getNextState();
+            assert.strictEqual(hstate.id, 2);
+            assert.strictEqual(hstate.state, '/login?oauth=saby');
+            assert.strictEqual(hstate.href, '/login?oauth=saby');
+         });
+
+         describe('#back', function() {
+            it('goes to the previous state when possible', function() {
+               History.back();
+               var hstate = History.getCurrentState();
+               assert.strictEqual(hstate.id, 0);
+               assert.strictEqual(Data.getRelativeUrl(), hstate.state);
+            });
+            it('creates a new starting state if called in first position', function() {
+               Data.setHistoryPosition(0);
+               var startingState = History.getCurrentState();
+               assert.notExists(History.getPrevState());
+
+               History.back();
+               var hstate = History.getCurrentState();
+               assert.strictEqual(hstate.id, -1);
+               assert.strictEqual(hstate.state, Data.getVisibleRelativeUrl());
+               assert.strictEqual(hstate.href, Data.getVisibleRelativeUrl());
+
+               assert.strictEqual(History.getNextState(), startingState);
+            });
+         });
+
+         describe('#forward', function() {
+            it('goes to the next state when possible', function() {
+               History.forward();
+               var hstate = History.getCurrentState();
+               assert.strictEqual(hstate.id, 2);
+               assert.strictEqual(Data.getRelativeUrl(), hstate.state);
+            });
+            it('creates a new state if called in last position', function() {
+               Data.setHistoryPosition(2);
+               var startingState = History.getCurrentState();
+               assert.notExists(History.getNextState());
+
+               History.forward();
+               var hstate = History.getCurrentState();
+               assert.strictEqual(hstate.id, 3);
+
+               assert.strictEqual(History.getPrevState(), startingState);
+            });
+         });
+
+         describe('#push', function() {
+            var pushStateStub;
+
+            before(function() {
+               if (typeof window === 'undefined') {
+                  this.skip();
+               }
+            });
+
+            beforeEach(function() {
+               pushStateStub = sinon.stub(window.history, 'pushState');
+            });
+
+            afterEach(function() {
+               window.history.pushState.restore();
+            });
+
+            it('adds a new state if current position is the last one', function() {
+               Data.setHistoryPosition(2);
+               History.push({ state: '/upage?navigation=profile', href: '/profile' });
+
+               var hstate = History.getCurrentState();
+               assert.strictEqual(hstate.id, 3);
+               assert.strictEqual(hstate.state, '/upage?navigation=profile');
+               assert.strictEqual(hstate.href, '/profile');
+
+               assert.strictEqual(Data.getRelativeUrl(), '/upage?navigation=profile');
+
+               assert(pushStateStub.calledOnce, 'expected window.history.pushState to be called');
+               var pushStateArgs = pushStateStub.getCall(0).args;
+               assert.deepEqual(pushStateArgs[0], hstate);
+               assert.strictEqual(pushStateArgs[2], '/profile');
+            });
+
+            it('replaces the states after the current one with the new state', function() {
+               Data.setHistoryPosition(0);
+               History.push({ state: '/upage?navigation=profile', href: '/profile' });
+
+               var hstate = History.getCurrentState();
+               assert.strictEqual(hstate.id, 1);
+               assert.strictEqual(hstate.state, '/upage?navigation=profile');
+               assert.strictEqual(hstate.href, '/profile');
+
+               assert(pushStateStub.calledOnce);
+               assert.notExists(History.getNextState());
+            });
          });
       });
    });
-});

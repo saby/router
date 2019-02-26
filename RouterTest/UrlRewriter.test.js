@@ -1,34 +1,42 @@
 /* global assert */
 define([
-   'Router/UrlRewriter',
+   'Router/router',
    'RouterTest/resources/router'
-], function(UrlRewriter, json) {
-   const tests = [
-      {
-         url: '/',
-         result: '/OnlineSbisRu'
-      },
-      {
-         url: '/a',
-         result: '/a'
-      },
-      {
-         url: '/a/b',
-         result: '/ab'
-      },
-      {
-         url: '/a/b/c',
-         result: '/ab/c'
-      },
-      {
-         url: '/a/b/c/d',
-         result: '/abcd'
-      },
-      {
-         url: '/a/b/c/d/e',
-         result: '/abcd/e'
-      }
-   ];
+],
+
+/**
+ * @param { import('../Router/router') } Router
+ * @param { import('./resources/router') } json
+ */
+function(Router, json) {
+   var
+      UrlRewriter = Router.UrlRewriter,
+      tests = [
+         {
+            url: '/',
+            result: '/OnlineSbisRu'
+         },
+         {
+            url: '/a',
+            result: '/a'
+         },
+         {
+            url: '/a/b',
+            result: '/ab'
+         },
+         {
+            url: '/a/b/c',
+            result: '/ab/c'
+         },
+         {
+            url: '/a/b/c/d',
+            result: '/abcd'
+         },
+         {
+            url: '/a/b/c/d/e',
+            result: '/abcd/e'
+         }
+      ];
 
    function runTests(testArr) {
       testArr.forEach(function(test) {

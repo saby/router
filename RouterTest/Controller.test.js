@@ -1,14 +1,17 @@
 /* global assert, sinon */
-define(['Router/Controller', 'Router/Data', 'Router/History', 'Router/UrlRewriter', 'RouterTest/resources/fakeAppManager'],
+define(['Router/router', 'RouterTest/resources/fakeAppManager'],
 
    /**
-   * @param { import('../Router/Controller') } Controller
-   * @param { import('../Router/Data') } Data
-   * @param { import('../Router/History') } History
+   * @param { import('../Router/router') } Router
    * @param { import('./resources/fakeAppManager') } fakeAppManager
    */
-   function(Controller, Data, History, UrlRewriter, fakeAppManager) {
+   function(Router, fakeAppManager) {
+      // Controller, Data, History, UrlRewriter
       var
+         Controller = Router.Controller,
+         Data = Router.Data,
+         History = Router.History,
+         UrlRewriter = Router.UrlRewriter,
          stubSandbox = sinon.createSandbox(),
          navigationDelay = 80;
 
