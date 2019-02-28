@@ -36,7 +36,6 @@
    },
    "nyc": {
       "include": [
-         "Router/router.js",
          "Router/ServerRouting.js",
          "Router/_private/*.js"
       ],
