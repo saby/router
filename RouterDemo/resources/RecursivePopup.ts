@@ -4,8 +4,8 @@
 import * as Control from 'Core/Control';
 // @ts-ignore
 import template = require('wml!RouterDemo/resources/RecursivePopup');
-
-import { navigate } from 'Router/Controller';
+// @ts-ignore
+import { Controller } from 'Router/router';
 
 import 'css!RouterDemo/resources/RecursivePopup';
 
@@ -48,7 +48,7 @@ class RecursivePopup extends Control {
          // Reset the URL to the same state as it was before we opened the nested popup,
          // so that all the popups with higher depth would as well
          setTimeout(() => {
-            navigate({ state: this._returnUrl, href: this._returnPrettyUrl });
+            Controller.navigate({ state: this._returnUrl, href: this._returnPrettyUrl });
          }, 0);
       }
    }

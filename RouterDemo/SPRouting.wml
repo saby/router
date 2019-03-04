@@ -11,7 +11,7 @@
    </p>
 
    <!-- The selectedTab option will be available in TabsBlock because of this Router.Route -->
-   <Router.Route mask="selectedTab/:selectedTab">
+   <Router.router:Route mask="selectedTab/:selectedTab">
       <RouterDemo.resources.TabsBlock />
-   </Router.Route>
+   </Router.router:Route>
 </div>

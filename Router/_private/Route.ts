@@ -1,14 +1,14 @@
-/// <amd-module name="Router/Route" />
+/// <amd-module name="Router/_private/Route" />
 
 // @ts-ignore
 import * as Control from 'Core/Control';
 // @ts-ignore
-import template = require('wml!Router/Route');
+import template = require('wml!Router/_private/Route');
 
-import * as Controller from 'Router/Controller';
-import * as Data from 'Router/Data';
-import * as MaskResolver from 'Router/MaskResolver';
-import * as History from 'Router/History';
+import * as Controller from './Controller';
+import * as Data from './Data';
+import * as MaskResolver from './MaskResolver';
+import * as History from './History';
 
 interface IRouteOptions extends HashMap<any> {
    content?: Function;

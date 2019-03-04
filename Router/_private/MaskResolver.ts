@@ -1,10 +1,10 @@
-/// <amd-module name="Router/MaskResolver" />
+/// <amd-module name="Router/_private/MaskResolver" />
 
 // @ts-ignore
 import { IoC } from 'Env/Env';
 
-import * as Data from 'Router/Data';
-import * as UrlRewriter from 'Router/UrlRewriter';
+import * as Data from './Data';
+import * as UrlRewriter from './UrlRewriter';
 
 interface IParam {
    name: string;
@@ -48,7 +48,7 @@ function _validateMask(mask: string): void {
 }
 
 const postfix = '/undefined/undefined/undefined/undefined/undefined/undefined/undefined/undefined/undefined/undefined';
-function _splitQueryAndHash(url: string): { path: string, misc: string } {
+function _splitQueryAndHash(url: string): { path: string; misc: string } {
    const splitMatch = url.match(/[?#]/);
    if (splitMatch) {
       const index = splitMatch.index;
@@ -190,27 +190,21 @@ function _resolveHref(href: string, mask: string, cfg: any): string {
             }
          } else if (href.indexOf('&' + toFind) !== -1) {
             result = href.replace('&' + toFind, '');
-         } else {
-            result = href.replace(toFind, '');
          }
       }
    } else if (toReplace) {
       const qIndex = href.indexOf('?');
-      if (toReplace[0] === '/') {
-         result = toReplace;
-      } else {
-         if (toReplace.indexOf('=') !== -1) {
-            if (qIndex !== -1) {
-               result += '&' + toReplace;
-            } else {
-               result += '?' + toReplace;
-            }
+      if (toReplace.indexOf('=') !== -1) {
+         if (qIndex !== -1) {
+            result += '&' + toReplace;
          } else {
-            if (qIndex !== -1) {
-               result = _appendSlash(href.slice(0, qIndex)) + toReplace + href.slice(qIndex);
-            } else {
-               result = _appendSlash(href) + toReplace;
-            }
+            result += '?' + toReplace;
+         }
+      } else {
+         if (qIndex !== -1) {
+            result = _appendSlash(href.slice(0, qIndex)) + toReplace + href.slice(qIndex);
+         } else {
+            result = _appendSlash(href) + toReplace;
          }
       }
    }
@@ -218,8 +212,7 @@ function _resolveHref(href: string, mask: string, cfg: any): string {
 }
 
 function _resolveMask(mask: string, params: HashMap<any>): string {
-   let
-      paramCount = 0,
+   let paramCount = 0,
       resolvedCount = 0;
    _matchParams(mask, param => {
       paramCount++;

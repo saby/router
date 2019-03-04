@@ -1,7 +1,9 @@
-define([
-   'RouterTest/resources/serverRoutingVerifier',
-   'Router/ServerRouting'
-], function(srVerifier, ServerRouting) {
+/* global assert */
+define(['RouterTest/resources/serverRoutingVerifier', 'Router/ServerRouting'], /**
+ * @param { import('./resources/serverRoutingVerifier') } srVerifier
+ * @param { import('../Router/ServerRouting') } ServerRouting
+ */
+function(srVerifier, ServerRouting) {
    describe('Router/ServerRouting', function() {
       beforeEach(function() {
          ServerRouting.setBaseTemplate('wml!Controls/Application/Route');
@@ -27,6 +29,5 @@ define([
          assert.strictEqual(rendered.template, 'wml!MyWml');
          assert.strictEqual(rendered.app, 'register/Index');
       });
-
    });
 });
