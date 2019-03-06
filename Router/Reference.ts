@@ -7,6 +7,7 @@ import template = require('wml!Router/Reference');
 
 import * as Controller from 'Router/Controller';
 import * as MaskResolver from 'Router/MaskResolver';
+import { getReverse } from 'Router/UrlRewriter';
 import { IHistoryState } from 'Router/Data';
 
 interface IReferenceOptions extends HashMap<any> {
@@ -55,7 +56,7 @@ class Reference extends Control {
       if (cfg.href) {
          this._href = MaskResolver.calculateHref(cfg.href, cfg);
       } else {
-         this._href = undefined;
+         this._href = getReverse(this._state);
       }
    }
 
