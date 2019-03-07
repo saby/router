@@ -1,16 +1,8 @@
 #!/bin/sh
 # Run unit testing via browser
 
-node -v
-
-npm install
-npm run build
-npm run test:browser-coverage
-
-# подготавливаем файлы покрытия для создания отчетов
-mkdir -p artifacts/{all,router}
-
 # дописываем 0 покрытие для файлов которые не использовались в тестах
+mkdir -p artifacts/{all,router}
 node coverageUnusedFiles
 
 mv artifacts/coverageAll.json artifacts/all/coverage.json
