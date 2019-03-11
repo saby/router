@@ -238,12 +238,15 @@ function(Router, fakeAppManager) {
 
          it('rewrites the url when needed', function(done) {
             var newState = '/ctestapp/rewritten/state',
-               rewriteStub = stubSandbox.stub(UrlRewriter, 'get');
+               rewriteStub = stubSandbox.stub(UrlRewriter, 'get'),
+               rewriteReverseStub = stubSandbox.stub(UrlRewriter, 'getReverse');
 
             // fake UrlRewriter.get returns the url it was passed, except
             // for /ctestapp/super/state, when it returns /ctestapp/rstate
             rewriteStub.returnsArg(0);
             rewriteStub.withArgs(newState).returns('/ctestapp/rstate');
+            rewriteReverseStub.returnsArg(0);
+            rewriteReverseStub.withArgs('/ctestapp/rstate').returns(newState);
 
             Controller.navigate({ state: newState });
             setTimeout(function() {
@@ -257,6 +260,7 @@ function(Router, fakeAppManager) {
                   done(e);
                } finally {
                   UrlRewriter.get.restore();
+                  UrlRewriter.getReverse.restore();
                }
             }, navigationDelay);
          });
