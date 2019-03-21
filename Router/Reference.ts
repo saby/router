@@ -59,12 +59,16 @@ class Reference extends Control {
       }
    }
 
-   private _clickHandler(e: Event): void {
-      e.preventDefault();
-      this._changeUrlState({
-         state: this._state,
-         href: this._href
-      });
+   private _clickHandler(e: any): void {
+      // Only respond to the 'main' button click (usually the left mouse
+      // button) and ignore the rest
+      if (e.nativeEvent.button === 0) {
+         e.preventDefault();
+         this._changeUrlState({
+            state: this._state,
+            href: this._href
+         });
+      }
    }
 
    private _changeUrlState(newState: IHistoryState): void {
