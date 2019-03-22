@@ -21,7 +21,7 @@ export function canChangeApplication(): boolean {
 
 export function navigate(newState: Data.IHistoryState, callback?: Function, errback?: Function): void {
    const rewrittenNewUrl = UrlRewriter.get(newState.state);
-   const prettyUrl = newState.href || UrlRewriter.getReverse(rewrittenNewUrl);
+   const prettyUrl = newState.href || newState.state;
    const currentState = History.getCurrentState();
 
    if (currentState.state === rewrittenNewUrl || isNavigating) {
