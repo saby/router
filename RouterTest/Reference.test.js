@@ -118,7 +118,7 @@ function(Router, CM) {
       });
 
       it('prevents default and navigates when clicked', function(done) {
-         var eventObject = { preventDefault: sinon.spy() },
+         var eventObject = { preventDefault: sinon.spy(), nativeEvent: { button: 0 } },
             navigateStub = sinon.stub(Controller, 'navigate');
 
          createdReference = createReference();
