@@ -28,6 +28,7 @@ requirejs.config(config);
 
 
 app.use(express.static(resourcesPath));
+app.use('/cdn/', serveStatic('./node_modules/sbis-cdn'));
 
 const port = process.env.PORT || 777;
 app.listen(port);
@@ -39,10 +40,6 @@ require(['Core/core-init'], () => {
 }, (err) => {
    console.log(err);
    console.log('core init failed');
-});
-
-app.get('/cdn*', (req, res) => {
-   res.redirect('http://dev-cdn.wasaby.io' + req.url.slice(4));
 });
 
 app.get('/RouterDemo/*', (req, res) => {
