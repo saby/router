@@ -111,7 +111,7 @@ function(Router, CM) {
                assert.strictEqual(createdReference._href, '/book');
             })
             .then(done, done);
-      }).timeout(1000000000);
+      });
 
       it('prevents default and navigates when clicked', function(done) {
          var eventObject = { preventDefault: sinon.spy(), nativeEvent: { button: 0 } },
