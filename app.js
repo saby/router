@@ -28,7 +28,7 @@ requirejs.config(config);
 
 
 app.use(express.static(resourcesPath));
-app.use('/cdn/', serveStatic('./node_modules/sbis-cdn'));
+app.use('/cdn', express.static('node_modules/sbis-cdn'));
 
 const port = process.env.PORT || 777;
 app.listen(port);

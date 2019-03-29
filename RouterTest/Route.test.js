@@ -154,7 +154,7 @@ function(Router, CM) {
                return waitForLifecycle();
             })
             .then(function() {
-               assert.deepEqual(createdRoute._urlOptions, { value: 'abc' });
+               assert.deepEqual(createdRoute._urlOptions.value, 'abc');
             })
             .then(done, done);
       });

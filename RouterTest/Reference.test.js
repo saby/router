@@ -107,15 +107,11 @@ function(Router, CM) {
          waitForLifecycle()
             .then(function() {
                var newOptions = Object.assign({}, createdReference._options, { location: 'book' });
-               createdReference._beforeMount(newOptions);
-               createdReference._options = newOptions;
-               return waitForLifecycle();
-            })
-            .then(function() {
+               createdReference._beforeUpdate(newOptions);
                assert.strictEqual(createdReference._href, '/book');
             })
             .then(done, done);
-      });
+      }).timeout(1000000000);
 
       it('prevents default and navigates when clicked', function(done) {
          var eventObject = { preventDefault: sinon.spy(), nativeEvent: { button: 0 } },
