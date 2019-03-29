@@ -1,7 +1,7 @@
 /// <amd-module name="Router/_private/Data" />
 
-// @ts-ignore
-import Request = require('View/Request');
+import * as AppInit  from 'Application/Initializer';
+import * as AppEnv  from 'Application/Env';
 
 import * as UrlRewriter from './UrlRewriter';
 
@@ -103,17 +103,21 @@ function _initNewStorage(storage: any): void {
 }
 
 function _getStorage(): IRouterData {
-   const currentRequest = Request.getCurrent();
-   const storage = currentRequest && currentRequest.getStorage(STORAGE_KEY);
-   if ((currentRequest && !storage) || (storage && !storage.IS_ROUTER_STORAGE)) {
+   let storage;
+   if (AppInit.isInit()) {
+      storage = AppEnv.getStore(STORAGE_KEY);
+   }
+   if (!storage || (storage && !storage.IS_ROUTER_STORAGE)) {
       _initNewStorage(storage);
    }
    return storage;
 }
 
 function _calculateRelativeUrl(): string {
-   const currentRequest = Request.getCurrent();
-   const location = currentRequest && currentRequest.location;
+   let location;
+   if (AppInit.isInit()) {
+      location = AppEnv.location;
+   }
 
    if (location) {
       return location.pathname + location.search + location.hash;
@@ -123,8 +127,10 @@ function _calculateRelativeUrl(): string {
 }
 
 function _getCoreInstance(): any {
-   const currentRequest = Request.getCurrent();
-   const storage = currentRequest && currentRequest.getStorage(CORE_INSTANCE_KEY);
+   let storage;
+   if (AppInit.isInit()) {
+      storage = AppEnv.getStore(CORE_INSTANCE_KEY);
+   }
    return storage && storage.instance;
 }
 
