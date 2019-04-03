@@ -103,10 +103,7 @@ function _initNewStorage(storage: any): void {
 }
 
 function _getStorage(): IRouterData {
-   let storage;
-   if (AppInit.isInit()) {
-      storage = AppEnv.getStore(STORAGE_KEY);
-   }
+   const storage = AppEnv.getStore(STORAGE_KEY);
    if (!storage || (storage && !storage.IS_ROUTER_STORAGE)) {
       _initNewStorage(storage);
    }
@@ -127,10 +124,7 @@ function _calculateRelativeUrl(): string {
 }
 
 function _getCoreInstance(): any {
-   let storage;
-   if (AppInit.isInit()) {
-      storage = AppEnv.getStore(CORE_INSTANCE_KEY);
-   }
+   let storage = AppEnv.getStore(CORE_INSTANCE_KEY);
    return storage && storage.instance;
 }
 
