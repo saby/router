@@ -1,11 +1,17 @@
 /* global assert */
 /* eslint-disable max-nested-callbacks */
-define(['Router/router'], /**
+define(['Router/router', 'Application/Initializer', 'SbisEnv/PresentationService'], /**
  * @param { import('../Router/router') } Router
  */
-function(Router) {
+function (Router, AppInit, EnvNode) {
    var MaskResolver = Router.MaskResolver,
       Data = Router.Data;
+
+   var env;
+   if (typeof window === 'undefined') {
+      env = EnvNode.default;
+   }
+   AppInit.default({}, env);
 
    describe('Router/MaskResolver', function() {
       describe('#getAppNameByUrl', function() {
