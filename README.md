@@ -84,7 +84,7 @@ Placeholder value for query param mask ends when the URL ends, or when `#` or `&
 
 ### Opening and Closing Popups on URL Change
 
-`Route` has two events: `on:enter` fires when the current URL starts to match this route's mask, and `on:leave` fires when the current URL no longer matches the specified mask.
+`Route` has three events: `on:enter` fires when the current URL starts to match this route's mask, `on:leave` fires when the current URL no longer matches the specified mask and `on:change` fires whenever the parameters specified by the mask option change.
 
 **Example:**
 
@@ -104,6 +104,19 @@ These events can be used to perform custom actions when the URL changes, for exa
     Current URL: "/home"
     Go to: "/home/alert/signup" -> showPopup() is executed
     Go to: "/home"              -> closePopup() is executed
+
+`on:enter` and `on:leave` handlers receive two parameters - the new and the old locations that user navigated between. These locations are represented by a state-object `{ state, href }` where state is an actual URL the router is working with and `href` is a pretty URL that is being displayed to the user.
+
+`on:change` handler receives two arguments as well, these are objects that contain the values of parameters specified by the mask after and before the navigation.
+
+**Example:**
+
+    <Router.router:Route mask="alert/:alertType" on:change="changeAlert()" />
+
+    Current URL: "/home"
+    Go to: "/home/alert/signup" -> changeAlert({ alertType: 'signup' }, { alertType: undefined })
+    Go to: "/home/alert/login"  -> changeAlert({ alertType: 'login' }, { alertType: 'signup' })
+    Go to: "/home"              -> changeAlert({ alertType: undefined }, { alertType: 'login' })
 
 #### Opening Recursive Popups
 
