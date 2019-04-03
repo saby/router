@@ -1,10 +1,16 @@
 /* global assert, sinon */
-define(['Router/router'], /**
+define(['Router/router', 'Application/Initializer', 'SbisEnv/PresentationService'], /**
  * @param { import('../Router/router') } Router
  */
-function(Router) {
+function (Router, AppInit, EnvNode) {
    var History = Router.History,
       Data = Router.Data;
+
+   var env;
+   if (typeof window === 'undefined') {
+      env = EnvNode.default;
+   }
+   AppInit.default({}, env);
 
    function getFakeHistoryState(id, url) {
       return {
