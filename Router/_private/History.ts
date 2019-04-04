@@ -18,11 +18,14 @@ export function back(): void {
    const historyPosition = Data.getHistoryPosition();
 
    if (historyPosition === 0) {
-      const currentUrl = Data.getVisibleRelativeUrl();
+      // If window has an existing state, use it instead of calculating by ourselves
+      const windowHistoryState = typeof window !== 'undefined' && window.history.state;
+      const currentState = windowHistoryState && windowHistoryState.state;
+      const currentHref = Data.getVisibleRelativeUrl();
       history.unshift({
          id: history[0].id - 1,
-         state: UrlRewriter.get(currentUrl),
-         href: currentUrl
+         state: currentState || UrlRewriter.get(currentHref),
+         href: currentHref
       });
    } else {
       Data.setHistoryPosition(historyPosition - 1);

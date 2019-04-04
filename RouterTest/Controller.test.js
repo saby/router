@@ -356,46 +356,6 @@ function (Router, fakeAppManager, AppInit, EnvNode) {
                }
             }, navigationDelay);
          });
-
-         it('can successfully create new state going back', function(done) {
-            Data.setHistoryPosition(0);
-            var fakeEvent = new PopStateEvent('popstate', { state: null }),
-               getVisibleUrlStub = stubSandbox.stub(Data, 'getVisibleRelativeUrl');
-
-            getVisibleUrlStub.returns('/ctestapp/gobackpage');
-            historyBackStub.restore();
-            window.onpopstate(fakeEvent);
-            setTimeout(function() {
-               try {
-                  var createdState = History.getCurrentState();
-                  assert.strictEqual(createdState.state, '/ctestapp/gobackpage');
-                  assert.strictEqual(createdState.id, History.getNextState().id - 1);
-                  done();
-               } catch (e) {
-                  done(e);
-               }
-            }, navigationDelay);
-         });
-         it('can successfully create new state going forward', function(done) {
-            Data.setHistoryPosition(1);
-            var fakeEvent = new PopStateEvent('popstate', {
-               state: { id: 3, state: '/ctestapp/goforwardpage', href: '/ctestapp/goforwardpage' }
-            });
-
-            historyForwardStub.restore();
-            Data.setRelativeUrl('/ctestapp/goforwardpage');
-            window.onpopstate(fakeEvent);
-            setTimeout(function() {
-               try {
-                  var createdState = History.getCurrentState();
-                  assert.strictEqual(createdState.state, '/ctestapp/goforwardpage');
-                  assert.strictEqual(createdState.id, History.getPrevState().id + 1);
-                  done();
-               } catch (e) {
-                  done(e);
-               }
-            }, navigationDelay);
-         });
       });
    });
 });
