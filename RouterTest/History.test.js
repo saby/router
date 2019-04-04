@@ -72,10 +72,14 @@ function (Router, AppInit, EnvNode) {
             assert.notExists(History.getPrevState());
 
             History.back();
-            var hstate = History.getCurrentState();
+            var
+               hstate = History.getCurrentState(),
+               expectedHref = Data.getVisibleRelativeUrl(),
+               expectedState = (typeof window !== 'undefined' && window.history.state.state) || expectedHref;
+
             assert.strictEqual(hstate.id, -1);
-            assert.strictEqual(hstate.state, Data.getVisibleRelativeUrl());
-            assert.strictEqual(hstate.href, Data.getVisibleRelativeUrl());
+            assert.strictEqual(hstate.state, expectedState);
+            assert.strictEqual(hstate.href, expectedHref);
 
             assert.strictEqual(History.getNextState(), startingState);
          });
