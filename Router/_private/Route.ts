@@ -15,6 +15,15 @@ interface IRouteOptions extends HashMap<any> {
    mask?: string;
 }
 
+const FILTERED_OPTIONS_NAMES = [
+   'content',
+   'mask',
+   'theme',
+   '_isSeparatedOptions',
+   '_logicParent',
+   'readOnly'
+];
+
 class Route extends Control {
    public _template: Function = template;
 
@@ -59,6 +68,7 @@ class Route extends Control {
    private _beforeApplyNewUrl(newLoc: Data.IHistoryState, oldLoc: Data.IHistoryState): Promise<boolean> {
       let result: Promise<boolean>;
 
+      const oldUrlOptions = this._urlOptions;
       this._urlOptions = MaskResolver.calculateUrlParams(this._options.mask, newLoc.state);
       const wasResolvedParam = this._hasResolvedParams();
       this._fillUrlOptionsFromCfg(this._options);
@@ -72,6 +82,11 @@ class Route extends Control {
       } else {
          result = Promise.resolve(true);
       }
+
+      if (this._didOptionsChange(this._urlOptions, oldUrlOptions)) {
+         this._notify('change', [this._urlOptions, oldUrlOptions]);
+      }
+
 
       return result;
    }
@@ -102,11 +117,9 @@ class Route extends Control {
    private _fillUrlOptionsFromCfg(cfg: IRouteOptions): void {
       for (let i in cfg) {
          if (
-            !this._urlOptions.hasOwnProperty(i) &&
             cfg.hasOwnProperty(i) &&
-            i !== 'mask' &&
-            i !== 'content' &&
-            i !== '_logicParent'
+            !this._isFilteredOptionName(i) &&
+            !this._urlOptions.hasOwnProperty(i)
          ) {
             this._urlOptions[i] = cfg[i];
          }
@@ -130,6 +143,29 @@ class Route extends Control {
          return this._notify('enter', [currentState, prevState]);
       }
       return Promise.resolve(true);
+   }
+
+   private _isFilteredOptionName(optionName: string): boolean {
+      return FILTERED_OPTIONS_NAMES.indexOf(optionName) >= 0;
+   }
+
+   private _didOptionsChange(newOptions: HashMap<any>, oldOptions: HashMap<any>): boolean {
+      let i;
+
+      for (i in newOptions) {
+         if (newOptions.hasOwnProperty(i)) {
+            if (!oldOptions.hasOwnProperty(i) || newOptions[i] !== oldOptions[i]) {
+               return true;
+            }
+         }
+      }
+      for (i in oldOptions) {
+         if (oldOptions.hasOwnProperty(i) && !newOptions.hasOwnProperty(i)) {
+            return true;
+         }
+      }
+
+      return false;
    }
 }
 

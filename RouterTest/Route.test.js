@@ -72,7 +72,7 @@ function(Router, CM) {
                return waitForLifecycle();
             })
             .then(function() {
-               assert(notifyStub.calledOnce, 'expected _notify to be called');
+               assert(notifyStub.called, 'expected _notify to be called');
                var notifyArgs = notifyStub.getCall(0).args;
                assert.strictEqual(notifyArgs[0], 'enter');
                assert.strictEqual(notifyArgs[1][0], newLocation);
@@ -112,7 +112,7 @@ function(Router, CM) {
                return waitForLifecycle();
             })
             .then(function() {
-               assert(notifyStub.calledOnce, 'expected _notify to be called');
+               assert(notifyStub.called, 'expected _notify to be called');
                var notifyArgs = notifyStub.getCall(0).args;
                assert.strictEqual(notifyArgs[0], 'leave');
                assert.strictEqual(notifyArgs[1][0], nonMatchingLocation);
@@ -120,7 +120,7 @@ function(Router, CM) {
             })
             .then(done, done);
       });
-      it('does not fire events when switching between two matched states', function(done) {
+      it('fires on:change when switches between two matched states', function(done) {
          var url1 = { state: '/my/test/one' },
             url2 = { state: '/my/test/two' },
             notifyStub;
@@ -139,7 +139,11 @@ function(Router, CM) {
                return waitForLifecycle();
             })
             .then(function() {
-               assert(notifyStub.notCalled, 'expected _notify not to be called');
+               assert(notifyStub.calledOnce, 'expected _notify to be called');
+               var notifyArgs = notifyStub.getCall(0).args;
+               assert.strictEqual(notifyArgs[0], 'change');
+               assert.strictEqual(notifyArgs[1][0].value, 'two');
+               assert.strictEqual(notifyArgs[1][1].value, 'one');
             })
             .then(done, done);
       });
