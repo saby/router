@@ -124,8 +124,11 @@ function _calculateRelativeUrl(): string {
 }
 
 function _getCoreInstance(): any {
-   let storage = AppEnv.getStore(CORE_INSTANCE_KEY);
-   return storage && storage.instance;
+   if (AppInit.isInit()) {
+      let storage = AppEnv.getStore(CORE_INSTANCE_KEY);
+      return storage && storage.instance;
+   }
+   return null;
 }
 
 function _getField(fieldName: string): any {
