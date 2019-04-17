@@ -126,7 +126,7 @@ class Route extends Control {
       }
    }
 
-   private _checkUrlResolved(): Promise<boolean> {
+   private _checkUrlResolved(): void {
       this._urlOptions = MaskResolver.calculateUrlParams(this._options.mask, Data.getRelativeUrl());
       const notUndefVal = this._hasResolvedParams();
       this._fillUrlOptionsFromCfg(this._options);
@@ -140,9 +140,9 @@ class Route extends Control {
                state: MaskResolver.calculateHref(this._options.mask, { clear: true })
             };
          }
-         return this._notify('enter', [currentState, prevState]);
+         this._notify('enter', [currentState, prevState]);
+         this._notify('change', [this._urlOptions, {}]);
       }
-      return Promise.resolve(true);
    }
 
    private _isFilteredOptionName(optionName: string): boolean {
