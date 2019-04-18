@@ -81,7 +81,7 @@ function _calculateParams(mask: string, cfg: any, url?: string): IParam[] {
    if (fields) {
       // fields[0] is the full url, fields[1] is prefix and fields[fields.length - 1] is suffix
       for (let j = 2; j < fields.length - 1; j++) {
-         result[j - 2].urlValue = decodeURIComponent(fields[j]);
+         result[j - 2].urlValue = _safeDecodeURIComponent(fields[j]);
 
          // convert 'undefined' to undefined
          if (result[j - 2].urlValue === 'undefined') {
@@ -151,7 +151,7 @@ function _matchParams(mask: string, cb: (param: IMatchPosition) => void): void {
 function _getUrlParams(params: IParam[]): HashMap<any> {
    const res: HashMap<any> = {};
    params.forEach(param => {
-      res[param.name] = param.urlValue === undefined ? undefined : decodeURIComponent(param.urlValue);
+      res[param.name] = param.urlValue === undefined ? undefined : _safeDecodeURIComponent(param.urlValue);
    });
    return res;
 }
@@ -264,4 +264,16 @@ function _getFolderNameByUrl(url: string): string {
    }
 
    return folderName;
+}
+
+function _safeDecodeURIComponent(value: string): string {
+   let result = value;
+   try {
+      result = decodeURIComponent(value);
+   } catch (e) {
+      // If decoder throws an error, ignore it and return value
+      // as a string. The URL may have been malformed, or already
+      // decoded by the browser or Router
+   }
+   return result;
 }
