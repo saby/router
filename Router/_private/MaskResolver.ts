@@ -81,7 +81,7 @@ function _calculateParams(mask: string, cfg: any, url?: string): IParam[] {
    if (fields) {
       // fields[0] is the full url, fields[1] is prefix and fields[fields.length - 1] is suffix
       for (let j = 2; j < fields.length - 1; j++) {
-         result[j - 2].urlValue = decodeURIComponent(fields[j]);
+         result[j - 2].urlValue = fields[j];
 
          // convert 'undefined' to undefined
          if (result[j - 2].urlValue === 'undefined') {
@@ -148,10 +148,13 @@ function _matchParams(mask: string, cb: (param: IMatchPosition) => void): void {
    }
 }
 
-function _getUrlParams(params: IParam[]): HashMap<any> {
+function _getUrlParams(params: IParam[], skipDecoding?: boolean): HashMap<any> {
    const res: HashMap<any> = {};
    params.forEach(param => {
-      res[param.name] = param.urlValue === undefined ? undefined : decodeURIComponent(param.urlValue);
+      res[param.name] = param.urlValue;
+      if (typeof res[param.name] !== 'undefined' && !skipDecoding) {
+         res[param.name] = _safeDecodeURIComponent(res[param.name]);
+      }
    });
    return res;
 }
@@ -167,9 +170,9 @@ function _getCfgParams(params: IParam[]): HashMap<any> {
 function _resolveHref(href: string, mask: string, cfg: any): string {
    const params = _calculateParams(mask, cfg);
    const cfgParams = _getCfgParams(params);
-   const urlParams = _getUrlParams(params);
+   const urlParams = _getUrlParams(params, true);
 
-   const toFind = _resolveMask(mask, urlParams);
+   const toFind = _resolveMask(mask, urlParams, true);
    const toReplace = _resolveMask(mask, cfgParams);
 
    let result = href;
@@ -211,8 +214,9 @@ function _resolveHref(href: string, mask: string, cfg: any): string {
    return result;
 }
 
-function _resolveMask(mask: string, params: HashMap<any>): string {
-   let paramCount = 0,
+function _resolveMask(mask: string, params: HashMap<any>, skipEncoding?: boolean): string {
+   let
+      paramCount = 0,
       resolvedCount = 0;
    _matchParams(mask, param => {
       paramCount++;
@@ -221,7 +225,9 @@ function _resolveMask(mask: string, params: HashMap<any>): string {
          if (typeof paramValue !== 'string') {
             paramValue = JSON.stringify(paramValue);
          }
-         paramValue = encodeURIComponent(paramValue);
+         if (!skipEncoding) {
+            paramValue = encodeURIComponent(paramValue);
+         }
          mask = mask.replace(':' + param.name, paramValue);
          resolvedCount++;
       }
@@ -264,4 +270,16 @@ function _getFolderNameByUrl(url: string): string {
    }
 
    return folderName;
+}
+
+function _safeDecodeURIComponent(value: string): string {
+   let result = value;
+   try {
+      result = decodeURIComponent(value);
+   } catch (e) {
+      // If decoder throws an error, ignore it and return value
+      // as a string. The URL may have been malformed, or already
+      // decoded by the browser or Router
+   }
+   return result;
 }
