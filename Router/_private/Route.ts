@@ -15,14 +15,65 @@ interface IRouteOptions extends HashMap<any> {
    mask?: string;
 }
 
-const FILTERED_OPTIONS_NAMES = [
-   'content',
-   'mask',
-   'theme',
-   '_isSeparatedOptions',
-   '_logicParent',
-   'readOnly'
-];
+const FILTERED_OPTIONS_NAMES = ['content', 'mask', 'theme', '_isSeparatedOptions', '_logicParent', 'readOnly'];
+
+/**
+ * A control that resolves the specified mask with the current URL
+ * and passes the parameters to its content.
+ *
+ * @class Router/_private/Route
+ * @extends Core/Control
+ * @control
+ * @public
+ */
+
+/**
+ * @typedef {Object} IHistoryState
+ * @property {Number} id Numeric identifier of the current state.
+ * @property {String} state The actual URL Router is working with.
+ * @property {String} [href] The "pretty" URL that is being displayed to the user.
+ */
+
+/**
+ * @name Router/_private/Route#mask
+ * @cfg {String} A string that contains a special placeholder that represents an arbitrary parameter in the URL.
+ * @remark See the <a href="https://github.com/saby/Router#mask-types">detailed description of the mask option and mask types</a>.
+ * @example
+ * <pre>
+ *    <Router.router:Route mask="my/:paramName">
+ *       <p>This is the value from the URL: {{ content.paramName }}</p>
+ *    </Router.router:Route>
+ * </pre>
+ */
+
+/**
+ * @name Router/_private/Route#content
+ * @cfg {Content} Template for the displayed content.
+ */
+
+/**
+ * @event Router/_private/Route#enter Fires when the current URL started matching the specified mask.
+ * @param {IHistoryState} newLocation Location that was navigated to.
+ * @param {IHistoryState} oldLocation Location that was navigated from.
+ * @remark
+ * This event can be used to open popup windows when a specific mask parameter appears in the URL,
+ * <a href="https://github.com/saby/Router#opening-and-closing-popups-on-url-change">see documentation for the details</a>.
+ */
+
+/**
+ * @event Router/_private/Route#leave Fires when the current URL stops matching the specified mask.
+ * @param {IHistoryState} newLocation Location that was navigated to.
+ * @param {IHistoryState} oldLocation Location that was navigated from.
+ * @remark
+ * This event can be used to open popup windows when a specific mask parameter appears in the URL,
+ * <a href="https://github.com/saby/Router#opening-and-closing-popups-on-url-change">see documentation for the details</a>.
+ */
+
+/**
+ * @event Router/_private/Route#change Fires when parameters resolved with the specified mask are changed.
+ * @param {Object} newParameters Resolved parameters after the navigation.
+ * @param {Object} oldParameters Resolved parameters before the navigation.
+ */
 
 class Route extends Control {
    public _template: Function = template;
@@ -87,7 +138,6 @@ class Route extends Control {
          this._notify('change', [this._urlOptions, oldUrlOptions]);
       }
 
-
       return result;
    }
 
@@ -116,11 +166,7 @@ class Route extends Control {
 
    private _fillUrlOptionsFromCfg(cfg: IRouteOptions): void {
       for (let i in cfg) {
-         if (
-            cfg.hasOwnProperty(i) &&
-            !this._isFilteredOptionName(i) &&
-            !this._urlOptions.hasOwnProperty(i)
-         ) {
+         if (cfg.hasOwnProperty(i) && !this._isFilteredOptionName(i) && !this._urlOptions.hasOwnProperty(i)) {
             this._urlOptions[i] = cfg[i];
          }
       }

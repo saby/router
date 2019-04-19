@@ -17,6 +17,39 @@ interface IReferenceOptions extends HashMap<any> {
    clear?: boolean;
 }
 
+/**
+ * A control that changes the URL on user click without reloading
+ * the page, performs single page navigation.
+ *
+ * @class Router/_private/Reference
+ * @extends Core/Control
+ * @control
+ * @public
+ */
+
+/**
+ * @name Router/_private/Reference#state
+ * @cfg {String} A mask that specifies which part of the actual URL should be changed
+ * @remark Refer to documentation <a href="https://github.com/saby/Router#using-reference-to-change-urls">for detailed description</a>.
+ */
+
+/**
+ * @name Router/_private/Reference#href
+ * @cfg {String} A mask that specified which part of the "pretty" (user friendly) URL should be changed
+ * @remark Refer to documentation <a href="https://github.com/saby/Router#specifying-a-pretty-url">for detailed description</a>.
+ */
+
+/**
+ * @name Router/_private/Reference#clear
+ * @cfg {Boolean} Specified if the part of the URL captured by the mask should be removed instead of being changed
+ * @default False
+ */
+
+/**
+ * @name Router/_private/Reference#content
+ * @cfg {Content} Template for the displayed content.
+ */
+
 class Reference extends Control {
    public _template: Function = template;
 
