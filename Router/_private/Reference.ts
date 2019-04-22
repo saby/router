@@ -15,6 +15,7 @@ interface IReferenceOptions extends HashMap<any> {
    state?: string;
    href?: string;
    clear?: boolean;
+   handleClick: boolean;
 }
 
 /**
@@ -48,6 +49,22 @@ interface IReferenceOptions extends HashMap<any> {
 /**
  * @name Router/_private/Reference#content
  * @cfg {Content} Template for the displayed content.
+ */
+
+/**
+ * @name Router/_private/Reference#handleClick
+ * @cfg {Boolean} Specifies if this Reference should handle click event by navigating to the calculated URL
+ * @default True
+ * @remark
+ * If you only want to calculate the URL based on the mask, but do not want to navigate to it on click,
+ * you can set this option to false
+ * @example
+ * <pre>
+ *    <Router.router:Reference state="doc/:id" id="{{ myId }}" handleClick="{{ false }}">
+ *       <p>Share this URL: {{ content.href }}</p>
+ *    </Router.router:Reference>
+ * </pre>
+ * Clicking on the paragraph in the example will not trigger a single page navigation
  */
 
 class Reference extends Control {
@@ -96,7 +113,7 @@ class Reference extends Control {
    private _clickHandler(e: any): void {
       // Only respond to the 'main' button click (usually the left mouse
       // button) and ignore the rest
-      if (e.nativeEvent.button === 0) {
+      if (this._options.handleClick && e.nativeEvent.button === 0) {
          e.preventDefault();
          this._changeUrlState({
             state: this._state,
@@ -107,6 +124,12 @@ class Reference extends Control {
 
    private _changeUrlState(newState: IHistoryState): void {
       Controller.navigate(newState);
+   }
+
+   public static getDefaultOptions(): IReferenceOptions {
+      return {
+         handleClick: true
+      };
    }
 }
 
