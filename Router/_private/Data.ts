@@ -1,12 +1,8 @@
 /// <amd-module name="Router/_private/Data" />
 
-import * as AppInit  from 'Application/Initializer';
-import * as AppEnv  from 'Application/Env';
+import StoreManager from './StoreManager';
 
 import * as UrlRewriter from './UrlRewriter';
-
-const STORAGE_KEY = 'RouterData';
-const CORE_INSTANCE_KEY = 'CoreInstance';
 
 export interface IHistoryState {
    id?: number;
@@ -72,7 +68,7 @@ export function getRegisteredReferences(): HashMap<IRegisteredReference> {
 }
 
 export function getCoreInstance(): any {
-   return _getCoreInstance();
+   return StoreManager.getCoreInstance();
 }
 
 function _initNewStorage(storage: any): void {
@@ -103,7 +99,7 @@ function _initNewStorage(storage: any): void {
 }
 
 function _getStorage(): IRouterData {
-   const storage = AppEnv.getStore(STORAGE_KEY);
+   const storage: any = StoreManager.getRouterStore();
    if (!storage || (storage && !storage.IS_ROUTER_STORAGE)) {
       _initNewStorage(storage);
    }
@@ -111,24 +107,13 @@ function _getStorage(): IRouterData {
 }
 
 function _calculateRelativeUrl(): string {
-   let location;
-   if (AppInit.isInit()) {
-      location = AppEnv.location;
-   }
+   const location = StoreManager.getLocation();
 
    if (location) {
       return location.pathname + location.search + location.hash;
    } else {
       return null;
    }
-}
-
-function _getCoreInstance(): any {
-   if (AppInit.isInit()) {
-      let storage = AppEnv.getStore(CORE_INSTANCE_KEY);
-      return storage && storage.instance;
-   }
-   return null;
 }
 
 function _getField(fieldName: string): any {
