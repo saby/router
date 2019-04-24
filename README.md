@@ -13,6 +13,8 @@
     * [Specifying a Pretty URL](#specifying-a-pretty-url)
     * [Clearing a Part of the URL](#clearing-a-part-of-the-url)
   * [Using Controller to Change URLs in TS/JS](#using-controller-to-change-urls-in-tsjs)
+    * [Replacing the Current State](#replacing-the-current-state)
+  * [Using MaskResolver to Do URL Calculations in TS/JS](#using-maskresolver-to-do-url-calculations-in-tsjs)
 
 ## Running the Tests
 
@@ -198,3 +200,15 @@ If `Reference` should not add or change the value specified by a mask, but compl
 
     RouterController.navigate({ state: "/signup/oauth/saby", href: "/sabylogin" })
     Current URL: "/signup/oauth/saby", user sees: "/sabylogin"
+
+### Replacing the Current State
+
+`Controller` exports the `replaceState({ state, href })` function that allows you to replace the current history state instead of navigating to a new one (you can think of it as of a `window.history.replaceState` alternative). The current state is removed from history and replaced with the state you have specified. This allows you to change the current state without adding a new record to the browser's history.
+
+## Using MaskResolver to Do URL Calculations in TS/JS
+
+If you are using `Reference` to change the history state, it calculates a new URL automatically based on the mask and parameters specified. `MaskResolver` module provides functions that can be used to calculate URL parameters programmatically without using the `Reference` component.
+
+To calculate a new URL based on the mask and parameters (like the `Reference` does), use `calculateHref(mask, { ...parameters })` function. It supports the same [the same mask types](#mask-types) like `Route` and `Reference` do. The `parameters` object should contain the values for the parameter placeholders used in the mask. The function returns a calculated new URL that can be then passed to [`Controller.navigate` method](#using-controller-to-change-urls-in-tsjs) to change the current state.
+
+To get values of the parameters from the current URL based on the mask (like the `Route` does), use the `calculateUrlParams(mask)` function. It returns a hash with the values of the parameter values extracted from the current state URL based on the mask specified.

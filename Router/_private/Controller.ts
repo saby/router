@@ -13,12 +13,26 @@ let isNavigating = false;
 
 _initializeController();
 
+/**
+ * @function Router/_private/Controller#canChangeApplication
+ * Checks if Router can switch the currently active application. This
+ * can only be done if the page has an Application/Core controller instance
+ * @returns {Boolean} can Router switch the active application
+ */
 export function canChangeApplication(): boolean {
    // Router can switch applications when there is an Application/Core
    // instance on it
    return !!Data.getCoreInstance();
 }
 
+/**
+ * @function Router/_private/Controller#navigate
+ * Performs the single page navigation (without reloading the page) to a new
+ * state
+ * @param {Data.IHistoryState} newState state to navigate to
+ * @param {Function} [callback] optional callback that will be called instead of window.history.push
+ * @param {Function} [errback] optional errback that will be called if one of the Routes rejected the navigation
+ */
 export function navigate(newState: Data.IHistoryState, callback?: Function, errback?: Function): void {
    const rewrittenNewUrl = UrlRewriter.get(newState.state);
    const prettyUrl = newState.href || UrlRewriter.getReverse(rewrittenNewUrl);
@@ -54,6 +68,28 @@ export function navigate(newState: Data.IHistoryState, callback?: Function, errb
    );
 }
 
+/**
+ * @function Router/_private/Controller#replaceState
+ * Performs the single page navigation while replacing the current history state
+ * instead of adding a new one
+ * @param {Data.IHistoryState} newHistoryState state to navigate to
+ * @see Router/_private/Controller#navigate
+ */
+export function replaceState(newHistoryState: Data.IHistoryState): void {
+   const rewrittenState = UrlRewriter.get(newHistoryState.state);
+   const rewrittenHref = newHistoryState.href || UrlRewriter.getReverse(rewrittenState);
+   const rewrittenHistoryState: Data.IHistoryState = {
+      state: rewrittenState,
+      href: rewrittenHref
+   };
+
+   navigate(rewrittenHistoryState, () => History.replaceState(rewrittenHistoryState));
+}
+
+/**
+ * @function Router/_private/Controller#addRoute
+ * @private
+ */
 export function addRoute(
    route,
    beforeUrlChangeCb: Data.TStateChangeFunction,
@@ -65,16 +101,28 @@ export function addRoute(
    };
 }
 
+/**
+ * @function Router/_private/Controller#removeRoute
+ * @private
+ */
 export function removeRoute(route): void {
    delete Data.getRegisteredRoutes()[route.getInstanceId()];
 }
 
+/**
+ * @function Router/_private/Controller#addReference
+ * @private
+ */
 export function addReference(reference, afterUrlChangeCb: Data.TStateChangeFunction): void {
    Data.getRegisteredReferences()[reference.getInstanceId()] = {
       afterUrlChangeCb
    };
 }
 
+/**
+ * @function Router/_private/Controller#removeReference
+ * @private
+ */
 export function removeReference(reference): void {
    delete Data.getRegisteredReferences()[reference.getInstanceId()];
 }

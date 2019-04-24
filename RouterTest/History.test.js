@@ -152,5 +152,40 @@ function (Router, AppInit, EnvNode) {
             assert.notExists(History.getNextState());
          });
       });
+
+      describe('#replaceState', function() {
+         var replaceStateStub;
+
+         before(function() {
+            if (typeof window === 'undefined') {
+               this.skip();
+            }
+         });
+
+         beforeEach(function() {
+            replaceStateStub = sinon.stub(window.history, 'replaceState');
+         });
+
+         afterEach(function() {
+            window.history.replaceState.restore();
+         });
+
+         it('replaces the current state with the specified one', function() {
+            Data.setHistoryPosition(2);
+            History.replaceState({ state: '/upage?navigation=profile', href: '/profile' });
+
+            var hstate = History.getCurrentState();
+            assert.strictEqual(hstate.id, 2);
+            assert.strictEqual(hstate.state, '/upage?navigation=profile');
+            assert.strictEqual(hstate.href, '/profile');
+
+            assert.strictEqual(Data.getRelativeUrl(), '/upage?navigation=profile');
+
+            assert(replaceStateStub.calledOnce, 'expected window.history.replaceState to be called');
+            var replaceStateArgs = replaceStateStub.getCall(0).args;
+            assert.deepEqual(replaceStateArgs[0], hstate);
+            assert.strictEqual(replaceStateArgs[2], '/profile');
+         });
+      });
    });
 });

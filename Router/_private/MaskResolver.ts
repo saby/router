@@ -18,6 +18,13 @@ interface IMatchPosition {
    name?: string;
 }
 
+/**
+ * @function Router/_private/MaskResolver#calculateUrlParams
+ * Extract values from the current URL based on the specified mask
+ * @param {String} mask mask with parameter placeholders
+ * @param {String} [url] URL to extract values from (current URL will be used by default)
+ * @returns {HashMap<string>} the key-value store of extracted parameters
+ */
 export function calculateUrlParams(mask: string, url?: string): HashMap<any> {
    _validateMask(mask);
    return _getUrlParams(_calculateParams(mask, {}, url));
@@ -28,6 +35,14 @@ export function calculateCfgParams(mask: string, cfg: any): HashMap<any> {
    return _getCfgParams(_calculateParams(mask, cfg));
 }
 
+/**
+ * @function Router/_private/MaskResolver#calculateHref
+ * Calculates a new URL based on the current URL, specified mask
+ * and the hash map of parameters to fill the mask
+ * @param {String} mask mask with parameter placeholders
+ * @param {HashMap<string>} cfg key-value store with specified parameters
+ * @returns {String} the new calculated URL
+ */
 export function calculateHref(mask: string, cfg: any): string {
    _validateMask(mask);
    cfg = cfg.clear ? {} : cfg;
