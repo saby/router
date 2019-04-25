@@ -360,6 +360,61 @@ function (Router, AppInit, EnvNode) {
                   assert.strictEqual(newUrl, '/a/b/35');
                });
             });
+            describe('shared cases', function() {
+               describe('simple param', function() {
+                  beforeEach(function() {
+                     Data.setRelativeUrl('/first/special%20param/second/svalue');
+                  });
+
+                   it('can add encoded value', function() {
+                     var newUrl = MaskResolver.calculateHref('test/:value', { value: 'has spaces' });
+                     assert.strictEqual(newUrl, '/first/special%20param/second/svalue/test/has%20spaces');
+                  });
+                  it('can change encoded value to encoded value', function() {
+                     var newUrl = MaskResolver.calculateHref('first/:value', { value: 'has spaces' });
+                     assert.strictEqual(newUrl, '/first/has%20spaces/second/svalue');
+                  });
+                  it('can change encoded value to unencoded value', function() {
+                     var newUrl = MaskResolver.calculateHref('first/:value', { value: 'simple' });
+                     assert.strictEqual(newUrl, '/first/simple/second/svalue');
+                  });
+                  it('can change unencoded value to encoded value', function() {
+                     var newUrl = MaskResolver.calculateHref('second/:value', { value: 'with/slash' });
+                     assert.strictEqual(newUrl, '/first/special%20param/second/with%2Fslash');
+                  });
+                  it('can remove encoded value', function() {
+                     var newUrl = MaskResolver.calculateHref('first/:value', { clear: true });
+                     assert.strictEqual(newUrl, '/second/svalue');
+                  });
+               });
+
+                describe('query param', function() {
+                  beforeEach(function() {
+                     Data.setRelativeUrl('/?qfrst=special%20value&qscnd=svalue');
+                  });
+
+                   it('can add encoded value', function() {
+                     var newUrl = MaskResolver.calculateHref('qthrd=:value', { value: 'mail@me' });
+                     assert.strictEqual(newUrl, '/?qfrst=special%20value&qscnd=svalue&qthrd=mail%40me');
+                  });
+                  it('can change encoded value to encoded value', function() {
+                     var newUrl = MaskResolver.calculateHref('qfrst=:value', { value: 'with spaces'});
+                     assert.strictEqual(newUrl, '/?qfrst=with%20spaces&qscnd=svalue');
+                  });
+                  it('can change encoded value to unencoded value', function() {
+                     var newUrl = MaskResolver.calculateHref('qfrst=:value', { value: 'simple'});
+                     assert.strictEqual(newUrl, '/?qfrst=simple&qscnd=svalue');
+                  });
+                  it('can change unencoded value to encoded value', function() {
+                     var newUrl = MaskResolver.calculateHref('qscnd=:value', { value: 'my$money' });
+                     assert.strictEqual(newUrl, '/?qfrst=special%20value&qscnd=my%24money');
+                  });
+                  it('can remove encoded value', function() {
+                     var newUrl = MaskResolver.calculateHref('qfrst=:value', { clear: true });
+                     assert.strictEqual(newUrl, '/?qscnd=svalue');
+                  });
+               });
+            });
          });
 
          describe('query masks', function() {
