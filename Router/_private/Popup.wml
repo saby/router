@@ -1,0 +1,3 @@
+<Router._private.Route mask="{{ _urlMask }}" on:change="_urlChanged()">
+   <ws:partial template="{{ _options.content }}" on:close="_popupClosed()" />
+</Router._private.Route>

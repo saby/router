@@ -10,5 +10,7 @@ import * as UrlRewriter from './_private/UrlRewriter';
 import * as Reference from './_private/Reference';
 // @ts-ignore
 import * as Route from './_private/Route';
+// @ts-ignore
+import * as Popup from './_private/Popup';
 
-export { Controller, Data, History, MaskResolver, UrlRewriter, Reference, Route };
+export { Controller, Data, History, MaskResolver, UrlRewriter, Reference, Route, Popup };
