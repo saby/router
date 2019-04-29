@@ -7,7 +7,7 @@ import * as Controller from './Controller';
 import * as MaskResolver from './MaskResolver';
 import * as History from './History';
 
-const URL_PARAM_NAME = 'doc';
+const URL_PARAM_NAME = 'id';
 
 interface IPopupRouterUrlParams extends Record<string, unknown> {
    [URL_PARAM_NAME]: string;
@@ -38,7 +38,7 @@ const _private = {
  * The mask for the popup is generated based on options that are used
  * to fill the following template:
  *
- * <pre>{{routeName}}-{{popupDepth}}/:doc</pre>
+ * <pre>{{routeName}}-{{popupDepth}}/:id</pre>
  *
  * @class Router/_private/Popup
  * @extends Core/Control
