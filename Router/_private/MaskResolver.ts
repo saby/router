@@ -20,12 +20,17 @@ interface IMatchPosition {
 
 export function calculateUrlParams(mask: string, url?: string): HashMap<any> {
    _validateMask(mask);
-   return _getUrlParams(_calculateParams(mask, {}, url));
+
+   const params = _calculateParams(mask, {}, url);
+   const urlParams = _getUrlParams(params);
+   return _mapParams(urlParams, _decodeParam);
 }
 
 export function calculateCfgParams(mask: string, cfg: any): HashMap<any> {
    _validateMask(mask);
-   return _getCfgParams(_calculateParams(mask, cfg));
+
+   const params = _calculateParams(mask, cfg);
+   return _getCfgParams(params);
 }
 
 export function calculateHref(mask: string, cfg: any): string {
@@ -148,13 +153,10 @@ function _matchParams(mask: string, cb: (param: IMatchPosition) => void): void {
    }
 }
 
-function _getUrlParams(params: IParam[], skipDecoding?: boolean): HashMap<any> {
+function _getUrlParams(params: IParam[]): HashMap<any> {
    const res: HashMap<any> = {};
    params.forEach(param => {
       res[param.name] = param.urlValue;
-      if (typeof res[param.name] !== 'undefined' && !skipDecoding) {
-         res[param.name] = _safeDecodeURIComponent(res[param.name]);
-      }
    });
    return res;
 }
@@ -170,10 +172,10 @@ function _getCfgParams(params: IParam[]): HashMap<any> {
 function _resolveHref(href: string, mask: string, cfg: any): string {
    const params = _calculateParams(mask, cfg);
    const cfgParams = _getCfgParams(params);
-   const urlParams = _getUrlParams(params, true);
+   const urlParams = _getUrlParams(params);
 
-   const toFind = _resolveMask(mask, urlParams, true);
-   const toReplace = _resolveMask(mask, cfgParams);
+   const toFind = _resolveMask(mask, urlParams);
+   const toReplace = _resolveMask(mask, _mapParams(cfgParams, _encodeParam));
 
    let result = href;
    if (toReplace && toReplace[0] === '/') {
@@ -214,22 +216,16 @@ function _resolveHref(href: string, mask: string, cfg: any): string {
    return result;
 }
 
-function _resolveMask(mask: string, params: HashMap<any>, skipEncoding?: boolean): string {
+function _resolveMask(mask: string, params: HashMap<any>): string {
    let
       paramCount = 0,
       resolvedCount = 0;
+
    _matchParams(mask, param => {
       paramCount++;
       if (params[param.name] !== undefined) {
-         let paramValue = params[param.name];
-         if (typeof paramValue !== 'string') {
-            paramValue = JSON.stringify(paramValue);
-         }
-         if (!skipEncoding) {
-            paramValue = encodeURIComponent(paramValue);
-         }
-         mask = mask.replace(':' + param.name, paramValue);
          resolvedCount++;
+         mask = mask.replace(':' + param.name, params[param.name]);
       }
    });
 
@@ -272,14 +268,37 @@ function _getFolderNameByUrl(url: string): string {
    return folderName;
 }
 
-function _safeDecodeURIComponent(value: string): string {
-   let result = value;
-   try {
-      result = decodeURIComponent(value);
-   } catch (e) {
-      // If decoder throws an error, ignore it and return value
-      // as a string. The URL may have been malformed, or already
-      // decoded by the browser or Router
+function _mapParams(obj: HashMap<string>, cb: (val: any) => string): HashMap<string> {
+   const result = {};
+   for (let i in obj) {
+      result[i] = cb(obj[i]);
+   }
+   return result;
+}
+
+function _encodeParam(param: any): string {
+   const type = typeof param;
+   let result: string = param;
+   if (type !== 'undefined') {
+      if (type !== 'string') {
+         result = JSON.stringify(result);
+      }
+      result = encodeURIComponent(result);
+   }
+   return result;
+}
+
+function _decodeParam(param: string): string {
+   let result = param;
+   if (typeof result !== 'undefined') {
+      try {
+         result = decodeURIComponent(result);
+      } catch (e) {
+         // If decoder throws an error, that means that the original
+         // URL was malformed. If the user enters an invalid URL,
+         // ignore the decoding (because it can't be decoded by the
+         // browser) and return the string as is.
+      }
    }
    return result;
 }
