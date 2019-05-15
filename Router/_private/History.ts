@@ -9,7 +9,7 @@ import * as Data from './Data';
  * @returns {Data.IHistoryState}
  */
 export function getPrevState(): Data.IHistoryState {
-   return Data.getHistory()[Data.getHistoryPosition() - 1];
+    return Data.getHistory()[Data.getHistoryPosition() - 1];
 }
 /**
  * @function Router/_private/History#getCurrentState
@@ -17,7 +17,7 @@ export function getPrevState(): Data.IHistoryState {
  * @returns {Data.IHistoryState}
  */
 export function getCurrentState(): Data.IHistoryState {
-   return Data.getHistory()[Data.getHistoryPosition()];
+    return Data.getHistory()[Data.getHistoryPosition()];
 }
 /**
  * @function Router/_private/History#getNextState
@@ -25,7 +25,7 @@ export function getCurrentState(): Data.IHistoryState {
  * @returns {Data.IHistoryState}
  */
 export function getNextState(): Data.IHistoryState {
-   return Data.getHistory()[Data.getHistoryPosition() + 1];
+    return Data.getHistory()[Data.getHistoryPosition() + 1];
 }
 
 /**
@@ -38,24 +38,24 @@ export function getNextState(): Data.IHistoryState {
  * changing the address bar location
  */
 export function back(): void {
-   const history = Data.getHistory();
-   const historyPosition = Data.getHistoryPosition();
+    const history = Data.getHistory();
+    const historyPosition = Data.getHistoryPosition();
 
-   if (historyPosition === 0) {
-      // If window has an existing state, use it instead of calculating by ourselves
-      const windowHistoryState = typeof window !== 'undefined' && window.history.state;
-      const currentState = windowHistoryState && windowHistoryState.state;
-      const currentHref = Data.getVisibleRelativeUrl();
-      history.unshift({
-         id: history[0].id - 1,
-         state: currentState || UrlRewriter.get(currentHref),
-         href: currentHref
-      });
-   } else {
-      Data.setHistoryPosition(historyPosition - 1);
-   }
+    if (historyPosition === 0) {
+        // If window has an existing state, use it instead of calculating by ourselves
+        const windowHistoryState = typeof window !== 'undefined' && window.history.state;
+        const currentState = windowHistoryState && windowHistoryState.state;
+        const currentHref = Data.getVisibleRelativeUrl();
+        history.unshift({
+            id: history[0].id - 1,
+            state: currentState || UrlRewriter.get(currentHref),
+            href: currentHref
+        });
+    } else {
+        Data.setHistoryPosition(historyPosition - 1);
+    }
 
-   _updateRelativeUrl();
+    _updateRelativeUrl();
 }
 /**
  * @function Router/_private/History#forward
@@ -67,20 +67,20 @@ export function back(): void {
  * changing the address bar location
  */
 export function forward(): void {
-   const history = Data.getHistory();
-   const newHistoryPosition = Data.getHistoryPosition() + 1;
+    const history = Data.getHistory();
+    const newHistoryPosition = Data.getHistoryPosition() + 1;
 
-   Data.setHistoryPosition(newHistoryPosition);
-   if (newHistoryPosition === history.length) {
-      const currentUrl = Data.getRelativeUrl();
-      history.push({
-         id: history[newHistoryPosition - 1].id + 1,
-         state: UrlRewriter.get(currentUrl),
-         href: currentUrl
-      });
-   }
+    Data.setHistoryPosition(newHistoryPosition);
+    if (newHistoryPosition === history.length) {
+        const currentUrl = Data.getRelativeUrl();
+        history.push({
+            id: history[newHistoryPosition - 1].id + 1,
+            state: UrlRewriter.get(currentUrl),
+            href: currentUrl
+        });
+    }
 
-   _updateRelativeUrl();
+    _updateRelativeUrl();
 }
 
 /**
@@ -96,21 +96,21 @@ export function forward(): void {
  * @see Router/_private/Controller#navigate
  */
 export function push(newState: Data.IHistoryState): void {
-   const history = Data.getHistory();
-   const historyPosition = Data.getHistoryPosition();
+    const history = Data.getHistory();
+    const historyPosition = Data.getHistoryPosition();
 
-   // remove all states after the current state
-   history.length = historyPosition + 1;
+    // remove all states after the current state
+    history.length = historyPosition + 1;
 
-   // add new history state to the store
-   newState.id = history[historyPosition].id + 1;
-   history.push(newState);
-   Data.setHistoryPosition(historyPosition + 1);
+    // add new history state to the store
+    newState.id = history[historyPosition].id + 1;
+    history.push(newState);
+    Data.setHistoryPosition(historyPosition + 1);
 
-   // update the URL
-   _updateRelativeUrl();
-   const displayUrl = newState.href || newState.state;
-   window.history.pushState(newState, displayUrl, displayUrl);
+    // update the URL
+    _updateRelativeUrl();
+    const displayUrl = newState.href || newState.state;
+    window.history.pushState(newState, displayUrl, displayUrl);
 }
 
 /**
@@ -125,18 +125,18 @@ export function push(newState: Data.IHistoryState): void {
  * @see Router/_private/Controller#replaceState
  */
 export function replaceState(newState: Data.IHistoryState): void {
-   const history = Data.getHistory();
-   const historyPosition = Data.getHistoryPosition();
+    const history = Data.getHistory();
+    const historyPosition = Data.getHistoryPosition();
 
-   newState.id = history[historyPosition].id;
+    newState.id = history[historyPosition].id;
 
-   history[historyPosition] = newState;
+    history[historyPosition] = newState;
 
-   _updateRelativeUrl();
-   const displayUrl = newState.href || newState.state;
-   window.history.replaceState(newState, displayUrl, displayUrl);
+    _updateRelativeUrl();
+    const displayUrl = newState.href || newState.state;
+    window.history.replaceState(newState, displayUrl, displayUrl);
 }
 
 function _updateRelativeUrl(): void {
-   Data.setRelativeUrl(Data.getHistory()[Data.getHistoryPosition()].state);
+    Data.setRelativeUrl(Data.getHistory()[Data.getHistoryPosition()].state);
 }

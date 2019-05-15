@@ -11,8 +11,8 @@ import * as MaskResolver from './MaskResolver';
 import * as History from './History';
 
 interface IRouteOptions extends HashMap<any> {
-   content?: Function;
-   mask?: string;
+    content?: Function;
+    mask?: string;
 }
 
 const FILTERED_OPTIONS_NAMES = ['content', 'mask', 'theme', '_isSeparatedOptions', '_logicParent', 'readOnly'];
@@ -37,7 +37,9 @@ const FILTERED_OPTIONS_NAMES = ['content', 'mask', 'theme', '_isSeparatedOptions
 /**
  * @name Router/_private/Route#mask
  * @cfg {String} A string that contains a special placeholder that represents an arbitrary parameter in the URL.
- * @remark See the <a href="https://github.com/saby/Router#mask-types">detailed description of the mask option and mask types</a>.
+ * @remark
+ * See the <a href="https://github.com/saby/Router#mask-types">detailed description
+ * of the mask option and mask types</a>.
  * @example
  * <pre>
  *    <Router.router:Route mask="my/:paramName">
@@ -57,7 +59,8 @@ const FILTERED_OPTIONS_NAMES = ['content', 'mask', 'theme', '_isSeparatedOptions
  * @param {IHistoryState} oldLocation Location that was navigated from.
  * @remark
  * This event can be used to open popup windows when a specific mask parameter appears in the URL,
- * <a href="https://github.com/saby/Router#opening-and-closing-popups-on-url-change">see documentation for the details</a>.
+ * <a href="https://github.com/saby/Router#opening-and-closing-popups-on-url-change">see documentation
+ * for the details</a>.
  */
 
 /**
@@ -66,7 +69,8 @@ const FILTERED_OPTIONS_NAMES = ['content', 'mask', 'theme', '_isSeparatedOptions
  * @param {IHistoryState} oldLocation Location that was navigated from.
  * @remark
  * This event can be used to open popup windows when a specific mask parameter appears in the URL,
- * <a href="https://github.com/saby/Router#opening-and-closing-popups-on-url-change">see documentation for the details</a>.
+ * <a href="https://github.com/saby/Router#opening-and-closing-popups-on-url-change">see documentation
+ * for the details</a>.
  */
 
 /**
@@ -76,143 +80,143 @@ const FILTERED_OPTIONS_NAMES = ['content', 'mask', 'theme', '_isSeparatedOptions
  */
 
 class Route extends Control {
-   public _template: Function = template;
+    _template: Function = template;
 
-   private _urlOptions: HashMap<any> = null;
-   private _isResolved = false;
+    private _urlOptions: HashMap<any> = null;
+    private _isResolved: boolean = false;
 
-   public _beforeMount(cfg: IRouteOptions): void {
-      this._urlOptions = {};
-      this._applyNewUrl(cfg.mask, cfg);
-   }
+    _beforeMount(cfg: IRouteOptions): void {
+        this._urlOptions = {};
+        this._applyNewUrl(cfg.mask, cfg);
+    }
 
-   public _afterMount(): void {
-      this._register();
-      this._checkUrlResolved();
-   }
+    _afterMount(): void {
+        this._register();
+        this._checkUrlResolved();
+    }
 
-   public _beforeUpdate(cfg: IRouteOptions) {
-      this._applyNewUrl(cfg.mask, cfg);
-   }
+    _beforeUpdate(cfg: IRouteOptions): void {
+        this._applyNewUrl(cfg.mask, cfg);
+    }
 
-   public _beforeUnmount() {
-      this._unregister();
-   }
+    _beforeUnmount(): void {
+        this._unregister();
+    }
 
-   private _register(): void {
-      Controller.addRoute(
-         this,
-         (newLoc, oldLoc) => {
-            return this._beforeApplyNewUrl(newLoc, oldLoc);
-         },
-         () => {
-            this._forceUpdate();
-            return Promise.resolve(true);
-         }
-      );
-   }
-
-   private _unregister(): void {
-      Controller.removeRoute(this);
-   }
-
-   private _beforeApplyNewUrl(newLoc: Data.IHistoryState, oldLoc: Data.IHistoryState): Promise<boolean> {
-      let result: Promise<boolean>;
-
-      const oldUrlOptions = this._urlOptions;
-      this._urlOptions = MaskResolver.calculateUrlParams(this._options.mask, newLoc.state);
-      const wasResolvedParam = this._hasResolvedParams();
-      this._fillUrlOptionsFromCfg(this._options);
-
-      if (wasResolvedParam && !this._isResolved) {
-         result = this._notify('enter', [newLoc, oldLoc]);
-         this._isResolved = true;
-      } else if (!wasResolvedParam && this._isResolved) {
-         result = this._notify('leave', [newLoc, oldLoc]);
-         this._isResolved = false;
-      } else {
-         result = Promise.resolve(true);
-      }
-
-      if (this._didOptionsChange(this._urlOptions, oldUrlOptions)) {
-         this._notify('change', [this._urlOptions, oldUrlOptions]);
-      }
-
-      return result;
-   }
-
-   private _applyNewUrl(mask: string, cfg: IRouteOptions): boolean {
-      this._urlOptions = MaskResolver.calculateUrlParams(mask);
-      const notUndefVal = this._hasResolvedParams();
-      this._fillUrlOptionsFromCfg(cfg);
-      return notUndefVal;
-   }
-
-   /**
-    * return flag = resolved params from URL
-    */
-   private _hasResolvedParams(): boolean {
-      let notUndefVal = false;
-      for (let i in this._urlOptions) {
-         if (this._urlOptions.hasOwnProperty(i)) {
-            if (this._urlOptions[i] !== undefined) {
-               notUndefVal = true;
-               break;
+    private _register(): void {
+        Controller.addRoute(
+            this,
+            async (newLoc, oldLoc) => {
+                return this._beforeApplyNewUrl(newLoc, oldLoc);
+            },
+            async () => {
+                this._forceUpdate();
+                return Promise.resolve(true);
             }
-         }
-      }
-      return notUndefVal;
-   }
+        );
+    }
 
-   private _fillUrlOptionsFromCfg(cfg: IRouteOptions): void {
-      for (let i in cfg) {
-         if (cfg.hasOwnProperty(i) && !this._isFilteredOptionName(i) && !this._urlOptions.hasOwnProperty(i)) {
-            this._urlOptions[i] = cfg[i];
-         }
-      }
-   }
+    private _unregister(): void {
+        Controller.removeRoute(this);
+    }
 
-   private _checkUrlResolved(): void {
-      this._urlOptions = MaskResolver.calculateUrlParams(this._options.mask, Data.getRelativeUrl());
-      const notUndefVal = this._hasResolvedParams();
-      this._fillUrlOptionsFromCfg(this._options);
+    private _beforeApplyNewUrl(newLoc: Data.IHistoryState, oldLoc: Data.IHistoryState): Promise<boolean> {
+        let result: Promise<boolean>;
 
-      const currentState = History.getCurrentState();
-      let prevState = History.getPrevState();
-      if (notUndefVal) {
-         this._isResolved = true;
-         if (!prevState) {
-            prevState = {
-               state: MaskResolver.calculateHref(this._options.mask, { clear: true })
-            };
-         }
-         this._notify('enter', [currentState, prevState]);
-         this._notify('change', [this._urlOptions, {}]);
-      }
-   }
+        const oldUrlOptions = this._urlOptions;
+        this._urlOptions = MaskResolver.calculateUrlParams(this._options.mask, newLoc.state);
+        const wasResolvedParam = this._hasResolvedParams();
+        this._fillUrlOptionsFromCfg(this._options);
 
-   private _isFilteredOptionName(optionName: string): boolean {
-      return FILTERED_OPTIONS_NAMES.indexOf(optionName) >= 0;
-   }
+        if (wasResolvedParam && !this._isResolved) {
+            result = this._notify('enter', [newLoc, oldLoc]);
+            this._isResolved = true;
+        } else if (!wasResolvedParam && this._isResolved) {
+            result = this._notify('leave', [newLoc, oldLoc]);
+            this._isResolved = false;
+        } else {
+            result = Promise.resolve(true);
+        }
 
-   private _didOptionsChange(newOptions: HashMap<any>, oldOptions: HashMap<any>): boolean {
-      let i;
+        if (this._didOptionsChange(this._urlOptions, oldUrlOptions)) {
+            this._notify('change', [this._urlOptions, oldUrlOptions]);
+        }
 
-      for (i in newOptions) {
-         if (newOptions.hasOwnProperty(i)) {
-            if (!oldOptions.hasOwnProperty(i) || newOptions[i] !== oldOptions[i]) {
-               return true;
+        return result;
+    }
+
+    private _applyNewUrl(mask: string, cfg: IRouteOptions): boolean {
+        this._urlOptions = MaskResolver.calculateUrlParams(mask);
+        const notUndefVal = this._hasResolvedParams();
+        this._fillUrlOptionsFromCfg(cfg);
+        return notUndefVal;
+    }
+
+    /**
+     * return flag = resolved params from URL
+     */
+    private _hasResolvedParams(): boolean {
+        let notUndefVal = false;
+        for (const i in this._urlOptions) {
+            if (this._urlOptions.hasOwnProperty(i)) {
+                if (this._urlOptions[i] !== undefined) {
+                    notUndefVal = true;
+                    break;
+                }
             }
-         }
-      }
-      for (i in oldOptions) {
-         if (oldOptions.hasOwnProperty(i) && !newOptions.hasOwnProperty(i)) {
-            return true;
-         }
-      }
+        }
+        return notUndefVal;
+    }
 
-      return false;
-   }
+    private _fillUrlOptionsFromCfg(cfg: IRouteOptions): void {
+        for (const i in cfg) {
+            if (cfg.hasOwnProperty(i) && !this._isFilteredOptionName(i) && !this._urlOptions.hasOwnProperty(i)) {
+                this._urlOptions[i] = cfg[i];
+            }
+        }
+    }
+
+    private _checkUrlResolved(): void {
+        this._urlOptions = MaskResolver.calculateUrlParams(this._options.mask, Data.getRelativeUrl());
+        const notUndefVal = this._hasResolvedParams();
+        this._fillUrlOptionsFromCfg(this._options);
+
+        const currentState = History.getCurrentState();
+        let prevState = History.getPrevState();
+        if (notUndefVal) {
+            this._isResolved = true;
+            if (!prevState) {
+                prevState = {
+                    state: MaskResolver.calculateHref(this._options.mask, { clear: true })
+                };
+            }
+            this._notify('enter', [currentState, prevState]);
+            this._notify('change', [this._urlOptions, {}]);
+        }
+    }
+
+    private _isFilteredOptionName(optionName: string): boolean {
+        return FILTERED_OPTIONS_NAMES.indexOf(optionName) >= 0;
+    }
+
+    private _didOptionsChange(newOptions: HashMap<any>, oldOptions: HashMap<any>): boolean {
+        let i;
+
+        for (i in newOptions) {
+            if (newOptions.hasOwnProperty(i)) {
+                if (!oldOptions.hasOwnProperty(i) || newOptions[i] !== oldOptions[i]) {
+                    return true;
+                }
+            }
+        }
+        for (i in oldOptions) {
+            if (oldOptions.hasOwnProperty(i) && !newOptions.hasOwnProperty(i)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
 
 export = Route;

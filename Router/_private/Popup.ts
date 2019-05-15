@@ -10,22 +10,25 @@ import * as History from './History';
 const URL_PARAM_NAME = 'id';
 
 interface IPopupRouterUrlParams extends Record<string, unknown> {
-   [URL_PARAM_NAME]: string;
+    [URL_PARAM_NAME]: string;
 }
 
 interface IPopupRouterOptions extends Record<string, unknown> {
-   routeName: string;
-   popupDepth: number;
+    routeName: string;
+    popupDepth: number;
+}
+
+interface IOpenerControl {
+    open: () => void;
+    close: () => void;
 }
 
 const _private = {
-   // TODO Will be removed
-   // https://online.sbis.ru/opendoc.html?guid=403837db-4075-4080-8317-5a37fa71b64a
-   _isOpenerControl(control): boolean {
-      return (
-         typeof control.open === 'function' && typeof control.close === 'function'
-      );
-   }
+    // TODO Will be removed
+    // https://online.sbis.ru/opendoc.html?guid=403837db-4075-4080-8317-5a37fa71b64a
+    _isOpenerControl(control: any): control is IOpenerControl {
+        return typeof control.open === 'function' && typeof control.close === 'function';
+    }
 };
 
 /**
@@ -89,91 +92,91 @@ const _private = {
  */
 
 class PopupRouter extends Control {
-   protected _options: IPopupRouterOptions;
-   protected _template: Function = template;
+    protected _options: IPopupRouterOptions;
+    protected _template: Function = template;
 
-   private _urlMask: string;
-   private _returnHref: string;
+    private _urlMask: string;
+    private _returnHref: string;
 
-   protected _beforeMount(opts: IPopupRouterOptions): void {
-      this._urlMask = PopupRouter.getUrlMask(opts);
+    protected _beforeMount(opts: IPopupRouterOptions): void {
+        this._urlMask = PopupRouter.getUrlMask(opts);
 
-      const prevState = History.getCurrentState();
-      this._returnHref = prevState && prevState.href;
-   }
+        const prevState = History.getCurrentState();
+        this._returnHref = prevState && prevState.href;
+    }
 
-   protected _beforeUpdate(newOpts: IPopupRouterOptions): void {
-      this._urlMask = PopupRouter.getUrlMask(newOpts);
-   }
+    protected _beforeUpdate(newOpts: IPopupRouterOptions): void {
+        this._urlMask = PopupRouter.getUrlMask(newOpts);
+    }
 
-   private _urlChanged(event, newParams: IPopupRouterUrlParams, oldParams: IPopupRouterUrlParams): void {
-      const oldPopupParameter = oldParams[URL_PARAM_NAME];
-      const newPopupParameter = newParams[URL_PARAM_NAME];
+    private _urlChanged(event: Event, newParams: IPopupRouterUrlParams, oldParams: IPopupRouterUrlParams): void {
+        const oldPopupParameter = oldParams[URL_PARAM_NAME];
+        const newPopupParameter = newParams[URL_PARAM_NAME];
 
-      if (newPopupParameter && !oldPopupParameter) {
-         this._notify('urlAdded', [newPopupParameter]);
-      } else if (!newPopupParameter && oldPopupParameter) {
-         this._notify('urlRemoved');
-         this._closePopup();
-      } else {
-         this._notify('urlChanged', [newPopupParameter, oldPopupParameter]);
-      }
-   }
+        if (newPopupParameter && !oldPopupParameter) {
+            this._notify('urlAdded', [newPopupParameter]);
+        } else if (!newPopupParameter && oldPopupParameter) {
+            this._notify('urlRemoved');
+            this._closePopup();
+        } else {
+            this._notify('urlChanged', [newPopupParameter, oldPopupParameter]);
+        }
+    }
 
-   private _popupClosed(): void {
-      // When the popup is closed, clear the corresponding url part from the
-      // address bar
-      const newUrl = MaskResolver.calculateHref(this._urlMask, { clear: true });
-      Controller.navigate({ state: newUrl, href: this._returnHref });
-   }
+    private _popupClosed(): void {
+        // When the popup is closed, clear the corresponding url part from the
+        // address bar
+        const newUrl = MaskResolver.calculateHref(this._urlMask, { clear: true });
+        Controller.navigate({ state: newUrl, href: this._returnHref });
+    }
 
-   private _closePopup(): void {
-      const opener = this._getOpenerControl();
-      if (opener) {
-         opener.close();
-      }
-   }
+    private _closePopup(): void {
+        const opener = this._getOpenerControl();
+        if (opener) {
+            opener.close();
+        }
+    }
 
-   private _getOpenerControl() {
-      // TODO Will be removed
-      // https://online.sbis.ru/opendoc.html?guid=403837db-4075-4080-8317-5a37fa71b64a
-      // @ts-ignore
-      const controlNodes: any[] = this._container.controlNodes;
-      for (let i = 0; i < controlNodes.length; i++) {
-         const node = controlNodes[i];
-         if (node && node.control && _private._isOpenerControl(node.control)) {
-            return node.control;
-         }
-      }
-      return null;
-   }
+    private _getOpenerControl(): IOpenerControl {
+        // TODO Will be removed
+        // https://online.sbis.ru/opendoc.html?guid=403837db-4075-4080-8317-5a37fa71b64a
+        // @ts-ignore
+        const controlNodes: any[] = this._container.controlNodes;
+        for (let i = 0; i < controlNodes.length; i++) {
+            const node = controlNodes[i];
+            if (node && node.control && _private._isOpenerControl(node.control)) {
+                return node.control;
+            }
+        }
+        return null;
+    }
 
-   /**
-    * Returns the url mask used by this popup router. The same mask should
-    * be passed to the Router.router:Reference that opens the popup itself
-    * @function Router/_private/Popup#getUrlMask
-    * @param {IPopupRouterOptions} opts options that define popup route parameters (same as control's options)
-    * @returns {String} url mask used by this router
-    */
-   static getUrlMask(opts?: IPopupRouterOptions): string {
-      return `${opts.routeName}-${opts.popupDepth}/:${URL_PARAM_NAME}`;
-   }
+    /**
+     * Returns the url mask used by this popup router. The same mask should
+     * be passed to the Router.router:Reference that opens the popup itself
+     * @function Router/_private/Popup#getUrlMask
+     * @param {IPopupRouterOptions} opts options that define popup route parameters (same as control's options)
+     * @returns {String} url mask used by this router
+     */
+    static getUrlMask(opts?: IPopupRouterOptions): string {
+        return `${opts.routeName}-${opts.popupDepth}/:${URL_PARAM_NAME}`;
+    }
 
-   static getDefaultOptions(): IPopupRouterOptions {
-      return {
-         /**
-          * @name Router/_private/Popup#routeName
-          * @cfg {String} name of the route that corresponds to this opener
-          */
-         routeName: 'popup',
+    static getDefaultOptions(): IPopupRouterOptions {
+        return {
+            /**
+             * @name Router/_private/Popup#routeName
+             * @cfg {String} name of the route that corresponds to this opener
+             */
+            routeName: 'popup',
 
-         /**
-          * @name Router/_private/Popup#popupDepth
-          * @cfg {Number} depth level of the popup that is opened by this opener
-          */
-         popupDepth: 0
-      };
-   }
+            /**
+             * @name Router/_private/Popup#popupDepth
+             * @cfg {Number} depth level of the popup that is opened by this opener
+             */
+            popupDepth: 0
+        };
+    }
 }
 
 export = PopupRouter;

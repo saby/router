@@ -11,11 +11,11 @@ import { getReverse } from './UrlRewriter';
 import { IHistoryState } from './Data';
 
 interface IReferenceOptions extends HashMap<any> {
-   content?: Function;
-   state?: string;
-   href?: string;
-   clear?: boolean;
-   handleClick: boolean;
+    content?: Function;
+    state?: string;
+    href?: string;
+    clear?: boolean;
+    handleClick: boolean;
 }
 
 /**
@@ -31,13 +31,17 @@ interface IReferenceOptions extends HashMap<any> {
 /**
  * @name Router/_private/Reference#state
  * @cfg {String} A mask that specifies which part of the actual URL should be changed
- * @remark Refer to documentation <a href="https://github.com/saby/Router#using-reference-to-change-urls">for detailed description</a>.
+ * @remark
+ * Refer to documentation <a href="https://github.com/saby/Router#using-reference-to-change-urls">for
+ * detailed description</a>.
  */
 
 /**
  * @name Router/_private/Reference#href
  * @cfg {String} A mask that specified which part of the "pretty" (user friendly) URL should be changed
- * @remark Refer to documentation <a href="https://github.com/saby/Router#specifying-a-pretty-url">for detailed description</a>.
+ * @remark
+ * Refer to documentation <a href="https://github.com/saby/Router#specifying-a-pretty-url">for
+ * detailed description</a>.
  */
 
 /**
@@ -68,69 +72,69 @@ interface IReferenceOptions extends HashMap<any> {
  */
 
 class Reference extends Control {
-   public _template: Function = template;
+    _template: Function = template;
 
-   private _state: string;
-   private _href: string;
+    private _state: string;
+    private _href: string;
 
-   public _beforeMount(cfg: IReferenceOptions): void {
-      this._recalcHref(cfg);
-   }
+    _beforeMount(cfg: IReferenceOptions): void {
+        this._recalcHref(cfg);
+    }
 
-   public _afterMount(): void {
-      this._register();
-   }
+    _afterMount(): void {
+        this._register();
+    }
 
-   public _beforeUpdate(cfg: IReferenceOptions): void {
-      this._recalcHref(cfg);
-   }
+    _beforeUpdate(cfg: IReferenceOptions): void {
+        this._recalcHref(cfg);
+    }
 
-   public _beforeUnmount() {
-      this._unregister();
-   }
+    _beforeUnmount(): void {
+        this._unregister();
+    }
 
-   private _register(): void {
-      Controller.addReference(this, () => {
-         this._recalcHref(this._options);
-         this._forceUpdate();
-         return Promise.resolve(true);
-      });
-   }
+    private _register(): void {
+        Controller.addReference(this, () => {
+            this._recalcHref(this._options);
+            this._forceUpdate();
+            return Promise.resolve(true);
+        });
+    }
 
-   private _unregister(): void {
-      Controller.removeReference(this);
-   }
+    private _unregister(): void {
+        Controller.removeReference(this);
+    }
 
-   private _recalcHref(cfg: IReferenceOptions): void {
-      this._state = MaskResolver.calculateHref(cfg.state, cfg);
-      if (cfg.href) {
-         this._href = MaskResolver.calculateHref(cfg.href, cfg);
-      } else {
-         this._href = getReverse(this._state);
-      }
-   }
+    private _recalcHref(cfg: IReferenceOptions): void {
+        this._state = MaskResolver.calculateHref(cfg.state, cfg);
+        if (cfg.href) {
+            this._href = MaskResolver.calculateHref(cfg.href, cfg);
+        } else {
+            this._href = getReverse(this._state);
+        }
+    }
 
-   private _clickHandler(e: any): void {
-      // Only respond to the 'main' button click (usually the left mouse
-      // button) and ignore the rest
-      if (this._options.handleClick && e.nativeEvent.button === 0) {
-         e.preventDefault();
-         this._changeUrlState({
-            state: this._state,
-            href: this._href
-         });
-      }
-   }
+    private _clickHandler(e: any): void {
+        // Only respond to the 'main' button click (usually the left mouse
+        // button) and ignore the rest
+        if (this._options.handleClick && e.nativeEvent.button === 0) {
+            e.preventDefault();
+            this._changeUrlState({
+                state: this._state,
+                href: this._href
+            });
+        }
+    }
 
-   private _changeUrlState(newState: IHistoryState): void {
-      Controller.navigate(newState);
-   }
+    private _changeUrlState(newState: IHistoryState): void {
+        Controller.navigate(newState);
+    }
 
-   public static getDefaultOptions(): IReferenceOptions {
-      return {
-         handleClick: true
-      };
-   }
+    static getDefaultOptions(): IReferenceOptions {
+        return {
+            handleClick: true
+        };
+    }
 }
 
 export = Reference;
