@@ -36,8 +36,7 @@
    },
    "nyc": {
       "include": [
-         "Router/ServerRouting.js",
-         "Router/_private/*.js"
+         "./application/Router/*"
       ],
       "reporter": [
          "text",
