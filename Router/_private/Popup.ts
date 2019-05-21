@@ -158,7 +158,7 @@ class PopupRouter extends Control {
      * @param {IPopupRouterOptions} opts options that define popup route parameters (same as control's options)
      * @returns {String} url mask used by this router
      */
-    static getUrlMask(opts?: IPopupRouterOptions): string {
+    static getUrlMask(opts: IPopupRouterOptions): string {
         return `${opts.routeName}-${opts.popupDepth}/:${URL_PARAM_NAME}`;
     }
 
