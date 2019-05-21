@@ -5,6 +5,13 @@
       This example is the same as the other Popups example, but it uses the <span class="CodeSpan">href</span> option of <span class="CodeSpan">Router.Reference</span> component
       to hide the long generated URL.
    </p>
+   <p class="global--deprecated">
+      Opening and closing popups using <span class="CodeSpan">Route</span> and <span class="CodeSpan">Reference</span> is supported but deprecated.
+      It is recommended for the new projects to use the <span class="CodeSpan">Popup</span> router component.&nbsp;
+      <Router.router:Reference state="/RouterDemo/page/PopupRouter">
+         <a href="{{ content.href }}">See this demo for details</a>
+      </Router.router:Reference>
+   </p>
 
    <!-- These Link and Route are used to open the first popup, so the depth 0 is hardcoded -->
    <!-- The difference is that the href option is specified to hide the real growing URL -->

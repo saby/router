@@ -15,6 +15,8 @@
   * [Using Controller to Change URLs in TS/JS](#using-controller-to-change-urls-in-tsjs)
     * [Replacing the Current State](#replacing-the-current-state)
   * [Using MaskResolver to Do URL Calculations in TS/JS](#using-maskresolver-to-do-url-calculations-in-tsjs)
+  * [Using Popup to Open and Close Popups on URL Change](#using-popup-to-open-and-close-popups-on-url-change)
+    * [Changing popupDepth to Open Recursive Popups](#changing-popupdepth-to-open-recursive-popups)
 
 ## Running the Tests
 
@@ -85,6 +87,8 @@ Placeholder value for query param mask ends when the URL ends, or when `#` or `&
     URL: "/page?paramName=value#three"    -> paramValue = "value"
 
 ### Opening and Closing Popups on URL Change
+
+**IMPORTANT!**: This method of popup routing is still supported but deprecated in favour of the new `Router/router:Popup` component which simplifies the process. It is recommended for all new projects to use the `Router.router:Popup` component, see [Popup section](#using-popup-to-open-and-close-popups-on-url-change) for details.
 
 `Route` has three events: `on:enter` fires when the current URL starts to match this route's mask, `on:leave` fires when the current URL no longer matches the specified mask and `on:change` fires whenever the parameters specified by the mask option change.
 
@@ -212,3 +216,46 @@ If you are using `Reference` to change the history state, it calculates a new UR
 To calculate a new URL based on the mask and parameters (like the `Reference` does), use `calculateHref(mask, { ...parameters })` function. It supports the same [the same mask types](#mask-types) like `Route` and `Reference` do. The `parameters` object should contain the values for the parameter placeholders used in the mask. The function returns a calculated new URL that can be then passed to [`Controller.navigate` method](#using-controller-to-change-urls-in-tsjs) to change the current state.
 
 To get values of the parameters from the current URL based on the mask (like the `Route` does), use the `calculateUrlParams(mask)` function. It returns a hash with the values of the parameter values extracted from the current state URL based on the mask specified.
+
+## Using Popup to Open and Close Popups on URL Change
+
+`Popup` is a component that simplifies the process of popup routing, meaning it allows you to open and change popups when the URL changes.
+
+**Example:**
+
+    <Router.route:Popup
+        routeName="myPopup"
+        popupDepth="0"
+        on:urlAdded="_openPopup()"
+        on:urlRemoved="_popupClosed()"
+        on:urlChanged="_updatePopup()">
+       <My.Popup.Opener />
+    </Router.route:Popup>
+
+The combination of `routeName` (`popup` by default) and `popupDepth` (`0` by default) forms the mask that the popup router uses to listen for URL changes. In the example above:
+
+- When `myPopup-0/a-3` is added to URL, `urlAdded` event will be fired and the `a-3` parameter will be passed to the handler. You should use this event handler to open your popup.
+- When the URL changes to `myPopup-0/b-7`, `urlChanged` event will be fired and both the new and the old parameters will be passed to the handler `['b-7', 'a-3]`. You should use this event handler to update the popup, change its contents.
+- When `myPopup-0/b-7` is removed from URL, `urlRemoved` event will be fired. You should use this event handler to close the popup. If the `My.Popup.Opener` component you have passed as  the router's contents provides the `close()` method, it will be called **automatically**. You can use this to not have to close the popup manually, but rather pass an `Opener` control to the router.
+
+To change the URL [use Reference](#using-reference-to-change-urls) or [Controller](#using-controller-to-change-urls-in-tsjs).
+
+### Changing popupDepth to Open Recursive Popups
+
+If user should be able to open a popup from inside of another popup, the popup itself has to have a `Router.route:Popup` inside of it. Then however leads to a collision: both the `Popup` on your page and the `Popup` inside of a popup will use the same routing mask.
+
+To prevent this, use the `popupDepth` option. The default value for this option is `0` and the recommended approach is to increase it by one with each nesting level. For example, the `Router.route:Popup` inside of the first-level popup should have a `popupDepth` of `1`. The popup opened from inside of the first popup should have a `popupDepth` of `2` and so on.
+
+This can be done in multiple ways, but simplest one is to pass the current `popupDepth` to the popup, and have it increase it by one.
+
+**Example:**
+
+    On the page:
+
+    <Router.route:Popup ... />
+    openPopup({ popupDepth: 0});
+
+    In the popup:
+
+    <Router.route:Popup popupDepth="{{ _receivedPopupDepth + 1 }}" ... />
+    openPopup({ popupDepth: this._receivedPopupDepth + 1 });

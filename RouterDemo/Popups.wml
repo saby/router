@@ -4,6 +4,13 @@
       This is an example of how to open and close popups based on the URL change, using <span class="CodeSpan">on:enter</span> and <span class="CodeSpan">on:leave</span>
       events.
    </p>
+   <p class="global--deprecated">
+      Opening and closing popups using <span class="CodeSpan">Route</span> and <span class="CodeSpan">Reference</span> is supported but deprecated.
+      It is recommended for the new projects to use the <span class="CodeSpan">Popup</span> router component.&nbsp;
+      <Router.router:Reference state="/RouterDemo/page/PopupRouter">
+         <a href="{{ content.href }}">See this demo for details</a>
+      </Router.router:Reference>
+   </p>
 
    <!-- These Link and Route are used to open the first popup, so the depth 0 is hardcoded -->
    <Router.router:Reference state="panel/0/:panelData" panelData="Hello" attr:class="BigButton">
