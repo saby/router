@@ -22,6 +22,11 @@
       "required": true
     },
     {
+      "name": "UI",
+      "path": "./node_modules/saby-ui/UI",
+      "required": true
+    },
+    {
       "name": "I18n",
       "path": "./node_modules/saby-i18n/I18n",
       "required": true
