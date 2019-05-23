@@ -1,0 +1,25 @@
+<div>
+   <div
+      id="popups"
+      style="position: absolute;"
+      on:popupManagerOpen="_requestedOpen()"
+      on:popupManagerClose="_requestedClose()">
+      <ws:for data="key in _registeredItems">
+         <div
+            class="PopupManager__popup"
+            style="left: {{ _items[key].config.left }}px; top: {{ _items[key].config.top }}px;"
+            attr:key="{{ _items[key].openerId }}">
+            <div class="PopupManager__titlebar">
+               <span class="PopupManager__titlebarClose" on:click="_userClosed(_items[key].openerId)">X</span>
+            </div>
+            <div class="PopupManager__content">
+               <ws:partial template="{{ _items[key].template }}" scope="{{ _items[key].config }}" />
+            </div>
+         </div>
+      </ws:for>
+   </div>
+   <ws:partial
+      template="{{ _options.content }}"
+      on:popupManagerOpen="_requestedOpen()"
+      on:popupManagerClose="_requestedClose()"/>
+</div>

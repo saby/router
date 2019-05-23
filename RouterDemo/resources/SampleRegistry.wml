@@ -1,0 +1,38 @@
+<div>
+   <div class="SampleRegistry">
+      <ws:for data="item in _options.items">
+         <div class="SampleRegistry__row">
+            <Router.router:Reference state="popup-0/:id" id="{{ item.id }}">
+               <a href="{{ content.href }}" class="SampleRegistry__link">
+                  <div class="SampleRegistry__textCell">
+                     {{ item.text }}
+                  </div>
+                  <div class="SampleRegistry__statusCell">
+                     {{ item.status }}
+                  </div>
+               </a>
+            </Router.router:Reference>
+         </div>
+      </ws:for>
+   </div>
+
+   <div class="SampleRegistry__recursiveCheckbox">
+      <input
+         type="checkbox"
+         name="recursiveCheck"
+         checked="{{ _isRecursive ? 'checked' }}"
+         disabled="{{ _popupOpened ? 'disabled' }}"
+         on:change="_recursiveChanged()"/>
+      Enable recursive popups
+   </div>
+
+   <h2>Router.router:Popup Event Log</h2>
+   <Router.router:Popup
+      routeName="popup"
+      on:urlAdded="_urlAddedHandler()"
+      on:urlRemoved="_urlRemovedHandler()"
+      on:urlChanged="_urlChangedHandler()">
+      <RouterDemo.resources.SampleOpener name="opener" />
+   </Router.router:Popup>
+   <textarea class="global--LogResultsArea" name="logResult"></textarea>
+</div>

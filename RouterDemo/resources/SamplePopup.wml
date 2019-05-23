@@ -1,0 +1,24 @@
+<div>
+   This popup was opened with argument: {{ _options.itemId }}
+   <ws:if data="{{ _options.isRecursive}}">
+      <div>
+         You can open another popup from this one recursively.
+      </div>
+      <div style="margin-top: 20px;">
+         <Router.router:Reference
+            state="popup-{{ _options.popupDepth + 1 }}/:id"
+            id="anotherPopupId{{ _options.popupDepth + 1 }}">
+            <a href="{{ content.href }}" class="BigButton">
+               Open another popup
+            </a>
+         </Router.router:Reference>
+         <Router.router:Popup
+            routeName="popup"
+            popupDepth="{{ _options.popupDepth + 1 }}"
+            on:urlAdded="_urlAddedOrChanged()"
+            on:urlChanged="_urlAddedOrChanged()">
+            <RouterDemo.resources.SampleOpener name="opener" />
+         </Router.router:Popup>
+      </div>
+   </ws:if>
+</div>
