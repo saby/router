@@ -29,8 +29,10 @@
       </ul>
    </nav>
    <main class="ContentContainer">
-      <Router.router:Route mask="page/:pageId">
-         <RouterDemo.resources.PageLoader />
-      </Router.router:Route>
+      <RouterDemo.resources.PopupManager>
+         <Router.router:Route mask="page/:pageId">
+            <RouterDemo.resources.PageLoader />
+         </Router.router:Route>
+      </RouterDemo.resources.PopupManager>
    </main>
 </div>
