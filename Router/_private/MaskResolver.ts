@@ -23,12 +23,19 @@ interface ISplitPath {
     misc: string;
 }
 
-/**
+/*
  * @function Router/_private/MaskResolver#calculateUrlParams
  * Extract values from the current URL based on the specified mask
  * @param {String} mask mask with parameter placeholders
  * @param {String} [url] URL to extract values from (current URL will be used by default)
  * @returns {HashMap<string>} the key-value store of extracted parameters
+ */
+/**
+ * @function Router/_private/MaskResolver#calculateUrlParams
+ * Извлекает значения из текущего адреса по заданной маске
+ * @param {String} mask параметризованная маска
+ * @param {String} [url] адрес, из которого будут извлекаться значения. По умолчанию используется текущий URL
+ * @returns {HashMap<string>} объект, в котором ключи - названия параметров, а значения - значения параметров
  */
 export function calculateUrlParams(mask: string, url?: string): HashMap<any> {
     _validateMask(mask);
@@ -38,6 +45,10 @@ export function calculateUrlParams(mask: string, url?: string): HashMap<any> {
     return _mapParams(urlParams, _decodeParam);
 }
 
+/**
+ * @function Router/_private/MaskResolver#calculateCfgParams
+ * @private
+ */
 export function calculateCfgParams(mask: string, cfg: any): HashMap<any> {
     _validateMask(mask);
 
@@ -45,13 +56,21 @@ export function calculateCfgParams(mask: string, cfg: any): HashMap<any> {
     return _getCfgParams(params);
 }
 
-/**
+/*
  * @function Router/_private/MaskResolver#calculateHref
  * Calculates a new URL based on the current URL, specified mask
  * and the hash map of parameters to fill the mask
  * @param {String} mask mask with parameter placeholders
  * @param {HashMap<string>} cfg key-value store with specified parameters
  * @returns {String} the new calculated URL
+ */
+/**
+ * @function Router/_private/MaskResolver#calculateHref
+ * Вычисляет новый URL-адрес, применяя к текущему маску и значения
+ * параметров для ее заполнения
+ * @param {String} mask параметризованная маска
+ * @param {HashMap<string>} cfg объект со значениями параметров, используемых в маске
+ * @returns {String} вычисленный адрес
  */
 export function calculateHref(mask: string, cfg: any): string {
     _validateMask(mask);

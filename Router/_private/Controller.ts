@@ -13,11 +13,18 @@ let isNavigating = false;
 
 _initializeController();
 
-/**
+/*
  * @function Router/_private/Controller#canChangeApplication
  * Checks if Router can switch the currently active application. This
  * can only be done if the page has an Application/Core controller instance
  * @returns {Boolean} can Router switch the active application
+ */
+/**
+ * @function Router/_private/Controller#canChangeApplication
+ * Определяет, может ли система роутинга переключить текущее приложение
+ * без перезагрузки страницы. Это можно сделать только в том случае, если
+ * на странице есть инстанс Application/Core.
+ * @returns {Boolean} возможно ли изменить текущее приложение без перезагрузки страницы
  */
 export function canChangeApplication(): boolean {
     // Router can switch applications when there is an Application/Core
@@ -25,13 +32,21 @@ export function canChangeApplication(): boolean {
     return !!Data.getCoreInstance();
 }
 
-/**
+/*
  * @function Router/_private/Controller#navigate
  * Performs the single page navigation (without reloading the page) to a new
  * state
  * @param {Data.IHistoryState} newState state to navigate to
  * @param {Function} [callback] optional callback that will be called instead of window.history.push
  * @param {Function} [errback] optional errback that will be called if one of the Routes rejected the navigation
+ */
+/**
+ * @function Router/_private/Controller#navigate
+ * Производит single-page переход (без перезагрузки страницы) к новому
+ * состоянию (URL-адресу)
+ * @param {Data.IHistoryState} newState состояние для перехода
+ * @param {Function} [callback] необязательная функция, будет вызвана вместо window.history.push
+ * @param {Function} [errback] необязательная функция, будет вызвана если один из компонентов Route отменит переход
  */
 export function navigate(newState: Data.IHistoryState, callback?: Function, errback?: Function): void {
     const rewrittenNewUrl = UrlRewriter.get(newState.state);
@@ -70,11 +85,18 @@ export function navigate(newState: Data.IHistoryState, callback?: Function, errb
     );
 }
 
-/**
+/*
  * @function Router/_private/Controller#replaceState
  * Performs the single page navigation while replacing the current history state
  * instead of adding a new one
  * @param {Data.IHistoryState} newHistoryState state to navigate to
+ * @see Router/_private/Controller#navigate
+ */
+/**
+ * @function Router/_private/Controller#replaceState
+ * Производит переход без перезагрузки страницы без добавления новой записи
+ * в историю переходов (вместо этого заменяет текущую)
+ * @param {Data.IHistoryState} newHistoryState состояние для перехода
  * @see Router/_private/Controller#navigate
  */
 export function replaceState(newHistoryState: Data.IHistoryState): void {
