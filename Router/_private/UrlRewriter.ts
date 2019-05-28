@@ -28,11 +28,39 @@ let reverseRouteTree: IRouteTree = null;
 import replacementRoutes = require('router');
 _prepareRoutes(replacementRoutes || {});
 
-// get url using rewriting by rules from router.json
+/*
+ * @function Router/_private/UrlRewriter#get
+ * Rewrites the given URL by replacing its prefix based on the configuration
+ * in the router.json configuration file
+ * @param {String} originalUrl URL to rewrite
+ * @returns {Strng} rewritten URL
+ */
+/**
+ * @function Router/_private/UrlRewriter#get
+ * Модифицирует переданный URL, заменяя его префикс на основе конфигурации, указанной
+ * в файле router.json
+ * @param {String} originalUrl URL для модификации
+ * @returns {Strng} модифицированный URL
+ */
 export function get(originalUrl: string): string {
     return getBestMatchFromRouteTree(originalUrl, routeTree);
 }
 
+/*
+ * @function Router/_private/UrlRewriter#getReverse
+ * De-rewrites the given URL by turning the replaced prefix back into its
+ * original form, based on the router.json configuration
+ * @param {String} rewrittenUrl url to de-rewrite
+ * @returns {String} original url
+ */
+/**
+ * @function Router/_private/UrlRewriter#getReverse
+ * Отменяет модификацию URL-адреса, возвращая его в исходный вид,
+ * заменяя префикс на исходный, на основе конфигурации в файле
+ * router.json
+ * @param {String} rewrittenUrl URL для восстановления
+ * @returns {String} исходный URL
+ */
 export function getReverse(rewrittenUrl: string): string {
     return getBestMatchFromRouteTree(rewrittenUrl, reverseRouteTree);
 }
@@ -105,8 +133,20 @@ function _getPath(url: string): string {
     return url;
 }
 
-// prepare data structure for quick access to it
-// exported for unit tests
+/*
+ * @function Router/_private/UrlRewriter#_prepareRoutes
+ * Turns the router.json config file into the routing tree. Exported
+ * for tests
+ * @param {Object} json rewriter config file
+ * @private
+ */
+/**
+ * @function Router/_private/UrlRewriter#_prepareRoutes
+ * Превращает конфигурационный файл router.json в дерево роутинга.
+ * Экспортируется для тестов
+ * @param {Object} json объект с конфигурацией замен адресов
+ * @private
+ */
 export function _prepareRoutes(json: any): void {
     const entries = getEntries(json);
     routeTree = buildRouteTree(entries);

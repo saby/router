@@ -17,7 +17,7 @@ interface IRouteOptions extends HashMap<any> {
 
 const FILTERED_OPTIONS_NAMES = ['content', 'mask', 'theme', '_isSeparatedOptions', '_logicParent', 'readOnly'];
 
-/**
+/*
  * A control that resolves the specified mask with the current URL
  * and passes the parameters to its content.
  *
@@ -26,60 +26,101 @@ const FILTERED_OPTIONS_NAMES = ['content', 'mask', 'theme', '_isSeparatedOptions
  * @control
  * @public
  */
-
 /**
- * @typedef {Object} IHistoryState
- * @property {Number} id Numeric identifier of the current state.
- * @property {String} state The actual URL Router is working with.
- * @property {String} [href] The "pretty" URL that is being displayed to the user.
+ * Компонент-роутер, извлекает параметры из текущего URL по заданной
+ * маске, и передает их значения своим детям.
+ *
+ * @class Router/_private/Route
+ * @extends Core/Control
+ * @control
+ * @public
  */
-
-/**
- * @name Router/_private/Route#mask
- * @cfg {String} A string that contains a special placeholder that represents an arbitrary parameter in the URL.
- * @remark
- * See the <a href="https://github.com/saby/Router#mask-types">detailed description
- * of the mask option and mask types</a>.
- * @example
- * <pre>
- *    <Router.router:Route mask="my/:paramName">
- *       <p>This is the value from the URL: {{ content.paramName }}</p>
- *    </Router.router:Route>
- * </pre>
- */
-
-/**
- * @name Router/_private/Route#content
- * @cfg {Content} Template for the displayed content.
- */
-
-/**
- * @event Router/_private/Route#enter Fires when the current URL started matching the specified mask.
- * @param {IHistoryState} newLocation Location that was navigated to.
- * @param {IHistoryState} oldLocation Location that was navigated from.
- * @remark
- * This event can be used to open popup windows when a specific mask parameter appears in the URL,
- * <a href="https://github.com/saby/Router#opening-and-closing-popups-on-url-change">see documentation
- * for the details</a>.
- */
-
-/**
- * @event Router/_private/Route#leave Fires when the current URL stops matching the specified mask.
- * @param {IHistoryState} newLocation Location that was navigated to.
- * @param {IHistoryState} oldLocation Location that was navigated from.
- * @remark
- * This event can be used to open popup windows when a specific mask parameter appears in the URL,
- * <a href="https://github.com/saby/Router#opening-and-closing-popups-on-url-change">see documentation
- * for the details</a>.
- */
-
-/**
- * @event Router/_private/Route#change Fires when parameters resolved with the specified mask are changed.
- * @param {Object} newParameters Resolved parameters after the navigation.
- * @param {Object} oldParameters Resolved parameters before the navigation.
- */
-
 class Route extends Control {
+    /*
+     * @typedef {Object} IHistoryState
+     * @property {Number} id Numeric identifier of the current state.
+     * @property {String} state The actual URL Router is working with.
+     * @property {String} [href] The "pretty" URL that is being displayed to the user.
+     */
+    /**
+     * @typedef {Object} IHistoryState
+     * @property {Number} id числовой идентификатор текущего состояния
+     * @property {String} state действительный адрес, с которым работает роутинг
+     * @property {String} [href] "красивый" адрес, который отображается пользователю
+     */
+
+    /*
+     * @name Router/_private/Route#mask
+     * @cfg {String} A string that contains a special placeholder that represents an arbitrary parameter in the URL.
+     * @remark
+     * See the <a href="https://github.com/saby/Router#mask-types">detailed description
+     * of the mask option and mask types</a>.
+     * @example
+     * <pre>
+     *    <Router.router:Route mask="my/:paramName">
+     *       <p>This is the value from the URL: {{ content.paramName }}</p>
+     *    </Router.router:Route>
+     * </pre>
+     */
+    /**
+     * @name Router/_private/Route#mask
+     * @cfg {String} специальная строка-маска, содержащая placeholder'ы для параметров
+     * @remark
+     * Подробное описание <a href="https://github.com/saby/Router#mask-types">масок и
+     * их видов</a> приведено в документации.
+     * @example
+     * <pre>
+     *    <Router.router:Route mask="my/:paramName">
+     *       <p>Значение из URL: {{ content.paramName }}</p>
+     *    </Router.router:Route>
+     * </pre>
+     */
+
+    /*
+     * @name Router/_private/Route#content
+     * @cfg {Content} Template for the displayed content.
+     */
+    /**
+     * @name Router/_private/Route#content
+     * @cfg {Content} шаблон отображаемого содержимого
+     */
+
+    /*
+     * @event Router/_private/Route#enter Fires when the current URL started matching the specified mask.
+     * @param {IHistoryState} newLocation Location that was navigated to.
+     * @param {IHistoryState} oldLocation Location that was navigated from.
+     */
+    /**
+     * @event Router/_private/Route#enter Инициируется после перехода, в котором текущий адрес начинает
+     * соответствовать заданной маске
+     * @param {IHistoryState} newLocation состояние, в которое был совершен переход
+     * @param {IHistoryState} oldLocation состояние, из которого был совершен переход
+     */
+
+    /*
+     * @event Router/_private/Route#leave Fires when the current URL stops matching the specified mask.
+     * @param {IHistoryState} newLocation Location that was navigated to.
+     * @param {IHistoryState} oldLocation Location that was navigated from.
+     */
+    /**
+     * @event Router/_private/Route#leave Инициируется после перехода, в котором текущий адрес перестает
+     * соответствовать заданной маске
+     * @param {IHistoryState} newLocation состояние, в которое был совершен переход
+     * @param {IHistoryState} oldLocation состояние, из которого был совершен переход
+     */
+
+    /*
+     * @event Router/_private/Route#change Fires when parameters resolved with the specified mask are changed.
+     * @param {Object} newParameters Resolved parameters after the navigation.
+     * @param {Object} oldParameters Resolved parameters before the navigation.
+     */
+    /**
+     * @event Router/_private/Route#change Инициируется после перехода, если значение параметров,
+     * определенных заданной маской, изменилось
+     * @param {Object} newParameters значения параметров после перехода
+     * @param {Object} oldParameters значения параметров до перехода
+     */
+
     _template: Function = template;
 
     private _urlOptions: HashMap<any> = null;
