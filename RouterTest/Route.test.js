@@ -87,9 +87,22 @@ function(Router, CM) {
 
          waitForLifecycle()
             .then(function() {
-               assert(notifyStub.calledOnce, 'expected _notify to be called');
+               assert(notifyStub.called, 'expected _notify to be called');
                var notifyArgs = notifyStub.getCall(0).args;
                assert.strictEqual(notifyArgs[0], 'enter');
+            })
+            .then(done, done);
+      });
+      it('fires on:change if it is created when url matches the mask', function(done) {
+         Data.setRelativeUrl('/unique/555-abc-def');
+         createdRoute = createRoute({ mask: 'unique/:uid' });
+         var notifyStub = sinon.stub(createdRoute, '_notify');
+
+         waitForLifecycle()
+            .then(function() {
+               assert(notifyStub.called, 'expected _notify to be called');
+               var notifyArgs = notifyStub.getCall(1).args;
+               assert.strictEqual(notifyArgs[0], 'change');
             })
             .then(done, done);
       });

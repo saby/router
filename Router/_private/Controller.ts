@@ -13,12 +13,41 @@ let isNavigating = false;
 
 _initializeController();
 
+/*
+ * @function Router/_private/Controller#canChangeApplication
+ * Checks if Router can switch the currently active application. This
+ * can only be done if the page has an Application/Core controller instance
+ * @returns {Boolean} can Router switch the active application
+ */
+/**
+ * @function Router/_private/Controller#canChangeApplication
+ * Определяет, может ли система роутинга переключить текущее приложение
+ * без перезагрузки страницы. Это можно сделать только в том случае, если
+ * на странице есть инстанс Application/Core.
+ * @returns {Boolean} возможно ли изменить текущее приложение без перезагрузки страницы
+ */
 export function canChangeApplication(): boolean {
    // Router can switch applications when there is an Application/Core
    // instance on it
    return !!Data.getCoreInstance();
 }
 
+/*
+ * @function Router/_private/Controller#navigate
+ * Performs the single page navigation (without reloading the page) to a new
+ * state
+ * @param {Data.IHistoryState} newState state to navigate to
+ * @param {Function} [callback] optional callback that will be called instead of window.history.push
+ * @param {Function} [errback] optional errback that will be called if one of the Routes rejected the navigation
+ */
+/**
+ * @function Router/_private/Controller#navigate
+ * Производит single-page переход (без перезагрузки страницы) к новому
+ * состоянию (URL-адресу)
+ * @param {Data.IHistoryState} newState состояние для перехода
+ * @param {Function} [callback] необязательная функция, будет вызвана вместо window.history.push
+ * @param {Function} [errback] необязательная функция, будет вызвана если один из компонентов Route отменит переход
+ */
 export function navigate(newState: Data.IHistoryState, callback?: Function, errback?: Function): void {
    const rewrittenNewUrl = UrlRewriter.get(newState.state);
    const prettyUrl = newState.href || UrlRewriter.getReverse(rewrittenNewUrl);
@@ -34,7 +63,7 @@ export function navigate(newState: Data.IHistoryState, callback?: Function, errb
 
    isNavigating = true;
    _tryApplyNewState(rewrittenNewState).then(
-      accept => {
+        (accept) => {
          isNavigating = false;
          if (accept) {
             if (callback) {
@@ -47,15 +76,46 @@ export function navigate(newState: Data.IHistoryState, callback?: Function, errb
             errback();
          }
       },
-      err => {
+        (err) => {
          isNavigating = false;
-         errback && errback(err);
+            if (errback) {
+                errback(err);
       }
+        }
    );
 }
 
+/*
+ * @function Router/_private/Controller#replaceState
+ * Performs the single page navigation while replacing the current history state
+ * instead of adding a new one
+ * @param {Data.IHistoryState} newHistoryState state to navigate to
+ * @see Router/_private/Controller#navigate
+ */
+/**
+ * @function Router/_private/Controller#replaceState
+ * Производит переход без перезагрузки страницы без добавления новой записи
+ * в историю переходов (вместо этого заменяет текущую)
+ * @param {Data.IHistoryState} newHistoryState состояние для перехода
+ * @see Router/_private/Controller#navigate
+ */
+export function replaceState(newHistoryState: Data.IHistoryState): void {
+    const rewrittenState = UrlRewriter.get(newHistoryState.state);
+    const rewrittenHref = newHistoryState.href || UrlRewriter.getReverse(rewrittenState);
+    const rewrittenHistoryState: Data.IHistoryState = {
+        state: rewrittenState,
+        href: rewrittenHref
+    };
+
+    navigate(rewrittenHistoryState, () => History.replaceState(rewrittenHistoryState));
+}
+
+/**
+ * @function Router/_private/Controller#addRoute
+ * @private
+ */
 export function addRoute(
-   route,
+    route: Data.IRegisterableComponent,
    beforeUrlChangeCb: Data.TStateChangeFunction,
    afterUrlChangeCb: Data.TStateChangeFunction
 ): void {
@@ -65,17 +125,32 @@ export function addRoute(
    };
 }
 
-export function removeRoute(route): void {
+/**
+ * @function Router/_private/Controller#removeRoute
+ * @private
+ */
+export function removeRoute(route: Data.IRegisterableComponent): void {
    delete Data.getRegisteredRoutes()[route.getInstanceId()];
 }
 
-export function addReference(reference, afterUrlChangeCb: Data.TStateChangeFunction): void {
+/**
+ * @function Router/_private/Controller#addReference
+ * @private
+ */
+export function addReference(
+    reference: Data.IRegisterableComponent,
+    afterUrlChangeCb: Data.TStateChangeFunction
+): void {
    Data.getRegisteredReferences()[reference.getInstanceId()] = {
       afterUrlChangeCb
    };
 }
 
-export function removeReference(reference): void {
+/**
+ * @function Router/_private/Controller#removeReference
+ * @private
+ */
+export function removeReference(reference: Data.IRegisterableComponent): void {
    delete Data.getRegisteredReferences()[reference.getInstanceId()];
 }
 
@@ -139,7 +214,7 @@ function _tryApplyNewState(newState: Data.IHistoryState): Promise<boolean> {
    const newApp = getAppNameByUrl(newState.state);
    const currentApp = getAppNameByUrl(state.state);
 
-   return _checkRoutesAcceptNewState(newState).then(result => {
+    return _checkRoutesAcceptNewState(newState).then((result) => {
       if (newApp === currentApp) {
          return result;
       } else {
@@ -150,7 +225,7 @@ function _tryApplyNewState(newState: Data.IHistoryState): Promise<boolean> {
          window.location.href = newState.href;
          return false;
          return new Promise<boolean>((resolve, reject) => {
-            require([newApp], appComponent => {
+                require([newApp], (appComponent) => {
                if (!appComponent) {
                   _handleAppRequireError(
                      `requirejs did not report an error, but '${newApp}' component was not loaded. ` +
@@ -162,16 +237,19 @@ function _tryApplyNewState(newState: Data.IHistoryState): Promise<boolean> {
                } else {
                   const changedApp = _tryChangeApplication(newApp);
                   if (!changedApp) {
-                     _checkRoutesAcceptNewState(newState).then(ret => {
+                            _checkRoutesAcceptNewState(newState).then((ret) => {
                         resolve(ret);
                      });
                   }
                   resolve(true);
                }
-            }, err => {
+                }, (err) => {
                // If the folder doesn't have /Index component, it does not
                // use new routing. Load the page manually
-               _handleAppRequireError(`Unable to load module '${newApp}', starting default redirect`, newState.href);
+                    _handleAppRequireError(
+                        `Unable to load module '${newApp}', starting default redirect`,
+                        newState.href
+                    );
                reject(err);
             });
          });
@@ -184,7 +262,7 @@ function _checkRoutesAcceptNewState(newState: Data.IHistoryState): Promise<boole
    const registeredRoutes = Data.getRegisteredRoutes();
 
    const promises = [];
-   for (let routeId in registeredRoutes) {
+    for (const routeId in registeredRoutes) {
       if (registeredRoutes.hasOwnProperty(routeId)) {
          const route: Data.IRegisteredRoute = registeredRoutes[routeId];
          promises.push(route.beforeUrlChangeCb(newState, currentState));
@@ -192,20 +270,20 @@ function _checkRoutesAcceptNewState(newState: Data.IHistoryState): Promise<boole
    }
 
    // Make sure none of the registered routes responded with 'false'
-   return Promise.all(promises).then(results => results.indexOf(false) === -1);
+    return Promise.all(promises).then((results) => results.indexOf(false) === -1);
 }
 
 function _notifyStateChanged(newState: Data.IHistoryState, oldState: Data.IHistoryState): void {
    const registeredRoutes = Data.getRegisteredRoutes();
    const registeredReferences = Data.getRegisteredReferences();
 
-   for (let routeId in registeredRoutes) {
+    for (const routeId in registeredRoutes) {
       if (registeredRoutes.hasOwnProperty(routeId)) {
          registeredRoutes[routeId].afterUrlChangeCb(newState, oldState);
       }
    }
 
-   for (let referenceId in registeredReferences) {
+    for (const referenceId in registeredReferences) {
       if (registeredReferences.hasOwnProperty(referenceId)) {
          registeredReferences[referenceId].afterUrlChangeCb(newState, oldState);
       }

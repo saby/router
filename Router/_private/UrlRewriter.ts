@@ -8,12 +8,17 @@ const finishSlash = /\/$/;
 type RouteEntriesArray = string[][];
 
 interface IRouteTreeNode {
-   value?: string;
-   tree: HashMap<IRouteTreeNode>;
+    value?: string;
+    tree: HashMap<IRouteTreeNode>;
 }
 
 interface IRouteTree extends IRouteTreeNode {
-   rootRoute: string;
+    rootRoute: string;
+}
+
+interface ISplitPath {
+    path: string;
+    misc: string;
 }
 
 let routeTree: IRouteTree = null;
@@ -23,144 +28,184 @@ let reverseRouteTree: IRouteTree = null;
 import replacementRoutes = require('router');
 _prepareRoutes(replacementRoutes || {});
 
-// get url using rewriting by rules from router.json
+/*
+ * @function Router/_private/UrlRewriter#get
+ * Rewrites the given URL by replacing its prefix based on the configuration
+ * in the router.json configuration file
+ * @param {String} originalUrl URL to rewrite
+ * @returns {Strng} rewritten URL
+ */
+/**
+ * @function Router/_private/UrlRewriter#get
+ * Модифицирует переданный URL, заменяя его префикс на основе конфигурации, указанной
+ * в файле router.json
+ * @param {String} originalUrl URL для модификации
+ * @returns {Strng} модифицированный URL
+ */
 export function get(originalUrl: string): string {
-   return getBestMatchFromRouteTree(originalUrl, routeTree);
+    return getBestMatchFromRouteTree(originalUrl, routeTree);
 }
 
+/*
+ * @function Router/_private/UrlRewriter#getReverse
+ * De-rewrites the given URL by turning the replaced prefix back into its
+ * original form, based on the router.json configuration
+ * @param {String} rewrittenUrl url to de-rewrite
+ * @returns {String} original url
+ */
+/**
+ * @function Router/_private/UrlRewriter#getReverse
+ * Отменяет модификацию URL-адреса, возвращая его в исходный вид,
+ * заменяя префикс на исходный, на основе конфигурации в файле
+ * router.json
+ * @param {String} rewrittenUrl URL для восстановления
+ * @returns {String} исходный URL
+ */
 export function getReverse(rewrittenUrl: string): string {
-   return getBestMatchFromRouteTree(rewrittenUrl, reverseRouteTree);
+    return getBestMatchFromRouteTree(rewrittenUrl, reverseRouteTree);
 }
 
 function getBestMatchFromRouteTree(url: string, rootNode: IRouteTree): string {
-   const { path, misc } = _splitQueryAndHash(url);
+    const { path, misc }: ISplitPath = _splitQueryAndHash(url);
 
-   if (path === '/' && rootNode && rootNode.rootRoute) {
-      return rootNode.rootRoute + misc;
-   }
-   if (rootNode) {
-      const urlParts = _getPath(path).split('/');
+    if (path === '/' && rootNode && rootNode.rootRoute) {
+        return rootNode.rootRoute + misc;
+    }
+    if (rootNode) {
+        const urlParts = _getPath(path).split('/');
 
-      let curTreeNode = rootNode.tree;
-      let bestMatching = null;
-      let bestMatchingIndex = -1;
+        let curTreeNode = rootNode.tree;
+        let bestMatching = null;
+        let bestMatchingIndex = -1;
 
-      for (let i = 0; i < urlParts.length; i++) {
-         const urlPart = urlParts[i];
+        for (let i = 0; i < urlParts.length; i++) {
+            const urlPart = urlParts[i];
 
-         if (!curTreeNode[urlPart]) {
-            break;
-         }
+            if (!curTreeNode[urlPart]) {
+                break;
+            }
 
-         const nodeValue = curTreeNode[urlPart].value;
-         if (nodeValue) {
-            bestMatching = nodeValue;
-            bestMatchingIndex = i;
-         }
+            const nodeValue = curTreeNode[urlPart].value;
+            if (nodeValue) {
+                bestMatching = nodeValue;
+                bestMatchingIndex = i;
+            }
 
-         curTreeNode = curTreeNode[urlPart].tree;
-      }
+            curTreeNode = curTreeNode[urlPart].tree;
+        }
 
-      if (bestMatching) {
-         const prefix = urlParts.slice(0, bestMatchingIndex + 1).join('/');
-         const result = path.replace(prefix, bestMatching).replace(multiSlash, '/');
-         return result + misc;
-      }
-   }
-   return path + misc;
+        if (bestMatching) {
+            const prefix = urlParts.slice(0, bestMatchingIndex + 1).join('/');
+            const result = path.replace(prefix, bestMatching).replace(multiSlash, '/');
+            return result + misc;
+        }
+    }
+    return path + misc;
 }
 
-function _splitQueryAndHash(url: string): { path: string; misc: string } {
-   const splitMatch = url.match(/[?#]/);
-   if (splitMatch) {
-      const index = splitMatch.index;
-      return {
-         path: url.substring(0, index),
-         misc: url.slice(index)
-      };
-   }
-   return {
-      path: url,
-      misc: ''
-   };
+function _splitQueryAndHash(url: string): ISplitPath {
+    const splitMatch = url.match(/[?#]/);
+    if (splitMatch) {
+        const index = splitMatch.index;
+        return {
+            path: url.substring(0, index),
+            misc: url.slice(index)
+        };
+    }
+    return {
+        path: url,
+        misc: ''
+    };
 }
 
 // get path by url and normalize it
 function _getPath(url: string): string {
-   url = url.replace(httpRE, '');
-   const qIndex = url.indexOf('?');
-   const pIndex = url.indexOf('#');
-   if (qIndex !== -1) {
-      url = url.slice(0, qIndex);
-   }
-   if (pIndex !== -1) {
-      url = url.slice(0, pIndex);
-   }
-   url = url.replace(startSlash, '').replace(finishSlash, '');
-   return url;
+    url = url.replace(httpRE, '');
+    const qIndex = url.indexOf('?');
+    const pIndex = url.indexOf('#');
+    if (qIndex !== -1) {
+        url = url.slice(0, qIndex);
+    }
+    if (pIndex !== -1) {
+        url = url.slice(0, pIndex);
+    }
+    url = url.replace(startSlash, '').replace(finishSlash, '');
+    return url;
 }
 
-// prepare data structure for quick access to it
-// exported for unit tests
+/*
+ * @function Router/_private/UrlRewriter#_prepareRoutes
+ * Turns the router.json config file into the routing tree. Exported
+ * for tests
+ * @param {Object} json rewriter config file
+ * @private
+ */
+/**
+ * @function Router/_private/UrlRewriter#_prepareRoutes
+ * Превращает конфигурационный файл router.json в дерево роутинга.
+ * Экспортируется для тестов
+ * @param {Object} json объект с конфигурацией замен адресов
+ * @private
+ */
 export function _prepareRoutes(json: any): void {
-   const entries = getEntries(json);
-   routeTree = buildRouteTree(entries);
-   reverseRouteTree = buildRouteTree(reverseEntries(entries));
+    const entries = getEntries(json);
+    routeTree = buildRouteTree(entries);
+    reverseRouteTree = buildRouteTree(reverseEntries(entries));
 }
 
 function buildRouteTree(entries: RouteEntriesArray): IRouteTree {
-   const result: IRouteTree = {
-      tree: {},
-      rootRoute: null
-   };
+    const result: IRouteTree = {
+        tree: {},
+        rootRoute: null
+    };
 
-   entries.forEach(entry => {
-      const routeName = entry[0];
-      const routeDest = entry[1];
+    entries.forEach((entry) => {
+        const routeName = entry[0];
+        const routeDest = entry[1];
 
-      if (routeName === '/') {
-         result.rootRoute = '/' + _getPath(routeDest);
-         return;
-      }
+        if (routeName === '/') {
+            result.rootRoute = '/' + _getPath(routeDest);
+            return;
+        }
 
-      const routeNameParts = _getPath(routeName).split('/');
+        const routeNameParts = _getPath(routeName).split('/');
 
-      let curTreeNode = result.tree;
-      routeNameParts.forEach((part, i) => {
-         if (!curTreeNode.hasOwnProperty(part)) {
-            curTreeNode[part] = {
-               value: null,
-               tree: {}
-            };
-         }
-         if (i === routeNameParts.length - 1) {
-            if (!curTreeNode[part].value || curTreeNode[part].value.length > routeDest.length) {
-               curTreeNode[part].value = routeDest;
+        let curTreeNode = result.tree;
+        routeNameParts.forEach((part, i) => {
+            if (!curTreeNode.hasOwnProperty(part)) {
+                curTreeNode[part] = {
+                    value: null,
+                    tree: {}
+                };
             }
-         }
-         curTreeNode = curTreeNode[part].tree;
-      });
-   });
+            if (i === routeNameParts.length - 1) {
+                if (!curTreeNode[part].value || curTreeNode[part].value.length > routeDest.length) {
+                    curTreeNode[part].value = routeDest;
+                }
+            }
+            curTreeNode = curTreeNode[part].tree;
+        });
+    });
 
-   return result;
+    return result;
 }
 
 function getEntries(json: any): RouteEntriesArray {
-   if (!json) {
-      return [];
-   }
+    if (!json) {
+        return [];
+    }
 
-   const ownProps = Object.keys(json);
-   let i = ownProps.length;
-   const result = new Array(i);
+    const ownProps = Object.keys(json);
+    let i = ownProps.length;
+    const result = new Array(i);
 
-   while (i--) {
-      result[i] = [ownProps[i], json[ownProps[i]]];
-   }
+    while (i--) {
+        result[i] = [ownProps[i], json[ownProps[i]]];
+    }
 
-   return result;
+    return result;
 }
 
 function reverseEntries(entries: RouteEntriesArray): RouteEntriesArray {
-   return entries.map(entry => [entry[1], entry[0]]);
+    return entries.map((entry) => [entry[1], entry[0]]);
 }

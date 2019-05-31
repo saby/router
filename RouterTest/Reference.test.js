@@ -126,6 +126,10 @@ function(Router, CM) {
             .then(function() {
                assert(eventObject.preventDefault.calledOnce, 'expected preventDefault to be called for click event');
                assert(navigateStub.calledOnce, 'expected Controller.navigate to be called on click');
+               Controller.navigate.restore();
+            })
+            .catch(function() {
+               Controller.navigate.restore();
             })
             .then(done, done);
       });

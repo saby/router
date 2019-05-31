@@ -1,7 +1,18 @@
 /// <amd-module name="Router/router" />
 
-// @ts-ignore
-import { IoC } from 'Env/Env';
+/**
+ * Single page routing library
+ * @library Router/router
+ * @includes Controller Router/_private/Controller
+ * @includes Data Router/_private/Data
+ * @includes History Router/_private/History
+ * @includes MaskResolver Router/_private/MaskResolver
+ * @includes UrlRewriter Router/_private/UrlRewriter
+ * @includes Reference Router/_private/Reference
+ * @includes Route Router/_private/Route
+ * @includes Popup Router/_private/Popup
+ * @public
+ */
 
 import * as Controller from './_private/Controller';
 import * as Data from './_private/Data';
@@ -13,13 +24,7 @@ import * as UrlRewriter from './_private/UrlRewriter';
 import * as Reference from './_private/Reference';
 // @ts-ignore
 import * as Route from './_private/Route';
+// @ts-ignore
+import * as Popup from './_private/Popup';
 
-export { Controller, Data, History, MaskResolver, UrlRewriter, Reference, Route };
-
-export function logDeprecatedWrapper(oldModuleName, newFieldName) {
-   IoC.resolve('ILogger').log(
-      'Router/router',
-      `"${oldModuleName}" wrapper is deprecated and will be removed. Require ` +
-         `"Router/router" library and use ${newFieldName} from it instead.`
-   );
-}
+export { Controller, Data, History, MaskResolver, UrlRewriter, Reference, Route, Popup };
