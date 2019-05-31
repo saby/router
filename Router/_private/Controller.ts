@@ -143,6 +143,12 @@ function _tryApplyNewState(newState: Data.IHistoryState): Promise<boolean> {
       if (newApp === currentApp) {
          return result;
       } else {
+         //Переходим без СПА, потому что сломалась синхронизация HEAD
+         //при несовпадении VirtualDom inferno разрушает HEAD. Нужно 
+         //допатчить инферно так, чтобы под капотом библиотека НИКОГДА
+         //не удаляла HEAD и HTML
+         window.location.href = newState.href;
+         return false;
          return new Promise<boolean>((resolve, reject) => {
             require([newApp], appComponent => {
                if (!appComponent) {
