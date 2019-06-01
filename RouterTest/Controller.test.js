@@ -271,6 +271,7 @@ function (Router, fakeAppManager, AppInit, EnvNode) {
             }, navigationDelay);
          });
 
+         /* waiting for https://online.sbis.ru/opendoc.html?guid=436271ce-e419-4ad3-a3fe-cbbed1287729
          it('loads new application and calls changeApplicationHandler', function(done) {
             fakeAppManager.createFakeApp('anotherapp');
 
@@ -296,7 +297,7 @@ function (Router, fakeAppManager, AppInit, EnvNode) {
                }
             }, navigationDelay * 2);
          });
-      });
+      });*/
 
       describe('onpopstate handler', function() {
          var historyBackStub, historyForwardStub;
