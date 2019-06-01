@@ -296,8 +296,8 @@ function (Router, fakeAppManager, AppInit, EnvNode) {
                   Data.getCoreInstance.restore();
                }
             }, navigationDelay * 2);
-         });
-      });*/
+         });*/
+      });
 
       describe('onpopstate handler', function() {
          var historyBackStub, historyForwardStub;
