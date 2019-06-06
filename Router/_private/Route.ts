@@ -30,6 +30,15 @@ const FILTERED_OPTIONS_NAMES = ['content', 'mask', 'theme', '_isSeparatedOptions
  * Компонент-роутер, извлекает параметры из текущего URL по заданной
  * маске, и передает их значения своим детям.
  *
+ * <a href="https://github.com/saby/Router#using-route-to-match-urls">Статья о компоненте</a>
+ *
+ * @example
+ * <pre>
+ * <Router.router:Route mask="destination/:myDestination">
+ *    <p>Значение параметра: {{ content.myDestination }}</p>
+ * </Router.router:Route>
+ * </pre>
+ *
  * @class Router/_private/Route
  * @extends Core/Control
  * @control
@@ -44,9 +53,9 @@ class Route extends Control {
      */
     /**
      * @typedef {Object} IHistoryState
-     * @property {Number} id числовой идентификатор текущего состояния
-     * @property {String} state действительный адрес, с которым работает роутинг
-     * @property {String} [href] "красивый" адрес, который отображается пользователю
+     * @property {Number} id Числовой идентификатор текущего состояния
+     * @property {String} state Действительный адрес, с которым работает роутинг
+     * @property {String} [href] "Красивый" адрес, который отображается пользователю
      */
 
     /*
@@ -64,16 +73,30 @@ class Route extends Control {
      */
     /**
      * @name Router/_private/Route#mask
-     * @cfg {String} специальная строка-маска, содержащая placeholder'ы для параметров
+     * @cfg {String} Строка, содержащая специальные placeholder'ы для параметров, начинающиеся с двоеточия.
+     * Эти placeholder'ы используются для обозначения определенного параметра в URL-адресе.
      * @remark
-     * Подробное описание <a href="https://github.com/saby/Router#mask-types">масок и
-     * их видов</a> приведено в документации.
+     * Значение параметра извлекается из URL и передается внутрь Router.router:Route с именем placeholder'a.
+     * При изменении значения параметра в URL-адресе, обновится сам компонент Route, и внутрь него будет передано новое
+     * значение параметра.
+     *
+     * Маски бывают двух видов.
+     *
+     * Первый - обычная маска с символом `/`, например `paramName/:paramValue`. Она может содержать любое число
+     * placeholder'ов, например `tour/:priceMin/:priceMax`.
+     * Второй - query-маска с символом `=`, например `paramName=:paramValue`. Она может содержать только один
+     * placeholder. Такая маска извлекает значение из "GET-параметров" текущего URL после знака вопроса. Например,
+     * для URL-адреса `/mypurchases?filtered=true&paramName=age&greaterthan=2` приведенная выше маска излечет параметр
+     * `paramValue` со значением `2`.
+     *
+     * Более подробно виды масок описаны <a href="https://github.com/saby/Router#mask-types">в статье о роутинге</a>.
      * @example
-     * <pre>
-     *    <Router.router:Route mask="my/:paramName">
-     *       <p>Значение из URL: {{ content.paramName }}</p>
-     *    </Router.router:Route>
-     * </pre>
+     * Маска: "paramName/:paramValue"
+     *
+     * URL: "/paramName/valueOne"        -> paramValue = "valueOne"
+     * URL: "/paramName/value/Two"       -> paramValue = "value"
+     * URL: "/paramName/value?num=three" -> paramValue = "value"
+     * URL: "/paramName/value#Four"      -> paramValue = "value"
      */
 
     /*
@@ -82,7 +105,7 @@ class Route extends Control {
      */
     /**
      * @name Router/_private/Route#content
-     * @cfg {Content} шаблон отображаемого содержимого
+     * @cfg {Content} Шаблон отображаемого содержимого
      */
 
     /*
@@ -91,10 +114,15 @@ class Route extends Control {
      * @param {IHistoryState} oldLocation Location that was navigated from.
      */
     /**
-     * @event Router/_private/Route#enter Инициируется после перехода, в котором текущий адрес начинает
-     * соответствовать заданной маске
-     * @param {IHistoryState} newLocation состояние, в которое был совершен переход
-     * @param {IHistoryState} oldLocation состояние, из которого был совершен переход
+     * @event Router/_private/Route#enter Срабатывает после перехода, в котором адрес начинает соответствовать маске
+     * @param {IHistoryState} newLocation Cостояние, в которое был совершен переход
+     * @param {IHistoryState} oldLocation Cостояние, из которого был совершен переход
+     * @example
+     * <pre>
+     * <Router.router:Route mask="search/:query">...</Router.router:Route>
+     * </pre>
+     * Текущий адрес: "/home"
+     * Переход по адресу: "/page/search/My+query" -> срабатывает on:enter
      */
 
     /*
@@ -103,10 +131,15 @@ class Route extends Control {
      * @param {IHistoryState} oldLocation Location that was navigated from.
      */
     /**
-     * @event Router/_private/Route#leave Инициируется после перехода, в котором текущий адрес перестает
-     * соответствовать заданной маске
-     * @param {IHistoryState} newLocation состояние, в которое был совершен переход
-     * @param {IHistoryState} oldLocation состояние, из которого был совершен переход
+     * @event Router/_private/Route#leave Срабатывает после перехода, в котором адрес перестает соответствовать маске
+     * @param {IHistoryState} newLocation Состояние, в которое был совершен переход
+     * @param {IHistoryState} oldLocation Состояние, из которого был совершен переход
+     * @example
+     * <pre>
+     * <Router.router:Route mask="search/:query">...</Router.router:Route>
+     * </pre>
+     * Текущий адрес: "/page/search/My+query"
+     * Переход по адресу: "/about" -> срабатывает on:leave
      */
 
     /*
@@ -115,10 +148,19 @@ class Route extends Control {
      * @param {Object} oldParameters Resolved parameters before the navigation.
      */
     /**
-     * @event Router/_private/Route#change Инициируется после перехода, если значение параметров,
-     * определенных заданной маской, изменилось
-     * @param {Object} newParameters значения параметров после перехода
-     * @param {Object} oldParameters значения параметров до перехода
+     * @event Router/_private/Route#change Срабатывает после перехода, в котором значение параметров маски изменилось
+     * @param {Object} newParameters Значения параметров после перехода
+     * @param {Object} oldParameters Значения параметров до перехода
+     * @example
+     * <pre>
+     * <Router.router:Route mask="alert/:alertType" on:change="changeAlert()" />
+     * </pre>
+     * <pre>
+     * Текущий адрес: "/home"
+     * Переход по адресу: "/home/alert/signup" -> changeAlert({ alertType: 'signup' }, { alertType: undefined })
+     * Переход по адресу: "/home/alert/login"  -> changeAlert({ alertType: 'login' }, { alertType: 'signup' })
+     * Переход по адресу: "/home"              -> changeAlert({ alertType: undefined }, { alertType: 'login' })
+     * </pre>
      */
 
     _template: Function = template;
@@ -193,9 +235,6 @@ class Route extends Control {
         return notUndefVal;
     }
 
-    /**
-     * return flag = resolved params from URL
-     */
     private _hasResolvedParams(): boolean {
         let notUndefVal = false;
         for (const i in this._urlOptions) {

@@ -1,7 +1,20 @@
 /// <amd-module name="Router/router" />
 
+/*
+ * Single-page routing library
+ * @library Router/router
+ * @includes Controller Router/_private/Controller
+ * @includes Data Router/_private/Data
+ * @includes History Router/_private/History
+ * @includes MaskResolver Router/_private/MaskResolver
+ * @includes UrlRewriter Router/_private/UrlRewriter
+ * @includes Reference Router/_private/Reference
+ * @includes Route Router/_private/Route
+ * @includes Popup Router/_private/Popup
+ * @public
+ */
 /**
- * Single page routing library
+ * Библиотека single-page роутинга
  * @library Router/router
  * @includes Controller Router/_private/Controller
  * @includes Data Router/_private/Data
