@@ -49,16 +49,16 @@ const _private = {
  * @public
  */
 /**
- * Компонент, упрощающий роутинг всплывающих окон. Router.router:Popup
- * стреляет события, когда в адресе появляется URL-параметр, соответствующий
- * его всплывающему окну, либо изменяется значение этого параметра. Она
- * также автоматически закрывает попап, когда его URL-параметр пропадает из
- * адреса (например при нажатии кнопки назад в браузере).
+ * Компонент для роутинга всплывающих окон, оборачивается вокруг компонента-opener'a
+ * и стреляет события, когда в адресе появляется или изменяется часть URL, соответствующая
+ * его всплывающему окну.
  *
- * Маска для URL-параметра попапа формируется на основе опций по
- * следующему шаблону:
+ * Он также автоматически закрывает всплывающее окно, когда его URL-параметр удаляется
+ * из адреса (например после нажатия кнопки назад в браузере).
  *
- * <pre>{{routeName}}-{{popupDepth}}/:id</pre>
+ * <a href="https://github.com/saby/Router#using-popup-to-open-and-close-popups-on-url-change">
+ * Статья о компоненте
+ * </a>
  *
  * @class Router/_private/Popup
  * @extends Core/Control
@@ -73,9 +73,9 @@ class PopupRouter extends Control {
      */
     /**
      * @typedef {Object} IPopupRouterOptions
-     * @property {String} routeName имя попапа, соответствующего этому popup-роутеру, используется
+     * @property {String} routeName Имя попапа, соответствующего этому popup-роутеру, используется
      * в качестве первой части маски
-     * @property {Number} popupDepth уровень вложенности попапа, соответствующего этому popup-роутеру,
+     * @property {Number} popupDepth Уровень вложенности попапа, соответствующего этому popup-роутеру,
      * используется в качестве второй части маски
      */
 
@@ -91,9 +91,16 @@ class PopupRouter extends Control {
      * User navigates from '/' to '/doc-0/abcdef' -> event 'urlAdded' fires with the parameter 'abcdef'
      */
     /**
-     * @event Router/_private/Popup#urlAdded Инициируется, когда URL-параметр, соответствующий попапу,
-     * добавляется в адрес
-     * @param {String} newParameter значение добавленного параметра
+     * @event Router/_private/Popup#urlAdded Срабатывает, когда к URL добавляется часть адреса, соответствующая попапу
+     * @param {String} newParameter Значение добавленного параметра
+     * @see Router/_private/Popup#routeName
+     * @see Router/_private/Popup#popupDepth
+     * @remark
+     * Маска для попапов следует следующему шаблону: `{{routeName}}-{{popupDepth}}/:id`.
+     * При появлении параметра в URL, который соответствует заданной маске, сработает это событие.
+     * Значение параметра, захваченного placeholder'ом `:id`, будет передано в обработчик в качестве параметра.
+     *
+     * В обработчике этого события нужно открыть всплывающее окно с содержимым, соответствующим параметру.
      * @example
      * <pre>
      *    <Router.router:Popup routeName="doc" popupDepth="0">
@@ -114,8 +121,15 @@ class PopupRouter extends Control {
      * User navigates from '/doc-0/abcdef' to '/' -> event 'urlRemoved' fires
      */
     /**
-     * @event Router/_private/Popup#urlRemoved Инициируется, когда URL-параметр, соответствующий попапу,
-     * удаляется из адреса
+     * @event Router/_private/Popup#urlRemoved Срабатывает, когда из URL удаляется часть адреса, соответствующая попапу
+     * @see Router/_private/Popup#routeName
+     * @see Router/_private/Popup#popupDepth
+     * @remark
+     * Маска для попапов следует следующему шаблону: `{{routeName}}-{{popupDepth}}/:id`.
+     * При удаление параметра соответствующего заданной маске, из URL, сработает это событие.
+     *
+     * Если Router.router:Popup обернут вокруг компонента-опенера, в этот момент на нем автоматически
+     * будет вызван метод `close()`, закрывать всплывающее окно вручную не нужно.
      * @example
      * <pre>
      *    <Router.router:Popup routeName="doc" popupDepth="0">
@@ -138,10 +152,21 @@ class PopupRouter extends Control {
      * User navigates from '/doc-0/abcdef' to '/doc-0/ijk' -> event 'urlChanged' fires with parameters 'ijk', 'abcdef'
      */
     /**
-     * @event Router/_private/Popup#urlChanged Инициируется, когда изменяется значение URL-параметра,
-     * соответствующего попапу
-     * @param {String} newParameter новое значение параметра
-     * @param {String} oldParameter старое значение параметра
+     * @event Router/_private/Popup#urlChanged Срабатывает, когда в URL меняется часть адреса, соответствующая попапу
+     * @param {String} newParameter Новое значение параметра
+     * @param {String} oldParameter Старое значение параметра
+     * @see Router/_private/Popup#routeName
+     * @see Router/_private/Popup#popupDepth
+     * @remark
+     * Маска для попапов следует следующему шаблону: `{{routeName}}-{{popupDepth}}/:id`.
+     * При изменении значения параметра, захваченного placeholder'ом `:id` в этом адресе, сработает
+     * это событие.
+     *
+     * В обработчик события в качестве параметров будут переданы как старое, так и новое значение
+     * параметра из URL.
+     *
+     * В этом обработчике нужно изменить содержимое уже открытого всплывающего окна, с учетом
+     * нового значения параметра.
      * @example
      * <pre>
      *    <Router.router:Popup routeName="doc" popupDepth="0">
@@ -211,21 +236,6 @@ class PopupRouter extends Control {
         return null;
     }
 
-    /*
-     * Returns the url mask used by this popup router. The same mask should
-     * be passed to the Router.router:Reference that opens the popup itself
-     * @function Router/_private/Popup#getUrlMask
-     * @param {IPopupRouterOptions} opts options that define popup route parameters (same as control's options)
-     * @returns {String} url mask used by this router
-     */
-    /**
-     * Формирует по опциям маску, соответствующую URL-параметру попапа. Эта
-     * же маска должна использоваться для Router.router:Reference, при клике
-     * на которую должен открываться попап.
-     * @function Router/_private/Popup#getUrlMask
-     * @param {IPopupRouterOptions} opts опции, по которым формируется маска (соответствуют опциям компонента)
-     * @returns {String} сформированная маска
-     */
     static getUrlMask(opts: IPopupRouterOptions): string {
         return `${opts.routeName}-${opts.popupDepth}/:${URL_PARAM_NAME}`;
     }
@@ -234,14 +244,14 @@ class PopupRouter extends Control {
         return {
             /**
              * @name Router/_private/Popup#routeName
-             * @cfg {String} имя попапа, соответствующего этому popup-роутеру, используется
+             * @cfg {String} Имя попапа, соответствующего этому popup-роутеру, используется
              * в качестве первой части маски
              */
             routeName: 'popup',
 
             /**
              * @name Router/_private/Popup#popupDepth
-             * @cfg {Number} уровень вложенности попапа, соответствующего этому popup-роутеру,
+             * @cfg {Number} Уровень вложенности попапа, соответствующего этому popup-роутеру,
              * используется в качестве второй части маски
              */
             popupDepth: 0
