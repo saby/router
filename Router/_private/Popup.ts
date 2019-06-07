@@ -18,16 +18,23 @@ interface IPopupRouterOptions extends Record<string, unknown> {
     popupDepth: number;
 }
 
-interface IOpenerControl {
+interface IOpenerControl extends Control {
     open: () => void;
     close: () => void;
+}
+
+interface IControlContainer extends HTMLElement {
+    controlNodes: Array<{ control: Control }>;
 }
 
 const _private = {
     // TODO Will be removed
     // https://online.sbis.ru/opendoc.html?guid=403837db-4075-4080-8317-5a37fa71b64a
-    _isOpenerControl(control: any): control is IOpenerControl {
-        return typeof control.open === 'function' && typeof control.close === 'function';
+    _isOpenerControl(control: Control): control is IOpenerControl {
+        return (
+            typeof (control as IOpenerControl).open === 'function' &&
+            typeof (control as IOpenerControl).close === 'function'
+        );
     }
 };
 
@@ -179,6 +186,7 @@ class PopupRouter extends Control {
 
     protected _options: IPopupRouterOptions;
     protected _template: Function = template;
+    protected _container: IControlContainer;
 
     private _urlMask: string;
     private _returnHref: string;
@@ -225,8 +233,7 @@ class PopupRouter extends Control {
     private _getOpenerControl(): IOpenerControl {
         // TODO Will be removed
         // https://online.sbis.ru/opendoc.html?guid=403837db-4075-4080-8317-5a37fa71b64a
-        // @ts-ignore
-        const controlNodes: any[] = this._container.controlNodes;
+        const controlNodes = this._container.controlNodes;
         for (let i = 0; i < controlNodes.length; i++) {
             const node = controlNodes[i];
             if (node && node.control && _private._isOpenerControl(node.control)) {

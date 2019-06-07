@@ -24,9 +24,8 @@ interface ISplitPath {
 let routeTree: IRouteTree = null;
 let reverseRouteTree: IRouteTree = null;
 
-// @ts-ignore
 import replacementRoutes = require('router');
-_prepareRoutes(replacementRoutes || {});
+_prepareRoutes(replacementRoutes as unknown as HashMap<string> || {});
 
 /*
  * @function Router/_private/UrlRewriter#get
@@ -120,17 +119,17 @@ function _splitQueryAndHash(url: string): ISplitPath {
 
 // get path by url and normalize it
 function _getPath(url: string): string {
-    url = url.replace(httpRE, '');
-    const qIndex = url.indexOf('?');
-    const pIndex = url.indexOf('#');
+    let result = url.replace(httpRE, '');
+    const qIndex = result.indexOf('?');
+    const pIndex = result.indexOf('#');
     if (qIndex !== -1) {
-        url = url.slice(0, qIndex);
+        result = result.slice(0, qIndex);
     }
     if (pIndex !== -1) {
-        url = url.slice(0, pIndex);
+        result = result.slice(0, pIndex);
     }
-    url = url.replace(startSlash, '').replace(finishSlash, '');
-    return url;
+    result = result.replace(startSlash, '').replace(finishSlash, '');
+    return result;
 }
 
 /*
@@ -147,7 +146,7 @@ function _getPath(url: string): string {
  * @param {Object} json объект с конфигурацией замен адресов
  * @private
  */
-export function _prepareRoutes(json: any): void {
+export function _prepareRoutes(json: HashMap<string>): void {
     const entries = getEntries(json);
     routeTree = buildRouteTree(entries);
     reverseRouteTree = buildRouteTree(reverseEntries(entries));
@@ -190,7 +189,7 @@ function buildRouteTree(entries: RouteEntriesArray): IRouteTree {
     return result;
 }
 
-function getEntries(json: any): RouteEntriesArray {
+function getEntries(json: HashMap<string>): RouteEntriesArray {
     if (!json) {
         return [];
     }

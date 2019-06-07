@@ -1,8 +1,6 @@
 /// <amd-module name="Router/_private/Reference" />
 
-// @ts-ignore
 import * as Control from 'Core/Control';
-// @ts-ignore
 import template = require('wml!Router/_private/Reference');
 
 import * as Controller from './Controller';
@@ -10,12 +8,18 @@ import * as MaskResolver from './MaskResolver';
 import { getReverse } from './UrlRewriter';
 import { IHistoryState } from './Data';
 
-interface IReferenceOptions extends HashMap<any> {
+interface IReferenceOptions extends HashMap<unknown> {
     content?: Function;
     state?: string;
     href?: string;
     clear?: boolean;
     handleClick: boolean;
+}
+
+// SyntheticEvent should be declared in WS.Core
+interface ISyntheticClickEvent {
+    preventDefault: () => void;
+    nativeEvent: MouseEvent;
 }
 
 /*
@@ -86,10 +90,10 @@ class Reference extends Control {
      * </Router.router:Reference>
      * </pre>
      *
-     * Текущий адрес: "/book" -> После клика: "/book/destination/Italy"
-     * Текущий адрес: "/book/destination/Russia" -> После перехода: "/book/destination/Italy"
-     * Текущий адрес: "/book/destination/0/day/Tue?price=mid" -> После перехода: "/book/destination/Italy/day/Tue?price=mid"
-     * Текущий адрес: "/book/all" -> После перехода: "/book/all/destination/Italy"
+     * Текущий адрес: "/book" -> После перехода: "/book/destination/Italy"
+     * Текущий адрес: "/book/destination/Russia" -> После: "/book/destination/Italy"
+     * Текущий адрес: "/book/destination/USA/day/Tue?price=mid" -> После: "/book/destination/Italy/day/Tue?price=mid"
+     * Текущий адрес: "/book/all" -> После: "/book/all/destination/Italy"
      */
 
     /*
@@ -243,7 +247,7 @@ class Reference extends Control {
         }
     }
 
-    private _clickHandler(e: any): void {
+    private _clickHandler(e: ISyntheticClickEvent): void {
         // Only respond to the 'main' button click (usually the left mouse
         // button) and ignore the rest
         if (this._options.handleClick && e.nativeEvent.button === 0) {
