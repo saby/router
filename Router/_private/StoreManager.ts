@@ -2,13 +2,17 @@
 
 import * as AppInit from 'Application/Initializer';
 import * as AppEnv from 'Application/Env';
-import { IStore, ILocation } from 'Application/Interface';
+import { ILocation } from 'Application/Interface';
 
 const STORAGE_KEY = 'RouterData';
 const CORE_INSTANCE_KEY = 'CoreInstance';
 
+export interface ICoreInstance {
+    changeApplicationHandler: (e: Event, newAppName: string) => boolean;
+}
+
 class StoreManager {
-    private _fakeStorage: any = {};
+    private _fakeStorage: Record<string, unknown> = {};
 
     getLocation(): ILocation {
         if (AppInit.isInit()) {
@@ -20,12 +24,12 @@ class StoreManager {
         }
     }
 
-    getRouterStore(): IStore<string> | Record<string, unknown> {
+    getRouterStore(): Record<string, unknown> {
         if (AppInit.isInit()) {
             // AppEnv storages exist on the new pages built with
             // Application/Core, we store Router data there if
             // possible (if the application is initialized)
-            return AppEnv.getStore(STORAGE_KEY);
+            return AppEnv.getStore(STORAGE_KEY) as Record<string, unknown>;
         } else if (typeof window !== 'undefined') {
             // If the application is not initialized, this means that
             // Router is used on the old page without Application/Core.
@@ -42,10 +46,10 @@ class StoreManager {
         }
     }
 
-    getCoreInstance(): any {
+    getCoreInstance(): ICoreInstance {
         if (AppInit.isInit()) {
-            const storage: any = AppEnv.getStore(CORE_INSTANCE_KEY);
-            return storage && storage.instance;
+            const storage = AppEnv.getStore(CORE_INSTANCE_KEY) as Record<string, unknown>;
+            return storage && storage.instance as ICoreInstance;
         }
         return null;
     }

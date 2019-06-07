@@ -1,6 +1,5 @@
 /// <amd-module name="Router/_private/Controller" />
 
-// @ts-ignore
 import { IoC } from 'Env/Env';
 
 import * as Data from './Data';
@@ -78,7 +77,7 @@ export function navigate(newState: Data.IHistoryState, callback?: Function, errb
       },
         (err) => {
          isNavigating = false;
-            if (errback) {
+         if (errback) {
                 errback(err);
       }
         }
@@ -116,8 +115,8 @@ export function replaceState(newHistoryState: Data.IHistoryState): void {
  */
 export function addRoute(
     route: Data.IRegisterableComponent,
-   beforeUrlChangeCb: Data.TStateChangeFunction,
-   afterUrlChangeCb: Data.TStateChangeFunction
+    beforeUrlChangeCb: Data.TStateChangeFunction,
+    afterUrlChangeCb: Data.TStateChangeFunction
 ): void {
    Data.getRegisteredRoutes()[route.getInstanceId()] = {
       beforeUrlChangeCb,
@@ -214,14 +213,14 @@ function _tryApplyNewState(newState: Data.IHistoryState): Promise<boolean> {
    const newApp = getAppNameByUrl(newState.state);
    const currentApp = getAppNameByUrl(state.state);
 
-    return _checkRoutesAcceptNewState(newState).then((result) => {
+   return _checkRoutesAcceptNewState(newState).then((result) => {
       if (newApp === currentApp) {
          return result;
       } else {
-         //Переходим без СПА, потому что сломалась синхронизация HEAD
-         //при несовпадении VirtualDom inferno разрушает HEAD. Нужно 
-         //допатчить инферно так, чтобы под капотом библиотека НИКОГДА
-         //не удаляла HEAD и HTML
+         // Переходим без СПА, потому что сломалась синхронизация HEAD
+         // при несовпадении VirtualDom inferno разрушает HEAD. Нужно
+         // допатчить инферно так, чтобы под капотом библиотека НИКОГДА
+         // не удаляла HEAD и HTML
          window.location.href = newState.href;
          return false;
          return new Promise<boolean>((resolve, reject) => {
@@ -250,7 +249,7 @@ function _tryApplyNewState(newState: Data.IHistoryState): Promise<boolean> {
                         `Unable to load module '${newApp}', starting default redirect`,
                         newState.href
                     );
-               reject(err);
+                    reject(err);
             });
          });
       }
@@ -262,7 +261,7 @@ function _checkRoutesAcceptNewState(newState: Data.IHistoryState): Promise<boole
    const registeredRoutes = Data.getRegisteredRoutes();
 
    const promises = [];
-    for (const routeId in registeredRoutes) {
+   for (const routeId in registeredRoutes) {
       if (registeredRoutes.hasOwnProperty(routeId)) {
          const route: Data.IRegisteredRoute = registeredRoutes[routeId];
          promises.push(route.beforeUrlChangeCb(newState, currentState));
@@ -270,20 +269,20 @@ function _checkRoutesAcceptNewState(newState: Data.IHistoryState): Promise<boole
    }
 
    // Make sure none of the registered routes responded with 'false'
-    return Promise.all(promises).then((results) => results.indexOf(false) === -1);
+   return Promise.all(promises).then((results) => results.indexOf(false) === -1);
 }
 
 function _notifyStateChanged(newState: Data.IHistoryState, oldState: Data.IHistoryState): void {
    const registeredRoutes = Data.getRegisteredRoutes();
    const registeredReferences = Data.getRegisteredReferences();
 
-    for (const routeId in registeredRoutes) {
+   for (const routeId in registeredRoutes) {
       if (registeredRoutes.hasOwnProperty(routeId)) {
          registeredRoutes[routeId].afterUrlChangeCb(newState, oldState);
       }
    }
 
-    for (const referenceId in registeredReferences) {
+   for (const referenceId in registeredReferences) {
       if (registeredReferences.hasOwnProperty(referenceId)) {
          registeredReferences[referenceId].afterUrlChangeCb(newState, oldState);
       }
