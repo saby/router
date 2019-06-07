@@ -1,8 +1,6 @@
 /// <amd-module name="Router/_private/Route" />
 
-// @ts-ignore
 import * as Control from 'Core/Control';
-// @ts-ignore
 import template = require('wml!Router/_private/Route');
 
 import * as Controller from './Controller';
@@ -10,7 +8,7 @@ import * as Data from './Data';
 import * as MaskResolver from './MaskResolver';
 import * as History from './History';
 
-interface IRouteOptions extends HashMap<any> {
+interface IRouteOptions extends HashMap<unknown> {
     content?: Function;
     mask?: string;
 }
@@ -165,7 +163,7 @@ class Route extends Control {
 
     _template: Function = template;
 
-    private _urlOptions: HashMap<any> = null;
+    private _urlOptions: HashMap<unknown> = null;
     private _isResolved: boolean = false;
 
     _beforeMount(cfg: IRouteOptions): void {
@@ -203,7 +201,7 @@ class Route extends Control {
         Controller.removeRoute(this);
     }
 
-    private _beforeApplyNewUrl(newLoc: Data.IHistoryState, oldLoc: Data.IHistoryState): Promise<boolean> {
+    private async _beforeApplyNewUrl(newLoc: Data.IHistoryState, oldLoc: Data.IHistoryState): Promise<boolean> {
         let result: Promise<boolean>;
 
         const oldUrlOptions = this._urlOptions;
@@ -279,8 +277,8 @@ class Route extends Control {
         return FILTERED_OPTIONS_NAMES.indexOf(optionName) >= 0;
     }
 
-    private _didOptionsChange(newOptions: HashMap<any>, oldOptions: HashMap<any>): boolean {
-        let i;
+    private _didOptionsChange(newOptions: HashMap<unknown>, oldOptions: HashMap<unknown>): boolean {
+        let i: string;
 
         for (i in newOptions) {
             if (newOptions.hasOwnProperty(i)) {
