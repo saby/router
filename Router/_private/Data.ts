@@ -1,6 +1,6 @@
 /// <amd-module name="Router/_private/Data" />
 
-import StoreManager from './StoreManager';
+import StoreManager, { ICoreInstance } from './StoreManager';
 
 import * as UrlRewriter from './UrlRewriter';
 
@@ -10,7 +10,7 @@ export interface IHistoryState {
     href?: string;
 }
 
-export type TStateChangeFunction = (newLoc: IHistoryState, oldLoc: IHistoryState) => Promise<any>;
+export type TStateChangeFunction = (newLoc: IHistoryState, oldLoc: IHistoryState) => Promise<boolean>;
 
 export interface IRegisterableComponent {
     getInstanceId: () => number;
@@ -31,7 +31,7 @@ export interface IRouterData {
     historyPosition: number;
     registeredRoutes: HashMap<IRegisteredRoute>;
     registeredReferences: HashMap<IRegisteredReference>;
-    coreInstance?: any;
+    coreInstance?: ICoreInstance;
     relativeUrl: string;
 }
 
@@ -185,11 +185,11 @@ export function getRegisteredReferences(): HashMap<IRegisteredReference> {
  * @returns {Controls/Application/Core}
  * @private
  */
-export function getCoreInstance(): any {
+export function getCoreInstance(): ICoreInstance {
     return StoreManager.getCoreInstance();
 }
 
-function _initNewStorage(storage: any): void {
+function _initNewStorage(storage: Record<string, unknown>): void {
     const currentUrl = _calculateRelativeUrl();
     const initialHistoryState: IHistoryState = {
         id: 0,
@@ -217,11 +217,11 @@ function _initNewStorage(storage: any): void {
 }
 
 function _getStorage(): IRouterData {
-    const storage: any = StoreManager.getRouterStore();
+    const storage = StoreManager.getRouterStore();
     if (!storage || (storage && !storage.IS_ROUTER_STORAGE)) {
         _initNewStorage(storage);
     }
-    return storage;
+    return storage as IRouterData;
 }
 
 function _calculateRelativeUrl(): string {
@@ -234,11 +234,11 @@ function _calculateRelativeUrl(): string {
     }
 }
 
-function _getField(fieldName: string): any {
+function _getField<T>(fieldName: string): T {
     return _getStorage()[fieldName];
 }
 
-function _setField(fieldName: string, value: any): any {
+function _setField<T>(fieldName: string, value: T): T {
     const storage = _getStorage();
     return (storage[fieldName] = value);
 }

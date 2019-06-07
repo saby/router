@@ -1,6 +1,5 @@
 /// <amd-module name="Router/_private/MaskResolver" />
 
-// @ts-ignore
 import { IoC } from 'Env/Env';
 
 import * as Data from './Data';
@@ -8,7 +7,7 @@ import * as UrlRewriter from './UrlRewriter';
 
 interface IParam {
     name: string;
-    value: any;
+    value: unknown;
     urlValue?: string;
 }
 
@@ -37,7 +36,7 @@ interface ISplitPath {
  * @param {String} [url] адрес, из которого будут извлекаться значения. По умолчанию используется текущий URL
  * @returns {HashMap<string>} объект, в котором ключи - названия параметров, а значения - значения параметров
  */
-export function calculateUrlParams(mask: string, url?: string): HashMap<any> {
+export function calculateUrlParams(mask: string, url?: string): HashMap<unknown> {
     _validateMask(mask);
 
     const params = _calculateParams(mask, {}, url);
@@ -49,7 +48,7 @@ export function calculateUrlParams(mask: string, url?: string): HashMap<any> {
  * @function Router/_private/MaskResolver#calculateCfgParams
  * @private
  */
-export function calculateCfgParams(mask: string, cfg: any): HashMap<any> {
+export function calculateCfgParams(mask: string, cfg: HashMap<unknown>): HashMap<unknown> {
     _validateMask(mask);
 
     const params = _calculateParams(mask, cfg);
@@ -72,17 +71,17 @@ export function calculateCfgParams(mask: string, cfg: any): HashMap<any> {
  * @param {HashMap<string>} cfg объект со значениями параметров, используемых в маске
  * @returns {String} вычисленный адрес
  */
-export function calculateHref(mask: string, cfg: any): string {
+export function calculateHref(mask: string, cfg: HashMap<unknown>): string {
     _validateMask(mask);
-    cfg = cfg.clear ? {} : cfg;
+    const actualCfg = cfg.clear ? {} : cfg;
     const url = UrlRewriter.get(Data.getRelativeUrl());
-    return _resolveHref(url, mask, cfg);
+    return _resolveHref(url, mask, actualCfg);
 }
 
 // TODO Remove this?
 export function getAppNameByUrl(url: string): string {
-    url = UrlRewriter.get(url);
-    return _getFolderNameByUrl(url) + '/Index';
+    const rewrittenUrl = UrlRewriter.get(url);
+    return _getFolderNameByUrl(rewrittenUrl) + '/Index';
 }
 
 function _validateMask(mask: string): void {
@@ -106,7 +105,9 @@ function _splitQueryAndHash(url: string): ISplitPath {
         misc: ''
     };
 }
-function _calculateParams(mask: string, cfg: any, url?: string): IParam[] {
+
+const MASK_RESULTS_OFFSET = 2;
+function _calculateParams(mask: string, cfg: HashMap<unknown>, url?: string): IParam[] {
     const result: IParam[] = [];
     const fullMask = _generateFullMaskWithoutParams(mask, (param) => {
         result.push({
@@ -124,12 +125,12 @@ function _calculateParams(mask: string, cfg: any, url?: string): IParam[] {
 
     if (fields) {
         // fields[0] is the full url, fields[1] is prefix and fields[fields.length - 1] is suffix
-        for (let j = 2; j < fields.length - 1; j++) {
-            result[j - 2].urlValue = fields[j];
+        for (let j = MASK_RESULTS_OFFSET; j < fields.length - 1; j++) {
+            result[j - MASK_RESULTS_OFFSET].urlValue = fields[j];
 
             // convert 'undefined' to undefined
-            if (result[j - 2].urlValue === 'undefined') {
-                result[j - 2].urlValue = undefined;
+            if (result[j - MASK_RESULTS_OFFSET].urlValue === 'undefined') {
+                result[j - MASK_RESULTS_OFFSET].urlValue = undefined;
             }
         }
     }
@@ -194,23 +195,23 @@ function _matchParams(mask: string, cb: (param: IMatchPosition) => void): void {
     }
 }
 
-function _getUrlParams(params: IParam[]): HashMap<any> {
-    const res: HashMap<any> = {};
+function _getUrlParams(params: IParam[]): HashMap<unknown> {
+    const res: HashMap<unknown> = {};
     params.forEach((param) => {
         res[param.name] = param.urlValue;
     });
     return res;
 }
 
-function _getCfgParams(params: IParam[]): HashMap<any> {
-    const res: HashMap<any> = {};
+function _getCfgParams(params: IParam[]): HashMap<unknown> {
+    const res: HashMap<unknown> = {};
     params.forEach((param) => {
         res[param.name] = param.value;
     });
     return res;
 }
 
-function _resolveHref(href: string, mask: string, cfg: any): string {
+function _resolveHref(href: string, mask: string, cfg: HashMap<unknown>): string {
     const params = _calculateParams(mask, cfg);
     const cfgParams = _getCfgParams(params);
     const urlParams = _getUrlParams(params);
@@ -257,21 +258,22 @@ function _resolveHref(href: string, mask: string, cfg: any): string {
     return result;
 }
 
-function _resolveMask(mask: string, params: HashMap<any>): string {
+function _resolveMask(mask: string, params: HashMap<unknown>): string {
     let paramCount = 0;
     let resolvedCount = 0;
+    let resolvedMask = mask;
 
-    _matchParams(mask, (param) => {
+    _matchParams(resolvedMask, (param) => {
         paramCount++;
         if (params[param.name] !== undefined) {
             resolvedCount++;
-            mask = mask.replace(':' + param.name, params[param.name]);
+            resolvedMask = resolvedMask.replace(':' + param.name, params[param.name] as string);
         }
     });
 
     let result = '';
     if (resolvedCount === paramCount) {
-        result = mask;
+        result = resolvedMask;
     }
     return result;
 }
@@ -308,7 +310,7 @@ function _getFolderNameByUrl(url: string): string {
     return folderName;
 }
 
-function _mapParams(obj: HashMap<string>, cb: (val: any) => string): HashMap<string> {
+function _mapParams(obj: HashMap<unknown>, cb: (val: unknown) => string): HashMap<string> {
     const result = {};
     for (const i in obj) {
         if (obj.hasOwnProperty(i)) {
@@ -318,16 +320,17 @@ function _mapParams(obj: HashMap<string>, cb: (val: any) => string): HashMap<str
     return result;
 }
 
-function _encodeParam(param: any): string {
+function _encodeParam(param: unknown): string {
     const type = typeof param;
-    let result: string = param;
+    let result = param;
     if (type !== 'undefined') {
         if (type !== 'string') {
+            // Convert parameter to string by calling JSON.stringify
             result = JSON.stringify(result);
         }
-        result = encodeURIComponent(result);
+        result = encodeURIComponent(result as string);
     }
-    return result;
+    return result as string;
 }
 
 function _decodeParam(param: string): string {
