@@ -13,7 +13,6 @@ interface IReferenceOptions extends HashMap<unknown> {
     state?: string;
     href?: string;
     clear?: boolean;
-    handleClick: boolean;
 }
 
 // SyntheticEvent should be declared in WS.Core
@@ -154,42 +153,10 @@ class Reference extends Control {
      */
 
     /*
-     * @name Router/_private/Reference#handleClick
-     * @cfg {Boolean} Specifies if this Reference should handle click event by navigating to the calculated URL
-     * @default True
-     * @remark
-     * If you only want to calculate the URL based on the mask, but do not want to navigate to it on click,
-     * you can set this option to false
-     * @example
-     * <pre>
-     *    <Router.router:Reference state="doc/:id" id="{{ myId }}" handleClick="{{ false }}">
-     *       <p>Share this URL: {{ content.href }}</p>
-     *    </Router.router:Reference>
-     * </pre>
-     * Clicking on the paragraph in the example will not trigger a single page navigation
-     */
-    /**
-     * @name Router/_private/Reference#handleClick
-     * @cfg {Boolean} Определяет, должен ли Reference переходить на указанный адрес при клике
-     * @default True
-     * @deprecated Используйте отменяемый обработыик события `navigate`
-     * @see Router/_private/Reference#navigate
-     * @remark
-     * Эту опцию можно установить в false, если Rerefence используется только для вычисления URL,
-     * но не для выполнения single-page перехода
-     * @example
-     * <pre>
-     *    <Router.router:Reference state="doc/:id" id="{{ myId }}" handleClick="{{ false }}">
-     *       <p>Share this URL: {{ content.href }}</p>
-     *    </Router.router:Reference>
-     * </pre>
-     * Клик на `p` не приведет к срабатыванию перехода
-     */
-
-    /*
      * @event Router/_private/Reference#navigate Fires when user clicks the Reference before navigating to
      * the new state
      * @param {IHistoryState} newState state Reference is navigating to
+     * @param {SyntheticEvent} syntheticClickEvent the click event object that caused the navigation
      * @remark
      * This event can be used to perform some actions before Reference navigates to a new state.
      * The history state passed as parameter can be mutated to change the navigation destination.
@@ -198,6 +165,7 @@ class Reference extends Control {
     /**
      * @event Router/_private/Reference#navigate Срабатывает при клике на Reference, перед совершением перехода
      * @param {IHistoryState} newState Состояние, в которое Reference совершает переход
+     * @param {SyntheticEvent} syntheticClickEvent Объект события клика, который привел к совершению перехода
      * @remark
      * В обработчике события navigate можно выполнить действия перед переходом в новое состояние.
      * Состояние, переданное в качестве параметра события, может быть изменено, чтобы изменить
@@ -250,7 +218,7 @@ class Reference extends Control {
     private _clickHandler(e: ISyntheticClickEvent): void {
         // Only respond to the 'main' button click (usually the left mouse
         // button) and ignore the rest
-        if (this._options.handleClick && e.nativeEvent.button === 0) {
+        if (e.nativeEvent.button === 0) {
             const navigateTo: IHistoryState = {
                 state: this._state,
                 href: this._href
@@ -259,7 +227,7 @@ class Reference extends Control {
             e.preventDefault();
             // navigate event can be handled by the user to prevent the
             // standard single page navigation
-            if (this._notify('navigate', [navigateTo]) !== false) {
+            if (this._notify('navigate', [navigateTo, e]) !== false) {
                 this._changeUrlState(navigateTo);
             }
         }
@@ -267,12 +235,6 @@ class Reference extends Control {
 
     private _changeUrlState(newState: IHistoryState): void {
         Controller.navigate(newState);
-    }
-
-    static getDefaultOptions(): IReferenceOptions {
-        return {
-            handleClick: true
-        };
     }
 }
 
