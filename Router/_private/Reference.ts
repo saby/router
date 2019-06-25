@@ -6,19 +6,13 @@ import template = require('wml!Router/_private/Reference');
 import * as Controller from './Controller';
 import * as MaskResolver from './MaskResolver';
 import { getReverse } from './UrlRewriter';
-import { IHistoryState } from './Data';
+import { IHistoryState, ISyntheticClickEvent } from './Data';
 
 interface IReferenceOptions extends HashMap<unknown> {
     content?: Function;
     state?: string;
     href?: string;
     clear?: boolean;
-}
-
-// SyntheticEvent should be declared in WS.Core
-interface ISyntheticClickEvent {
-    preventDefault: () => void;
-    nativeEvent: MouseEvent;
 }
 
 /*
@@ -225,6 +219,11 @@ class Reference extends Control {
             };
 
             e.preventDefault();
+
+            // Tag the event as handled by Router.router:Reference, useful
+            // for checks in other routing components
+            e.routerReferenceNavigation = true;
+
             // navigate event can be handled by the user to prevent the
             // standard single page navigation
             if (this._notify('navigate', [navigateTo, e]) !== false) {

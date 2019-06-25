@@ -35,6 +35,12 @@ export interface IRouterData {
     relativeUrl: string;
 }
 
+export interface ISyntheticClickEvent {
+    preventDefault: () => void;
+    nativeEvent: MouseEvent;
+    routerReferenceNavigation?: boolean;
+}
+
 /*
  * @function Router/_private/Data#getHistory
  * Get the list of stored history states

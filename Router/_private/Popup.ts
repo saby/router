@@ -195,7 +195,9 @@ class PopupRouter extends Control {
         this._urlMask = PopupRouter.getUrlMask(opts);
 
         const prevState = History.getCurrentState();
-        this._returnHref = prevState && prevState.href;
+        if (prevState && prevState.href !== prevState.state) {
+            this._returnHref = prevState.href;
+        }
     }
 
     protected _beforeUpdate(newOpts: IPopupRouterOptions): void {
