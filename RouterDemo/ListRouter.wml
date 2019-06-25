@@ -1,0 +1,23 @@
+<div>
+   <h1>Routing for List controls</h1>
+   <p>
+      This is an example of using <span class="CodeSpan">Router.router:List</span> to change URL when an inner
+      list control fires the <span class="CodeSpan">itemClick</span> event
+   </p>
+
+   <div>
+      <h2>Sample List Control</h2>
+      <Router.router:List
+         state="listItem/:id"
+         itemKeyProperty="itemUrlName">
+         <RouterDemo.resources.SampleList
+            items="{{ _items }}"
+            displayProperty="{{ _displayProperty }}" />
+      </Router.router:List>
+      <div>
+         <Router.router:Route mask="listItem/:selectedItem">
+            <span>Selected item: <strong>{{ content.selectedItem || 'none' }}</strong></span>
+         </Router.router:Route>
+      </div>
+   </div>
+</div>

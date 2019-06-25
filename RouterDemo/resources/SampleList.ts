@@ -1,0 +1,14 @@
+import * as Control from 'Core/Control';
+import * as template from 'wml!RouterDemo/resources/SampleList';
+
+import 'css!RouterDemo/resources/SampleList';
+
+class SampleList extends Control {
+    protected _template: Function = template;
+
+    private _itemClickHandler(event: Event, item: any) {
+        this._notify('itemClick', [item, event], { bubbling: true });
+    }
+}
+
+export = SampleList;
