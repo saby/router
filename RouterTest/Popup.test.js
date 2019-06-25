@@ -73,6 +73,7 @@ function(Router) {
             assert.notInclude(navigateState, 'myEntityId');
          });
          it('returns to the href it was created with', function() {
+            pr._returnHref = returnHref;
             pr._popupClosed();
 
             var
