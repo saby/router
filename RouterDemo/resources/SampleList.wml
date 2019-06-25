@@ -1,0 +1,9 @@
+<div class="SampleList">
+   <ws:for data="item in _options.items">
+      <div class="SampleList__row" on:click="_itemClickHandler(item)">
+         <div class="SampleList__rowContent">
+            {{ item[_options.displayProperty || 'content'] }}
+         </div>
+      </div>
+   </ws:for>
+</div>

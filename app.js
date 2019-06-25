@@ -46,4 +46,4 @@ app.get('/RouterDemo/*', (req, res) => {
    res.send(indexFile);
 });
 
-
+app.get('/', (req, res) => res.redirect('/RouterDemo/'));

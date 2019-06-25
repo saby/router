@@ -11,6 +11,7 @@
  * @includes Reference Router/_private/Reference
  * @includes Route Router/_private/Route
  * @includes Popup Router/_private/Popup
+ * @includes List Router/_private/List
  * @public
  */
 /**
@@ -24,6 +25,7 @@
  * @includes Reference Router/_private/Reference
  * @includes Route Router/_private/Route
  * @includes Popup Router/_private/Popup
+ * @includes List Router/_private/List
  * @public
  */
 
@@ -40,4 +42,6 @@ import * as Route from './_private/Route';
 // @ts-ignore
 import * as Popup from './_private/Popup';
 
-export { Controller, Data, History, MaskResolver, UrlRewriter, Reference, Route, Popup };
+import List from './_private/List';
+
+export { Controller, Data, History, MaskResolver, UrlRewriter, Reference, Route, Popup, List };
