@@ -239,11 +239,6 @@ function (Router, AppInit, EnvNode) {
       });
 
       describe('#calculateHref', function() {
-         // Everything for simple/query and mutltiparam
-         // Check for urls with hashes
-         // 1. Changing the existing value
-         // 2. Adding a new value
-         // 3. No changes
          describe('simple masks', function() {
             describe('starting at root url', function() {
                beforeEach(function() {
@@ -477,6 +472,50 @@ function (Router, AppInit, EnvNode) {
                   var newUrl = MaskResolver.calculateHref('qscnd=:value', { clear: true });
                   assert.strictEqual(newUrl, '/first/fvalue/second/svalue/?qfrst=fvalue');
                });
+            });
+         });
+
+         describe('appends to the end of url if mask has more parameters than url', function() {
+            it('can append to end of url', function() {
+               Data.setRelativeUrl('/root/page/signup');
+               var newUrl = MaskResolver.calculateHref(
+                  'page/:pageName/:pageParam',
+                  { pageName: 'login', pageParam: 'now' }
+               );
+               assert.strictEqual(newUrl, '/root/page/login/now');
+            });
+            it('can append to end of main part of url if it has query params', function() {
+               Data.setRelativeUrl('/root/page/signup?query=true');
+               var newUrl = MaskResolver.calculateHref(
+                  'page/:pageName/:pageParam',
+                  { pageName: 'login', pageParam: 'now' }
+               );
+               assert.strictEqual(newUrl, '/root/page/login/now?query=true');
+            });
+            it('can append to end of main part of url if it has query params after slash', function() {
+               Data.setRelativeUrl('/root/page/signup/?query=true');
+               var newUrl = MaskResolver.calculateHref(
+                  'page/:pageName/:pageParam',
+                  { pageName: 'login', pageParam: 'now' }
+               );
+               // trailing slash doesn't matter for routing
+               assert.strictEqual(newUrl, '/root/page/login/now/?query=true');
+            });
+            it('can append to end of main part of url if it has hash', function() {
+               Data.setRelativeUrl('/root/page/signup#hashparam');
+               var newUrl = MaskResolver.calculateHref(
+                  'page/:pageName/:pageParam',
+                  { pageName: 'login', pageParam: 'now' }
+               );
+               assert.strictEqual(newUrl, '/root/page/login/now#hashparam');
+            });
+            it('can append to end of main part of url if it has hash after slash', function() {
+               Data.setRelativeUrl('/root/page/signup/#hashparam');
+               var newUrl = MaskResolver.calculateHref(
+                  'page/:pageName/:pageParam',
+                  { pageName: 'login', pageParam: 'now' }
+               );
+               assert.strictEqual(newUrl, '/root/page/login/now/#hashparam');
             });
          });
       });

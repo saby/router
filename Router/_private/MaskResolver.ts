@@ -85,7 +85,7 @@ export function getAppNameByUrl(url: string): string {
 }
 
 function _validateMask(mask: string): void {
-    if (mask.indexOf('/') !== -1 && mask.indexOf('=') !== -1) {
+    if (!_isSlashMask(mask) && !_isQueryMask(mask)) {
         IoC.resolve('ILogger').error('Router.MaskResolver', `Mask "${mask}" is invalid`);
     }
 }
@@ -161,19 +161,19 @@ function _generateFullMaskWithoutParams(mask: string, matchedParamCb?: (param: I
 function _generateFullMask(mask: string): string {
     let fullMask = mask;
 
-    if (fullMask.indexOf('/') !== -1) {
+    if (_isSlashMask(fullMask)) {
         if (fullMask[0] === '/') {
             fullMask = '([/]|.*?\\.html/)' + fullMask.slice(1);
         } else {
             fullMask = '(.*?/)' + fullMask;
         }
-    } else if (fullMask.indexOf('=') !== -1) {
+    } else if (_isQueryMask(fullMask)) {
         fullMask = '(.*?\\?|.*?&)' + fullMask;
     } else {
         fullMask = '(.*?/)' + fullMask;
     }
 
-    if (fullMask.indexOf('=') !== -1) {
+    if (_isQueryMask(fullMask)) {
         fullMask = fullMask + '(#.*|&.+)?';
     } else {
         fullMask = fullMask + '(#.*|/.*|\\?.+)?';
@@ -216,8 +216,8 @@ function _resolveHref(href: string, mask: string, cfg: HashMap<unknown>): string
     const cfgParams = _getCfgParams(params);
     const urlParams = _getUrlParams(params);
 
-    const toFind = _resolveMask(mask, urlParams);
-    const toReplace = _resolveMask(mask, _mapParams(cfgParams, _encodeParam));
+    const toFind = _getMaskFindValue(mask, urlParams, href);
+    const toReplace = _getMaskReplaceValue(mask, cfgParams);
 
     let result = href;
     if (toReplace && toReplace[0] === '/') {
@@ -256,6 +256,60 @@ function _resolveHref(href: string, mask: string, cfg: HashMap<unknown>): string
         }
     }
     return result;
+}
+
+function _getMaskFindValue(mask: string, urlParams: HashMap<unknown>, href: string): string {
+    let findValue = _resolveMask(mask, urlParams);
+
+    // Если полную маску не получается найти в URL, но есть префикс
+    // этой маски, который совпадает с окончанием URL-адреса, можно
+    // использовать его в качестве findValue
+    //
+    // Например, текущий адрес: /page/posts
+    // Маска: page/:pName/:pParam, urlParams: { pName: "posts", pParam: undefined }
+    // Полная маска не вычислится, так как есть неопределенный параметр. Но при этом
+    // неполную маску page/:pName можно вычислить, и так как page/posts находится
+    // в самом конце адреса, эту строку можно безопасно вернуть в качестве findValue.
+    if (!findValue) {
+        findValue = _getIncompleteMaskFindValue(mask, urlParams, href);
+    }
+
+    return findValue;
+}
+
+function _getIncompleteMaskFindValue(mask: string, urlParams: HashMap<unknown>, href: string): string {
+    let incompleteMask = mask;
+    while (_isSlashMask(incompleteMask) && _maskHasParams(incompleteMask)) {
+        // Пока в маске есть слэши и параметры, отрезаем от маски часть после последнего
+        // слэша и вычисляем неполную маску
+        incompleteMask = _removeLastSlashPart(incompleteMask);
+        const findValue = _resolveMask(incompleteMask, urlParams);
+
+        // Если неполная маска вычислена, и при этом находится в самом конце
+        // href, можно вернуть ее в качестве findValue
+        if (findValue && _hrefMainPartEndsWith(href, findValue)) {
+            return findValue;
+        }
+    }
+
+    // Если подходящую неполную маску найти не удалось findValue будет
+    // пустой, то есть новое значение будет добавляться к URL, а не
+    // заменять старое
+    return '';
+}
+
+function _hrefMainPartEndsWith(href: string, ending: string): boolean {
+    // Основная часть URL заканчивается маской, если эта маска присутствует
+    // в адресе, при этом сразу после нее идет конец строки, или начинаются
+    // query или hash
+    const escapedEnding = _escapeForRegex(ending);
+    const endingPattern = `${escapedEnding}/?($|\\?|#)`;
+    return new RegExp(endingPattern).test(href);
+}
+
+function _getMaskReplaceValue(mask: string, cfgParams: HashMap<unknown>): string {
+    const encodedParams = _mapParams(cfgParams, _encodeParam);
+    return _resolveMask(mask, encodedParams);
 }
 
 function _resolveMask(mask: string, params: HashMap<unknown>): string {
@@ -346,4 +400,34 @@ function _decodeParam(param: string): string {
         }
     }
     return result;
+}
+
+function _isSlashMask(mask: string): boolean {
+    return mask.indexOf('/') >= 0;
+}
+
+function _isQueryMask(mask: string): boolean {
+    return mask.indexOf('=') >= 0;
+}
+
+function _maskHasParams(mask: string): boolean {
+    return mask.indexOf(':') >= 0;
+}
+
+function _removeLastSlashPart(url: string): string {
+    let result = url;
+    const lastSlash = url.lastIndexOf('/');
+    if (lastSlash >= 0) {
+        result = url.slice(0, lastSlash);
+    }
+    return result;
+}
+
+// Символы, которые должны быть экранированы при использовании в регулярном
+// выражении
+const escapedCharacters = /[|\\{}()[\]^$+*?.-]/g;
+function _escapeForRegex(str: string): string {
+    // Перед всеми символами, которые необходимо экранировать,
+    // добавляем бэк-слэш
+    return str.replace(escapedCharacters, '\\$&');
 }
