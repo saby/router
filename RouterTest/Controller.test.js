@@ -40,6 +40,7 @@ function (Router, fakeAppManager, AppInit, EnvNode) {
          // define a fake ctestapp/Index component so tests
          // do not do redirects
          fakeAppManager.createFakeApp('ctestapp');
+         this.ignoreLeaks = true;
       });
       after(function() {
          stubSandbox.restore();
