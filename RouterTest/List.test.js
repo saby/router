@@ -69,20 +69,25 @@ function(Router) {
       });
 
       it('fires navigate event with new state', function() {
-         var fakeRecord = {};
+         var
+            fakeRecord = {},
+            fakeClickEvent = { click: true };
+
          fakeRecord[options.itemKeyProperty] = '123';
 
-         l._itemClickHandler(null, fakeRecord);
+         l._itemClickHandler(null, fakeRecord, fakeClickEvent);
 
          var notifyCall = l._notify.getCall(0);
 
          assert.isOk(notifyCall);
          assert.strictEqual(notifyCall.args[0], 'navigate');
-         assert.lengthOf(notifyCall.args[1], 1); // new state
+         assert.lengthOf(notifyCall.args[1], 3); // new state, click event, record
 
          var navCall = Router.Controller.navigate.getCall(0);
 
          assert.deepEqual(notifyCall.args[1][0], navCall.args[0]);
+         assert.strictEqual(notifyCall.args[1][1], fakeClickEvent);
+         assert.strictEqual(notifyCall.args[1][2], fakeRecord);
       });
 
       it('prevents navigation if navigate handler returns false', function() {
