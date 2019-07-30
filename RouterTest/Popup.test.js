@@ -47,6 +47,7 @@ function(Router) {
          });
          it('fires urlChanged when parameter is changed', function() {
             pr._urlChanged({}, { id: 'newId' }, { id: 'oldId' });
+            assert.isTrue(pr._ignorePopupClose);
             assert.isTrue(pr._notify.calledWith('urlChanged', ['newId', 'oldId']));
          });
       });
@@ -71,6 +72,12 @@ function(Router) {
             assert.include(navigateState, '/page');
             assert.notInclude(navigateState, 'test-0');
             assert.notInclude(navigateState, 'myEntityId');
+         });
+         it('does not remove the popup parameter from url when ignoring close', function() {
+            pr._ignoreImmediateClose();
+            pr._popupClosed();
+
+            assert.isTrue(Router.Controller.navigate.notCalled);
          });
          it('returns to the href it was created with', function() {
             pr._returnHref = returnHref;
