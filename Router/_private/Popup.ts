@@ -8,6 +8,7 @@ import * as MaskResolver from './MaskResolver';
 import * as History from './History';
 
 const URL_PARAM_NAME = 'id';
+const IGNORE_POPUP_CLOSE_TIMEOUT = 250;
 
 interface IPopupRouterUrlParams extends Record<string, unknown> {
     [URL_PARAM_NAME]: string;
@@ -191,6 +192,8 @@ class PopupRouter extends Control {
     private _urlMask: string;
     private _returnHref: string;
 
+    private _ignorePopupClose: boolean = false;
+
     protected _beforeMount(opts: IPopupRouterOptions): void {
         this._urlMask = PopupRouter.getUrlMask(opts);
 
@@ -215,14 +218,23 @@ class PopupRouter extends Control {
             this._closePopup();
         } else {
             this._notify('urlChanged', [newPopupParameter, oldPopupParameter]);
+
+            // Some openers (most of the compatible ones) can't update the existing
+            // popup when url changes, they have to close the old one and open the
+            // new one.
+            // We have to ignore this popup being closed and immediately reopened,
+            // otherwise Router/Popup will clear the url when popup is closed.
+            this._ignoreImmediateClose();
         }
     }
 
     private _popupClosed(): void {
         // When the popup is closed, clear the corresponding url part from the
-        // address bar
-        const newUrl = MaskResolver.calculateHref(this._urlMask, { clear: true });
-        Controller.navigate({ state: newUrl, href: this._returnHref });
+        // address bar (unless ignored)
+        if (!this._ignorePopupClose) {
+            const newUrl = MaskResolver.calculateHref(this._urlMask, { clear: true });
+            Controller.navigate({ state: newUrl, href: this._returnHref });
+        }
     }
 
     private _closePopup(): void {
@@ -243,6 +255,13 @@ class PopupRouter extends Control {
             }
         }
         return null;
+    }
+
+    private _ignoreImmediateClose(): void {
+        this._ignorePopupClose = true;
+        setTimeout(() => {
+            this._ignorePopupClose = false;
+        }, IGNORE_POPUP_CLOSE_TIMEOUT);
     }
 
     static getUrlMask(opts: IPopupRouterOptions): string {

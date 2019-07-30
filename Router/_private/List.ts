@@ -171,6 +171,8 @@ export default class ListRouter extends Control {
      * @event Router/_private/List#navigate Fires when user clicks the list item before navigating to
      * the new state
      * @param {IHistoryState} newState state List is navigating to
+     * @param {SyntheticEvent<MouseEvent>} clickEvent original click event that fired on the item
+     * @param {Record} record record of the clicked item
      * @remark
      * This event can be used to perform some actions before List navigates to a new state.
      * The history state passed as parameter can be mutated to change the navigation destination.
@@ -179,6 +181,8 @@ export default class ListRouter extends Control {
     /**
      * @event Router/_private/List#navigate Срабатывает при клике на элемент списка, перед совершением перехода
      * @param {IHistoryState} newState Состояние, в которое List совершает переход
+     * @param {SyntheticEvent<MouseEvent>} clickEvent Исходное событие клика
+     * @param {Record} record Record кликнутой записи
      * @remark
      * В обработчике события navigate можно выполнить действия перед переходом в новое состояние (к новому адресу).
      * Состояние, переданное в качестве параметра события, можно изменять, чтобы изменить результат перехода. Из
@@ -199,7 +203,7 @@ export default class ListRouter extends Control {
 
         // Fires the same navigate event as Reference does, makes it
         // possible to prevent the navigation
-        if (this._notify('navigate', [newState]) !== false) {
+        if (this._notify('navigate', [newState, clickEvent, record]) !== false) {
             navigate(newState);
         }
     }
