@@ -79,7 +79,7 @@ function (Router, fakeAppManager, AppInit, EnvNode) {
             assert.property(registeredRoutes, fakeRoute.control.getInstanceId());
 
             Controller.removeRoute(fakeRoute.control);
-            assert.notProperty(registeredRoutes, fakeRoute.control);
+            assert.notProperty(registeredRoutes, fakeRoute.control.getInstanceId());
          });
       });
       describe('#addReference/#removeReference', function() {
@@ -90,8 +90,8 @@ function (Router, fakeAppManager, AppInit, EnvNode) {
             Controller.addReference(fakeReference.control, fakeReference.afterApplyUrl);
             assert.property(registeredReferences, fakeReference.control.getInstanceId());
 
-            Controller.removeRoute(fakeReference.control);
-            assert.notProperty(registeredReferences, fakeReference.control);
+            Controller.removeReference(fakeReference.control);
+            assert.notProperty(registeredReferences, fakeReference.control.getInstanceId());
          });
       });
 

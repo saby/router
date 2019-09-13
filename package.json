@@ -14,7 +14,7 @@
       "build:app": "node node_modules/gulp/bin/gulp.js --gulpfile=node_modules/sbis3-builder/gulpfile.js build --config=../../buildTemplate.json",
       "compile": "tsc",
       "start": "node node_modules/saby-units/cli/server",
-      "test": "saby-units --isolated",
+      "test": "saby-units %NODE_DEBUG_OPTION% --isolated",
       "test:node": "saby-units --isolated --report",
       "test:node-coverage": "saby-units --isolated --report --coverage",
       "test:browser": "saby-units --browser --report",
