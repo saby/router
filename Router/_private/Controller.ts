@@ -1,5 +1,11 @@
 /// <amd-module name="Router/_private/Controller" />
 
+/**
+ * Набор общих функций для управления в системе роутинга.
+ * @module
+ * @name Router/_private/Controller
+ */
+
 import { IoC } from 'Env/Env';
 
 import * as Data from './Data';
@@ -11,12 +17,6 @@ import * as UrlRewriter from './UrlRewriter';
 let isNavigating = false;
 
 _initializeController();
-
-/**
- * Набор общих функций для управления в системе роутинга.
- * @module
- * @name Router/_private/Controller
- */
 
 /*
  * Checks if Router can switch the currently active application.

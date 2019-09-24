@@ -1,5 +1,11 @@
 /// <amd-module name="Router/_private/History" />
 
+/**
+ * 
+ * @module
+ * @name Router/_private/History
+ */
+
 import * as UrlRewriter from './UrlRewriter';
 import * as Data from './Data';
 
@@ -9,8 +15,9 @@ import * as Data from './Data';
  * @returns {Data.IHistoryState}
  */
 /**
- * @function Router/_private/History#getPrevState
- * Возвращает предыдущее состояние истории (если такое есть)
+ * Возвращает предыдущее состояние истории (если такое есть).
+ * @function
+ * @name Router/_private/History#getPrevState
  * @returns {Data.IHistoryState}
  */
 export function getPrevState(): Data.IHistoryState {
@@ -22,8 +29,9 @@ export function getPrevState(): Data.IHistoryState {
  * @returns {Data.IHistoryState}
  */
 /**
- * @function Router/_private/History#getCurrentState
- * Возвращает текущее состояние истории
+ * Возвращает текущее состояние истории.
+ * @function
+ * @name Router/_private/History#getCurrentState
  * @returns {Data.IHistoryState}
  */
 export function getCurrentState(): Data.IHistoryState {
@@ -35,8 +43,9 @@ export function getCurrentState(): Data.IHistoryState {
  * @returns {Data.IHistoryState}
  */
 /**
- * @function Router/_private/History#getNextState
- * Возвращает следующее состояние истории (если такое есть)
+ * Возвращает следующее состояние истории (если такое есть).
+ * @function
+ * @name Router/_private/History#getNextState
  * @returns {Data.IHistoryState}
  */
 export function getNextState(): Data.IHistoryState {
