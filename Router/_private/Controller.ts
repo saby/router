@@ -12,18 +12,25 @@ let isNavigating = false;
 
 _initializeController();
 
+/**
+ * Набор общих функций для управления
+ * @module
+ * @name Router/_private/Controller
+ */
+
 /*
- * @function Router/_private/Controller#canChangeApplication
- * Checks if Router can switch the currently active application. This
- * can only be done if the page has an Application/Core controller instance
+ * Checks if Router can switch the currently active application.
+ * This can only be done if the page has an Application/Core controller instance.
+ * @name Router/_private/Controller#canChangeApplication
+ * @function
  * @returns {Boolean} can Router switch the active application
  */
 /**
- * @function Router/_private/Controller#canChangeApplication
- * Определяет, может ли система роутинга переключить текущее приложение
- * без перезагрузки страницы. Это можно сделать только в том случае, если
- * на странице есть инстанс Application/Core.
- * @returns {Boolean} возможно ли изменить текущее приложение без перезагрузки страницы
+ * Определяет, может ли система роутинга переключить текущее приложение без перезагрузки страницы.
+ * Это можно сделать только в том случае, если на странице есть инстанс Application/Core.
+ * @function 
+ * @name Router/_private/Controller#canChangeApplication
+ * @returns {Boolean} Возможно ли изменить текущее приложение без перезагрузки страницы
  */
 export function canChangeApplication(): boolean {
    // Router can switch applications when there is an Application/Core
