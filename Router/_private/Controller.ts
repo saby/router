@@ -13,7 +13,7 @@ let isNavigating = false;
 _initializeController();
 
 /**
- * Набор общих функций для управления
+ * Набор общих функций для управления в системе роутинга.
  * @module
  * @name Router/_private/Controller
  */
@@ -27,10 +27,10 @@ _initializeController();
  */
 /**
  * Определяет, может ли система роутинга переключить текущее приложение без перезагрузки страницы.
- * Это можно сделать только в том случае, если на странице есть инстанс Application/Core.
+ * Это можно сделать только в том случае, если на странице есть экземпляр {@link Application/Core}.
  * @function 
  * @name Router/_private/Controller#canChangeApplication
- * @returns {Boolean} Возможно ли изменить текущее приложение без перезагрузки страницы
+ * @returns {Boolean} Возможно ли изменить текущее приложение без перезагрузки страницы.
  */
 export function canChangeApplication(): boolean {
    // Router can switch applications when there is an Application/Core
@@ -39,20 +39,23 @@ export function canChangeApplication(): boolean {
 }
 
 /*
- * @function Router/_private/Controller#navigate
+ * 
  * Performs the single page navigation (without reloading the page) to a new
  * state
+ * @function 
+ * @name Router/_private/Controller#navigate
  * @param {Data.IHistoryState} newState state to navigate to
  * @param {Function} [callback] optional callback that will be called instead of window.history.push
  * @param {Function} [errback] optional errback that will be called if one of the Routes rejected the navigation
  */
 /**
- * @function Router/_private/Controller#navigate
- * Производит single-page переход (без перезагрузки страницы) к новому
- * состоянию (URL-адресу)
- * @param {Data.IHistoryState} newState состояние для перехода
- * @param {Function} [callback] необязательная функция, будет вызвана вместо window.history.push
- * @param {Function} [errback] необязательная функция, будет вызвана если один из компонентов Route отменит переход
+ * 
+ * Производит single-page переход (без перезагрузки страницы) к новому состоянию (URL-адресу).
+ * @function 
+ * @name Router/_private/Controller#navigate
+ * @param {Data.IHistoryState} newState Состояние для перехода.
+ * @param {Function} [callback] Необязательная функция, будет вызвана вместо window.history.push.
+ * @param {Function} [errback] Необязательная функция, будет вызвана если один из компонентов Route отменит переход
  */
 export function navigate(newState: Data.IHistoryState, callback?: Function, errback?: Function): void {
    const rewrittenNewUrl = UrlRewriter.get(newState.state);
@@ -92,17 +95,20 @@ export function navigate(newState: Data.IHistoryState, callback?: Function, errb
 }
 
 /*
- * @function Router/_private/Controller#replaceState
+ * 
  * Performs the single page navigation while replacing the current history state
  * instead of adding a new one
+ * @function 
+ * @name Router/_private/Controller#replaceState
  * @param {Data.IHistoryState} newHistoryState state to navigate to
  * @see Router/_private/Controller#navigate
  */
 /**
- * @function Router/_private/Controller#replaceState
- * Производит переход без перезагрузки страницы без добавления новой записи
- * в историю переходов (вместо этого заменяет текущую)
- * @param {Data.IHistoryState} newHistoryState состояние для перехода
+ * 
+ * Производит переход без перезагрузки страницы без добавления новой записи в историю переходов (вместо этого заменяет текущую).
+ * @function 
+ * @name Router/_private/Controller#replaceState
+ * @param {Data.IHistoryState} newHistoryState Состояние для перехода.
  * @see Router/_private/Controller#navigate
  */
 export function replaceState(newHistoryState: Data.IHistoryState): void {
@@ -116,10 +122,7 @@ export function replaceState(newHistoryState: Data.IHistoryState): void {
     navigate(rewrittenHistoryState, () => History.replaceState(rewrittenHistoryState));
 }
 
-/**
- * @function Router/_private/Controller#addRoute
- * @private
- */
+
 export function addRoute(
     route: Data.IRegisterableComponent,
     beforeUrlChangeCb: Data.TStateChangeFunction,
@@ -131,18 +134,10 @@ export function addRoute(
    };
 }
 
-/**
- * @function Router/_private/Controller#removeRoute
- * @private
- */
 export function removeRoute(route: Data.IRegisterableComponent): void {
    delete Data.getRegisteredRoutes()[route.getInstanceId()];
 }
 
-/**
- * @function Router/_private/Controller#addReference
- * @private
- */
 export function addReference(
     reference: Data.IRegisterableComponent,
     afterUrlChangeCb: Data.TStateChangeFunction
@@ -152,10 +147,6 @@ export function addReference(
    };
 }
 
-/**
- * @function Router/_private/Controller#removeReference
- * @private
- */
 export function removeReference(reference: Data.IRegisterableComponent): void {
    delete Data.getRegisteredReferences()[reference.getInstanceId()];
 }
