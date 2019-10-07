@@ -125,8 +125,8 @@ export function replaceState(newHistoryState: Data.IHistoryState): void {
 
 export function addRoute(
     route: Data.IRegisterableComponent,
-    beforeUrlChangeCb: Data.TStateChangeFunction,
-    afterUrlChangeCb: Data.TStateChangeFunction
+    beforeUrlChangeCb: Data.TStateChangeFunction = () => { return Promise.resolve(true); },
+    afterUrlChangeCb: Data.TStateChangeFunction = () => { return Promise.resolve(true); }
 ): void {
    Data.getRegisteredRoutes()[route.getInstanceId()] = {
       beforeUrlChangeCb,
