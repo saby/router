@@ -30,6 +30,7 @@
       "report": "./application/artifacts/xunit-report.xml",
       "htmlCoverageReport": "./application/artifacts/coverage/index.html",
       "jsonCoverageReport": "./application/artifacts/coverage.json",
+      "initializer": "init-testing.js",
       "url": {
          "port": 1023
       }
