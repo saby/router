@@ -12,7 +12,7 @@
       "build": "npm run build:typescript && npm run build:app",
       "build:typescript": "saby-typescript --install --tsconfig=tsconfig.base.json",
       "build:app": "node node_modules/gulp/bin/gulp.js --gulpfile=node_modules/sbis3-builder/gulpfile.js build --config=../../buildTemplate.json",
-      "compile": "tsc",
+      "compile": "saby-typescript --compiler",
       "start": "node node_modules/saby-units/cli/server",
       "test": "saby-units %NODE_DEBUG_OPTION% --isolated",
       "test:node": "saby-units --isolated --report",
