@@ -3,16 +3,18 @@
 // @ts-ignore
 import * as Control from 'Core/Control';
 // @ts-ignore
-import template = require('wml!RouterDemo/Main');
+import * as template from 'wml!RouterDemo/Main';
 // @ts-ignore
-import * as AppInit  from 'Application/Initializer';
+import * as AppInit from 'Application/Initializer';
 
 import 'css!RouterDemo/Main';
 
 class Main extends Control {
-   public _template: Function = template;
+   _template: Function = template;
 
-   constructor(cfg) {
+   // TODO: Constructor of base class recieves any-type param
+   // tslint:disable-next-line: no-any
+   constructor(cfg: any) {
       super();
 
       // Initialize the Request storage that is used by Router/Data.

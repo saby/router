@@ -6,11 +6,11 @@ import * as Control from 'Core/Control';
 import template = require('wml!RouterDemo/resources/PageLoader');
 
 class PageLoader extends Control {
-   public _template: Function = template;
+   _template: Function = template;
 
    private pageClassLoaded: Function = null;
 
-   private changePage(newPage: String): Promise<void> {
+   private async changePage(newPage: String): Promise<void> {
       return new Promise((resolve, reject) => {
          // @ts-ignore
          require(['RouterDemo/' + newPage], (newPageClass: Function) => {
@@ -26,7 +26,7 @@ class PageLoader extends Control {
       };
    }
 
-   _beforeMount(cfg: any): Promise<void> {
+   async _beforeMount(cfg: any): Promise<void> {
       return this.changePage(cfg.pageId);
    }
 

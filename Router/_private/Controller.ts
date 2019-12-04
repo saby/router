@@ -28,7 +28,7 @@ _initializeController();
 /**
  * Определяет, может ли система роутинга переключить текущее приложение без перезагрузки страницы.
  * Это можно сделать только в том случае, если на странице есть экземпляр {@link Application/Core}.
- * @function 
+ * @function
  * @name Router/_private/Controller#canChangeApplication
  * @returns {Boolean} Возможно ли изменить текущее приложение без перезагрузки страницы.
  */
@@ -39,19 +39,19 @@ export function canChangeApplication(): boolean {
 }
 
 /*
- * 
+ *
  * Performs the single page navigation (without reloading the page) to a new
  * state
- * @function 
+ * @function
  * @name Router/_private/Controller#navigate
  * @param {Data.IHistoryState} newState state to navigate to
  * @param {Function} [callback] optional callback that will be called instead of window.history.push
  * @param {Function} [errback] optional errback that will be called if one of the Routes rejected the navigation
  */
 /**
- * 
+ *
  * Производит single-page переход (без перезагрузки страницы) к новому состоянию (URL-адресу).
- * @function 
+ * @function
  * @name Router/_private/Controller#navigate
  * @param {Data.IHistoryState} newState Состояние для перехода.
  * @param {Function} [callback] Необязательная функция, будет вызвана вместо window.history.push.
@@ -95,18 +95,18 @@ export function navigate(newState: Data.IHistoryState, callback?: Function, errb
 }
 
 /*
- * 
+ *
  * Performs the single page navigation while replacing the current history state
  * instead of adding a new one
- * @function 
+ * @function
  * @name Router/_private/Controller#replaceState
  * @param {Data.IHistoryState} newHistoryState state to navigate to
  * @see Router/_private/Controller#navigate
  */
 /**
- * 
+ *
  * Производит переход без перезагрузки страницы без добавления новой записи в историю переходов (вместо этого заменяет текущую).
- * @function 
+ * @function
  * @name Router/_private/Controller#replaceState
  * @param {Data.IHistoryState} newHistoryState Состояние для перехода.
  * @see Router/_private/Controller#navigate
@@ -121,7 +121,6 @@ export function replaceState(newHistoryState: Data.IHistoryState): void {
 
     navigate(rewrittenHistoryState, () => History.replaceState(rewrittenHistoryState));
 }
-
 
 export function addRoute(
     route: Data.IRegisterableComponent,
@@ -206,52 +205,51 @@ function _getNavigationState(
    return localState;
 }
 
-function _tryApplyNewState(newState: Data.IHistoryState): Promise<boolean> {
+async function _tryApplyNewState(newState: Data.IHistoryState): Promise<boolean> {
    const state = History.getCurrentState();
    const newApp = getAppNameByUrl(newState.state);
    const currentApp = getAppNameByUrl(state.state);
 
-   return _checkRoutesAcceptNewState(newState).then((result) => {
-      if (newApp === currentApp) {
-         return result;
-      } else {
-         // Переходим без СПА, потому что сломалась синхронизация HEAD
-         // при несовпадении VirtualDom inferno разрушает HEAD. Нужно
-         // допатчить инферно так, чтобы под капотом библиотека НИКОГДА
-         // не удаляла HEAD и HTML
-         window.location.href = newState.href;
-         return false;
-         return new Promise<boolean>((resolve, reject) => {
-                require([newApp], (appComponent) => {
-               if (!appComponent) {
-                  _handleAppRequireError(
-                     `requirejs did not report an error, but '${newApp}' component was not loaded. ` +
-                        'This could have happened because of circular dependencies or because ' +
-                        'of the browser behavior. Starting default redirect',
-                     newState.href
-                  );
-                  reject(new Error('App component is not defined'));
-               } else {
-                  const changedApp = _tryChangeApplication(newApp);
-                  if (!changedApp) {
-                            _checkRoutesAcceptNewState(newState).then((ret) => {
-                        resolve(ret);
-                     });
-                  }
-                  resolve(true);
+   const result = await _checkRoutesAcceptNewState(newState);
+   if (newApp === currentApp) {
+      return result;
+   } else {
+      // Переходим без СПА, потому что сломалась синхронизация HEAD
+      // при несовпадении VirtualDom inferno разрушает HEAD. Нужно
+      // допатчить инферно так, чтобы под капотом библиотека НИКОГДА
+      // не удаляла HEAD и HTML
+      window.location.href = newState.href;
+      return false;
+      return new Promise<boolean>((resolve, reject) => {
+         require([newApp], (appComponent) => {
+            if (!appComponent) {
+               _handleAppRequireError(
+                  `requirejs did not report an error, but '${newApp}' component was not loaded. ` +
+                  'This could have happened because of circular dependencies or because ' +
+                  'of the browser behavior. Starting default redirect',
+                  newState.href
+               );
+               reject(new Error('App component is not defined'));
+            } else {
+               const changedApp = _tryChangeApplication(newApp);
+               if (!changedApp) {
+                  _checkRoutesAcceptNewState(newState).then((ret) => {
+                     resolve(ret);
+                  });
                }
-                }, (err) => {
-               // If the folder doesn't have /Index component, it does not
-               // use new routing. Load the page manually
-                    _handleAppRequireError(
-                        `Unable to load module '${newApp}', starting default redirect`,
-                        newState.href
-                    );
-                    reject(err);
-            });
+               resolve(true);
+            }
+         }, (err) => {
+            // If the folder doesn't have /Index component, it does not
+            // use new routing. Load the page manually
+            _handleAppRequireError(
+               `Unable to load module '${newApp}', starting default redirect`,
+               newState.href
+            );
+            reject(err);
          });
-      }
-   });
+      });
+   }
 }
 
 function _checkRoutesAcceptNewState(newState: Data.IHistoryState): Promise<boolean> {

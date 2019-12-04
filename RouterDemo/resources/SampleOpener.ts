@@ -10,7 +10,7 @@ export default class SampleOpener extends Control {
         this._selfId = this._generateRandomId();
     }
 
-    public open(popupParams: Record<string, unknown>): void {
+    open(popupParams: Record<string, unknown>): void {
         this._notify(
             'popupManagerOpen',
             [{
@@ -23,7 +23,7 @@ export default class SampleOpener extends Control {
         );
     }
 
-    public close(): void {
+    close(): void {
         this._notify(
             'popupManagerClose',
             [{ openerId: this._selfId }],
