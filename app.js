@@ -5,15 +5,16 @@ const root = process.cwd(),
    app = express(),
    resourcesPath = path.join('', 'application');
 
-const global = (function() {
-   return this || (0, eval)('this');
+var globalObject = (function() {
+   result = this || global || frames || window || self;
+   result.global=result;
+   return result;
 })();
-
 
 const indexFile = fs.readFileSync(path.join(root, 'application', 'RouterDemo', 'index.html'), 'utf8');
 
 const requirejs = require(path.join(root, 'node_modules', 'saby-units', 'lib', 'requirejs', 'r.js'));
-global.requirejs = requirejs;
+globalObject.requirejs = requirejs;
 
 
 const createConfig = require(path.join(root, 'node_modules', 'sbis3-ws', 'WS.Core', 'ext', 'requirejs', 'config.js'));
@@ -22,7 +23,7 @@ const config = createConfig(path.join(root, 'application'),
    path.join(root, 'application'),
    { lite: true });
 
-global.require = global.requirejs = require = requirejs;
+globalObject.require = globalObject.requirejs = require = requirejs;
 requirejs.config(config);
 
 

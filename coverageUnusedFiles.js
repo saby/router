@@ -8,7 +8,7 @@ let path = require('path'),
     allFiles = [];
 
 // функция пробегает по папке и находит все js файлы
-dirWalker = function (dir) {
+let dirWalker = function (dir) {
     let pattern = /\.js$/,
         files = fs.readdirSync(dir),
         newPath = '';
@@ -41,8 +41,8 @@ function coverFiles(files, replacer) {
         let relPath = file.replace(replacer, '').slice(1),
             rootPaths = replacer.split(path.sep),
             rootDir = rootPaths[rootPaths.length - 1],
-            key = [rootDir, relPath].join(path.sep),
-            coverData = cover[key];
+            absolutePath = [rootDir, relPath].join(path.sep),
+            coverData = cover[absolutePath];
         if (!coverData) {
             try {
                 let rawFile = fs.readFileSync(file, 'utf-8');
@@ -66,10 +66,10 @@ coverFiles(routerFiles, routerPath);
 
 
 // функция возвращает покрытие для опредленного пути
-function getCoverByPath(path) {
+function getCoverByPath(value) {
     let coverageByPath = {};
     Object.keys(newCover).forEach(function (name) {
-        if (name.includes(path)) {
+        if (name.includes(value)) {
             coverageByPath[name] = newCover[name]
         }
     });
