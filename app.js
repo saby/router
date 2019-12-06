@@ -1,3 +1,5 @@
+/* eslint-disable no-global-assign */
+/* eslint-disable no-eval */
 const root = process.cwd(),
    path = require('path'),
    express = require('express'),
@@ -5,16 +7,14 @@ const root = process.cwd(),
    app = express(),
    resourcesPath = path.join('', 'application');
 
-var globalObject = (function() {
-   result = this || global || frames || window || self;
-   result.global=result;
-   return result;
+const global = (function() {
+   return this || (0, eval)('this');
 })();
 
 const indexFile = fs.readFileSync(path.join(root, 'application', 'RouterDemo', 'index.html'), 'utf8');
 
 const requirejs = require(path.join(root, 'node_modules', 'saby-units', 'lib', 'requirejs', 'r.js'));
-globalObject.requirejs = requirejs;
+global.requirejs = requirejs;
 
 
 const createConfig = require(path.join(root, 'node_modules', 'sbis3-ws', 'WS.Core', 'ext', 'requirejs', 'config.js'));
@@ -23,9 +23,8 @@ const config = createConfig(path.join(root, 'application'),
    path.join(root, 'application'),
    { lite: true });
 
-globalObject.require = globalObject.requirejs = require = requirejs;
+global.require = global.requirejs = require = requirejs;
 requirejs.config(config);
-
 
 
 app.use(express.static(resourcesPath));
