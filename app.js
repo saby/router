@@ -1,3 +1,5 @@
+/* eslint-disable no-global-assign */
+/* eslint-disable no-eval */
 const root = process.cwd(),
    path = require('path'),
    express = require('express'),
@@ -8,7 +10,6 @@ const root = process.cwd(),
 const global = (function() {
    return this || (0, eval)('this');
 })();
-
 
 const indexFile = fs.readFileSync(path.join(root, 'application', 'RouterDemo', 'index.html'), 'utf8');
 
@@ -24,7 +25,6 @@ const config = createConfig(path.join(root, 'application'),
 
 global.require = global.requirejs = require = requirejs;
 requirejs.config(config);
-
 
 
 app.use(express.static(resourcesPath));
