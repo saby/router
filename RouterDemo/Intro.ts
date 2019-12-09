@@ -6,7 +6,7 @@ import * as Control from 'Core/Control';
 import template = require('wml!RouterDemo/Intro');
 
 class Intro extends Control {
-   public _template: Function = template;
+   _template: Function = template;
 }
 
 export = Intro;

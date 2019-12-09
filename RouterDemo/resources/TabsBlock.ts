@@ -12,10 +12,10 @@ interface ITabsBlockOptions {
 }
 
 class TabsBlock extends Control {
-   public _template: Function = template;
+   _template: Function = template;
 
-   private _tabCount = 3;
-   private _selectedTabId = 0;
+   private _tabCount: number = 3;
+   private _selectedTabId: number = 0;
 
    _beforeMount(cfg: ITabsBlockOptions): void {
       // cfg.selectedTab is passed in options as a string by Router.Route

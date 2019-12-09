@@ -5,7 +5,7 @@ import * as Control from 'Core/Control';
 // @ts-ignore
 import template = require('wml!RouterDemo/resources/RecursivePopup');
 // @ts-ignore
-import { Controller } from 'Router/router';
+import { Controller, Data } from 'Router/router';
 
 import 'css!RouterDemo/resources/RecursivePopup';
 
@@ -14,18 +14,18 @@ interface IRecursivePopupOptions {
 }
 
 class RecursivePopup extends Control {
-   public _template: Function = template;
-   private _isPopupDisplayed = false;
-   private _topCoordinate = 80;
+   _template: Function = template;
+   private _isPopupDisplayed: boolean = false;
+   private _topCoordinate: number = 80;
 
    private _returnPrettyUrl: string;
    private _returnUrl: string;
 
-   _beforeMount(cfg: IRecursivePopupOptions) {
+   _beforeMount(cfg: IRecursivePopupOptions): void {
       this._topCoordinate = 80 + cfg.displayDepth * 50;
    }
 
-   _displayPopup(event, newLocation, oldLocation) {
+   _displayPopup(event: Event, newLocation: Data.IHistoryState, oldLocation: Data.IHistoryState): void {
       if (!this._isPopupDisplayed) {
          this._isPopupDisplayed = true;
 
@@ -36,12 +36,12 @@ class RecursivePopup extends Control {
       }
    }
 
-   _hideSelf() {
+   _hideSelf(): void {
       this._isPopupDisplayed = false;
       this._notify('hideSelf');
    }
 
-   _hideNestedPopup() {
+   _hideNestedPopup(): void {
       if (this._isPopupDisplayed) {
          this._isPopupDisplayed = false;
 

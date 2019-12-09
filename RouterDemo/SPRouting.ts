@@ -6,7 +6,7 @@ import * as Control from 'Core/Control';
 import template = require('wml!RouterDemo/SPRouting');
 
 class SPRouting extends Control {
-   public _template: Function = template;
+   _template: Function = template;
 }
 
 export = SPRouting;
