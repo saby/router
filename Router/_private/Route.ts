@@ -40,6 +40,7 @@ const FILTERED_OPTIONS_NAMES = ['content', 'mask', 'theme', '_isSeparatedOptions
  * @class Router/_private/Route
  * @extends Core/Control
  * @control
+ * @author Черваков Д.В.
  * @public
  */
 class Route extends Control {
