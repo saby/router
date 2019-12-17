@@ -4,7 +4,6 @@
  * 
  * @module
  * @name Router/_private/History
- * @author Черваков Д.В.
  */
 
 import * as UrlRewriter from './UrlRewriter';

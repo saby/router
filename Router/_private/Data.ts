@@ -4,7 +4,6 @@
  * 
  * @module
  * @name Router/_private/Data
- * @author Черваков Д.В.
  */
 
 import StoreManager, { ICoreInstance } from './StoreManager';

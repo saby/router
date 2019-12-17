@@ -4,7 +4,6 @@
  * 
  * @module
  * @name Router/_private/MaskResolver
- * @author Черваков Д.В.
  */
 
 import { IoC } from 'Env/Env';

@@ -26,7 +26,6 @@
  * @includes Route Router/_private/Route
  * @includes Popup Router/_private/Popup
  * @includes List Router/_private/List
- * @author Черваков Д.В.
  * @public
  */
 
