@@ -71,7 +71,6 @@ const _private = {
  * @class Router/_private/Popup
  * @extends Core/Control
  * @control
- * @author Черваков Д.В.
  * @public
  */
 class PopupRouter extends Control {
