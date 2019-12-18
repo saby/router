@@ -50,6 +50,7 @@ interface IReferenceOptions extends HashMap<unknown> {
  * @class Router/_private/Reference
  * @extends Core/Control
  * @control
+ * @author Черваков Д.В.
  * @public
  */
 class Reference extends Control {
