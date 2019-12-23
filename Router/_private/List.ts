@@ -9,7 +9,7 @@ import { IHistoryState, ISyntheticClickEvent } from './Data';
 
 import { Record } from 'Types/entity';
 
-interface IListRouterOptions {
+export interface IListRouterOptions {
     state: string;
     href?: string;
     itemKeyProperty: string;
@@ -189,10 +189,10 @@ export default class ListRouter extends Control {
      * обработчика события можно вернуть **false**, чтобы предотвратить переход и изменение URL.
      */
 
-    protected _options: IListRouterOptions;
+    public _options: IListRouterOptions;
     protected _template: Function = template;
 
-    private _itemClickHandler(event: Event, record: Record, clickEvent?: ISyntheticClickEvent): void {
+    protected _itemClickHandler(event: Event, record: Record, clickEvent?: ISyntheticClickEvent): void {
         // If Reference already handled the event, do not process
         // it here
         if (clickEvent && clickEvent.routerReferenceNavigation) {
@@ -203,6 +203,7 @@ export default class ListRouter extends Control {
 
         // Fires the same navigate event as Reference does, makes it
         // possible to prevent the navigation
+        // @ts-ignore
         if (this._notify('navigate', [newState, clickEvent, record]) !== false) {
             navigate(newState);
         }
