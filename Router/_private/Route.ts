@@ -262,6 +262,7 @@ class Route extends Control {
         const currentState = History.getCurrentState();
         let prevState = History.getPrevState();
         if (notUndefVal) {
+            this._urlOptions = urlOptions;
             this._isResolved = true;
             if (!prevState) {
                 prevState = {
