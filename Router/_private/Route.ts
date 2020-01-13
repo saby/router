@@ -206,7 +206,7 @@ class Route extends Control {
 
         const oldUrlOptions = this._urlOptions;
         this._urlOptions = MaskResolver.calculateUrlParams(this._options.mask, newLoc.state);
-        const wasResolvedParam = this._hasResolvedParams();
+        const wasResolvedParam = this._hasResolvedParams(this._urlOptions);
         this._fillUrlOptionsFromCfg(this._options);
 
         if (wasResolvedParam && !this._isResolved) {
@@ -228,16 +228,16 @@ class Route extends Control {
 
     private _applyNewUrl(mask: string, cfg: IRouteOptions): boolean {
         this._urlOptions = MaskResolver.calculateUrlParams(mask);
-        const notUndefVal = this._hasResolvedParams();
+        const notUndefVal = this._hasResolvedParams(this._urlOptions);
         this._fillUrlOptionsFromCfg(cfg);
         return notUndefVal;
     }
 
-    private _hasResolvedParams(): boolean {
+    private _hasResolvedParams(urlOptions: HashMap<unknown>): boolean {
         let notUndefVal = false;
-        for (const i in this._urlOptions) {
-            if (this._urlOptions.hasOwnProperty(i)) {
-                if (this._urlOptions[i] !== undefined) {
+        for (const i in urlOptions) {
+            if (urlOptions.hasOwnProperty(i)) {
+                if (urlOptions[i] !== undefined) {
                     notUndefVal = true;
                     break;
                 }
@@ -255,8 +255,8 @@ class Route extends Control {
     }
 
     private _checkUrlResolved(): void {
-        this._urlOptions = MaskResolver.calculateUrlParams(this._options.mask, Data.getRelativeUrl());
-        const notUndefVal = this._hasResolvedParams();
+        const urlOptions = MaskResolver.calculateUrlParams(this._options.mask, Data.getRelativeUrl());
+        const notUndefVal = this._hasResolvedParams(urlOptions);
         this._fillUrlOptionsFromCfg(this._options);
 
         const currentState = History.getCurrentState();
