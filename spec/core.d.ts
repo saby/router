@@ -16,6 +16,7 @@ declare module "tmpl!*" {
     export = tmpl;
 }*/
 
+// @ts-ignore
 declare const process: any;
 
 declare module "Core/Control" {
@@ -25,6 +26,7 @@ declare module "Core/Control" {
        _notify(...args): any;
       _beforeUpdate(...args): any;
       _forceUpdate(...args): any;
+      getInstanceId(): number;
 
    }
    export = Control;
