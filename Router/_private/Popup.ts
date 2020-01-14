@@ -72,6 +72,7 @@ const _private = {
  * @extends Core/Control
  * @control
  * @public
+ * @author Черваков Д.В.
  */
 class PopupRouter extends Control {
     /*
@@ -228,7 +229,7 @@ class PopupRouter extends Control {
         }
     }
 
-    private _popupClosed(): void {
+    protected _popupClosed(): void {
         // When the popup is closed, clear the corresponding url part from the
         // address bar (unless ignored)
         if (!this._ignorePopupClose) {
