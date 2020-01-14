@@ -11,6 +11,12 @@ export interface ICoreInstance {
     changeApplicationHandler: (e: Event, newAppName: string) => boolean;
 }
 
+/**
+ * Класс-менеджер хранилища
+ * @class Router/_private/StoreManager
+ * @public
+ * @author Черваков Д.В.
+ */
 class StoreManager {
     private _fakeStorage: Record<string, unknown> = {};
 

@@ -41,6 +41,7 @@ const FILTERED_OPTIONS_NAMES = ['content', 'mask', 'theme', '_isSeparatedOptions
  * @extends Core/Control
  * @control
  * @public
+ * @author Черваков Д.В.
  */
 class Route extends Control {
     /*
