@@ -27,6 +27,7 @@
  * @includes Popup Router/_private/Popup
  * @includes List Router/_private/List
  * @public
+ * @author Черваков Д.В.
  */
 
 import * as Controller from './_private/Controller';
