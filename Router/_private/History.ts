@@ -1,10 +1,9 @@
 /// <amd-module name="Router/_private/History" />
 
 /**
- * Набор методов для взаимодействия с Историей Роутера
+ * 
  * @module
  * @name Router/_private/History
- * @author Черваков Д.В.
  */
 
 import * as UrlRewriter from './UrlRewriter';
