@@ -51,7 +51,6 @@ interface IReferenceOptions extends HashMap<unknown> {
  * @extends Core/Control
  * @control
  * @public
- * @author Черваков Д.В.
  */
 class Reference extends Control {
     /*
