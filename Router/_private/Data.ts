@@ -1,10 +1,9 @@
 /// <amd-module name="Router/_private/Data" />
 
 /**
- * Набор методов для хранения состояний истории роутера
+ * 
  * @module
  * @name Router/_private/Data
- * @author Черваков Д.В.
  */
 
 import StoreManager, { ICoreInstance } from './StoreManager';

@@ -4,7 +4,6 @@
  * Набор общих функций для управления в системе роутинга.
  * @module
  * @name Router/_private/Controller
- * @author Черваков Д.В.
  */
 
 import { IoC } from 'Env/Env';
