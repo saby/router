@@ -1,13 +1,5 @@
 /// <amd-module name="Router/_private/UrlRewriter" />
 
-/**
- * Набор методов для работы с router.json, в котором можно задать соответствие
- * между текущим путем и его короткой записью - "красивым" URL
- * @module
- * @name Router/_private/MaskResolver
- * @author Черваков Д.В.
- */
-
 const httpRE = /^http[s]?:\/\//;
 const multiSlash = /\/{2,}/g;
 const startSlash = /^\//;
