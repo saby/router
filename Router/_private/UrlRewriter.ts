@@ -17,7 +17,7 @@ type RouteEntriesArray = string[][];
 
 interface IRouteTreeNode {
     value?: string;
-    tree: HashMap<IRouteTreeNode>;
+    tree: Record<string, IRouteTreeNode>;
 }
 
 interface IRouteTree extends IRouteTreeNode {
@@ -33,7 +33,7 @@ let routeTree: IRouteTree = null;
 let reverseRouteTree: IRouteTree = null;
 
 import replacementRoutes = require('router');
-_prepareRoutes(replacementRoutes as unknown as HashMap<string> || {});
+_prepareRoutes(replacementRoutes as unknown as Record<string, string> || {});
 
 /*
  * @function Router/_private/UrlRewriter#get
@@ -154,7 +154,7 @@ function _getPath(url: string): string {
  * @param {Object} json объект с конфигурацией замен адресов
  * @private
  */
-export function _prepareRoutes(json: HashMap<string>): void {
+export function _prepareRoutes(json: Record<string, string>): void {
     const entries = getEntries(json);
     routeTree = buildRouteTree(entries);
     reverseRouteTree = buildRouteTree(reverseEntries(entries));
@@ -197,7 +197,7 @@ function buildRouteTree(entries: RouteEntriesArray): IRouteTree {
     return result;
 }
 
-function getEntries(json: HashMap<string>): RouteEntriesArray {
+function getEntries(json: Record<string, string>): RouteEntriesArray {
     if (!json) {
         return [];
     }
