@@ -8,7 +8,7 @@ import * as Data from './Data';
 import * as MaskResolver from './MaskResolver';
 import * as History from './History';
 
-interface IRouteOptions extends HashMap<unknown> {
+interface IRouteOptions extends Record<string, unknown> {
     content?: Function;
     mask?: string;
 }
@@ -164,7 +164,7 @@ class Route extends Control {
 
     _template: Function = template;
 
-    private _urlOptions: HashMap<unknown> = null;
+    private _urlOptions: Record<string, unknown> = null;
     private _isResolved: boolean = false;
 
     _beforeMount(cfg: IRouteOptions): void {
@@ -234,7 +234,7 @@ class Route extends Control {
         return notUndefVal;
     }
 
-    private _hasResolvedParams(urlOptions: HashMap<unknown>): boolean {
+    private _hasResolvedParams(urlOptions: Record<string, unknown>): boolean {
         let notUndefVal = false;
         for (const i in urlOptions) {
             if (urlOptions.hasOwnProperty(i)) {
@@ -279,7 +279,7 @@ class Route extends Control {
         return FILTERED_OPTIONS_NAMES.indexOf(optionName) >= 0;
     }
 
-    private _didOptionsChange(newOptions: HashMap<unknown>, oldOptions: HashMap<unknown>): boolean {
+    private _didOptionsChange(newOptions: Record<string, unknown>, oldOptions: Record<string, unknown>): boolean {
         let i: string;
 
         for (i in newOptions) {

@@ -34,7 +34,7 @@ interface ISplitPath {
  * Extract values from the current URL based on the specified mask
  * @param {String} mask mask with parameter placeholders
  * @param {String} [url] URL to extract values from (current URL will be used by default)
- * @returns {HashMap<string>} the key-value store of extracted parameters
+ * @returns {Record<string, string>} the key-value store of extracted parameters
  */
 /**
  * Извлекает значения из текущего адреса по заданной маске.
@@ -42,9 +42,9 @@ interface ISplitPath {
  * @name Router/_private/MaskResolver#calculateUrlParams
  * @param {String} mask Параметризованная маска.
  * @param {String} [url] Адрес, из которого будут извлекаться значения. По умолчанию используется текущий URL.
- * @returns {HashMap<string>} Объект, в котором ключи - названия параметров, а значения - значения параметров.
+ * @returns {Record<string, string>} Объект, в котором ключи - названия параметров, а значения - значения параметров.
  */
-export function calculateUrlParams(mask: string, url?: string): HashMap<unknown> {
+export function calculateUrlParams(mask: string, url?: string): Record<string, unknown> {
     _validateMask(mask);
 
     const params = _calculateParams(mask, {}, url);
@@ -56,7 +56,7 @@ export function calculateUrlParams(mask: string, url?: string): HashMap<unknown>
  * @function Router/_private/MaskResolver#calculateCfgParams
  * @private
  */
-export function calculateCfgParams(mask: string, cfg: HashMap<unknown>): HashMap<unknown> {
+export function calculateCfgParams(mask: string, cfg: Record<string, unknown>): Record<string, unknown> {
     _validateMask(mask);
 
     const params = _calculateParams(mask, cfg);
@@ -68,7 +68,7 @@ export function calculateCfgParams(mask: string, cfg: HashMap<unknown>): HashMap
  * Calculates a new URL based on the current URL, specified mask
  * and the hash map of parameters to fill the mask
  * @param {String} mask mask with parameter placeholders
- * @param {HashMap<string>} cfg key-value store with specified parameters
+ * @param {Record<string, string>} cfg key-value store with specified parameters
  * @returns {String} the new calculated URL
  */
 /**
@@ -76,10 +76,10 @@ export function calculateCfgParams(mask: string, cfg: HashMap<unknown>): HashMap
  * @function
  * @name Router/_private/MaskResolver#calculateHref
  * @param {String} mask Параметризованная маска.
- * @param {HashMap<string>} cfg Объект со значениями параметров, используемых в маске.
+ * @param {Record<string, string>} cfg Объект со значениями параметров, используемых в маске.
  * @returns {String} Вычисленный адрес.
  */
-export function calculateHref(mask: string, cfg: HashMap<unknown>): string {
+export function calculateHref(mask: string, cfg: Record<string, unknown>): string {
     _validateMask(mask);
     const actualCfg = cfg.clear ? {} : cfg;
     const url = UrlRewriter.get(Data.getRelativeUrl());
@@ -115,7 +115,7 @@ function _splitQueryAndHash(url: string): ISplitPath {
 }
 
 const MASK_RESULTS_OFFSET = 2;
-function _calculateParams(mask: string, cfg: HashMap<unknown>, url?: string): IParam[] {
+function _calculateParams(mask: string, cfg: Record<string, unknown>, url?: string): IParam[] {
     const result: IParam[] = [];
     const fullMask = _generateFullMaskWithoutParams(mask, (param) => {
         result.push({
@@ -203,23 +203,23 @@ function _matchParams(mask: string, cb: (param: IMatchPosition) => void): void {
     }
 }
 
-function _getUrlParams(params: IParam[]): HashMap<unknown> {
-    const res: HashMap<unknown> = {};
+function _getUrlParams(params: IParam[]): Record<string, unknown> {
+    const res: Record<string, unknown> = {};
     params.forEach((param) => {
         res[param.name] = param.urlValue;
     });
     return res;
 }
 
-function _getCfgParams(params: IParam[]): HashMap<unknown> {
-    const res: HashMap<unknown> = {};
+function _getCfgParams(params: IParam[]): Record<string, unknown> {
+    const res: Record<string, unknown> = {};
     params.forEach((param) => {
         res[param.name] = param.value;
     });
     return res;
 }
 
-function _resolveHref(href: string, mask: string, cfg: HashMap<unknown>): string {
+function _resolveHref(href: string, mask: string, cfg: Record<string, unknown>): string {
     const params = _calculateParams(mask, cfg);
     const cfgParams = _getCfgParams(params);
     const urlParams = _getUrlParams(params);
@@ -266,7 +266,7 @@ function _resolveHref(href: string, mask: string, cfg: HashMap<unknown>): string
     return result;
 }
 
-function _getMaskFindValue(mask: string, urlParams: HashMap<unknown>, href: string): string {
+function _getMaskFindValue(mask: string, urlParams: Record<string, unknown>, href: string): string {
     let findValue = _resolveMask(mask, urlParams);
 
     // Если полную маску не получается найти в URL, но есть префикс
@@ -285,7 +285,7 @@ function _getMaskFindValue(mask: string, urlParams: HashMap<unknown>, href: stri
     return findValue;
 }
 
-function _getIncompleteMaskFindValue(mask: string, urlParams: HashMap<unknown>, href: string): string {
+function _getIncompleteMaskFindValue(mask: string, urlParams: Record<string, unknown>, href: string): string {
     let incompleteMask = mask;
     while (_isSlashMask(incompleteMask) && _maskHasParams(incompleteMask)) {
         // Пока в маске есть слэши и параметры, отрезаем от маски часть после последнего
@@ -315,12 +315,12 @@ function _hrefMainPartEndsWith(href: string, ending: string): boolean {
     return new RegExp(endingPattern).test(href);
 }
 
-function _getMaskReplaceValue(mask: string, cfgParams: HashMap<unknown>): string {
+function _getMaskReplaceValue(mask: string, cfgParams: Record<string, unknown>): string {
     const encodedParams = _mapParams(cfgParams, _encodeParam);
     return _resolveMask(mask, encodedParams);
 }
 
-function _resolveMask(mask: string, params: HashMap<unknown>): string {
+function _resolveMask(mask: string, params: Record<string, unknown>): string {
     let paramCount = 0;
     let resolvedCount = 0;
     let resolvedMask = mask;
@@ -372,7 +372,7 @@ function _getFolderNameByUrl(url: string): string {
     return folderName;
 }
 
-function _mapParams(obj: HashMap<unknown>, cb: (val: unknown) => string): HashMap<string> {
+function _mapParams(obj: Record<string, unknown>, cb: (val: unknown) => string): Record<string, string> {
     const result = {};
     for (const i in obj) {
         if (obj.hasOwnProperty(i)) {

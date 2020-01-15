@@ -8,7 +8,7 @@ import * as MaskResolver from './MaskResolver';
 import { getReverse } from './UrlRewriter';
 import { IHistoryState, ISyntheticClickEvent } from './Data';
 
-interface IReferenceOptions extends HashMap<unknown> {
+interface IReferenceOptions extends Record<string, unknown> {
     content?: Function;
     state?: string;
     href?: string;
