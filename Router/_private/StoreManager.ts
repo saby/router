@@ -35,7 +35,7 @@ class StoreManager {
             // AppEnv storages exist on the new pages built with
             // Application/Core, we store Router data there if
             // possible (if the application is initialized)
-            return AppEnv.getStore(STORAGE_KEY).toObject() as Record<string, unknown>;
+            return AppEnv.getStore<Record<string, unknown>>(STORAGE_KEY).toObject();
         } else if (typeof window !== 'undefined') {
             // If the application is not initialized, this means that
             // Router is used on the old page without Application/Core.
@@ -54,7 +54,7 @@ class StoreManager {
 
     getCoreInstance(): ICoreInstance {
         if (AppInit.isInit()) {
-            const storage = AppEnv.getStore(CORE_INSTANCE_KEY).toObject() as Record<string, unknown>;
+            const storage = AppEnv.getStore<Record<string, unknown>>(CORE_INSTANCE_KEY).toObject();
             return storage && storage.instance as ICoreInstance;
         }
         return null;
