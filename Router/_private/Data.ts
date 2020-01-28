@@ -217,7 +217,7 @@ export function getCoreInstance(): ICoreInstance {
     return StoreManager.getCoreInstance();
 }
 
-function _initNewStorage(storage: Record<string, unknown>): void {
+function _initNewStorage(storage: IRouterData): void {
     const currentUrl = _calculateRelativeUrl();
     const initialHistoryState: IHistoryState = {
         id: 0,
@@ -249,7 +249,7 @@ function _getStorage(): IRouterData {
     if (!storage || (storage && !storage.IS_ROUTER_STORAGE)) {
         _initNewStorage(storage);
     }
-    return storage as IRouterData;
+    return storage;
 }
 
 function _calculateRelativeUrl(): string {
