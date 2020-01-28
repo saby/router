@@ -57,10 +57,7 @@ class RouterData implements IRouterData {
     coreInstance?: ICoreInstance;
 
     // данные из стора
-    private _IS_ROUTER_STORAGE: boolean;
     private _history: IHistoryState[];
-    private _historyPosition: number;
-    private _relativeUrl: string;
 
     constructor(private _storage: IStore<Record<string, string>>) {
         const initState = _storage.toObject ? _storage.toObject() : {};
@@ -68,10 +65,10 @@ class RouterData implements IRouterData {
         Object.assign(this, initState);
     }
 
-    get IS_ROUTER_STORAGE(): boolean { return this._IS_ROUTER_STORAGE; }
+    get IS_ROUTER_STORAGE(): boolean { return this._storage.get('IS_ROUTER_STORAGE') === 'true' }
 
     set IS_ROUTER_STORAGE(val: boolean) {
-        this._IS_ROUTER_STORAGE = val;
+        // this._IS_ROUTER_STORAGE = val;
         this._storage.set('IS_ROUTER_STORAGE', val.toString());
     }
 
@@ -82,18 +79,21 @@ class RouterData implements IRouterData {
         this._storage.set('history', JSON.stringify(val));
     }
 
-    get historyPosition(): number { return this._historyPosition; }
+    get historyPosition(): number {
+        const radix = 10;
+        return Number.parseInt(this._storage.get('historyPosition'), radix);
+    }
 
     set historyPosition(val: number) {
-        this._historyPosition = val;
         this._storage.set('historyPosition', '' + val);
     }
 
-    get relativeUrl(): string { return this._relativeUrl; }
+    get relativeUrl(): string {
+        return this._storage.get('relativeUrl');
+     }
 
     set relativeUrl(val: string) {
-        this._relativeUrl = val;
-        this._storage.set('relativeUrl', '' + val);
+        this._storage.set('relativeUrl', val);
     }
 }
 
