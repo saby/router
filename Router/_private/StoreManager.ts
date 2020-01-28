@@ -58,3 +58,4 @@ class StoreManager {
 const Instance = new StoreManager();
 
 export default Instance;
+
