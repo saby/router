@@ -55,9 +55,10 @@ class RouterData implements IRouterData {
     registeredRoutes: Record<string, IRegisteredRoute>;
     registeredReferences: Record<string, IRegisteredReference>;
     coreInstance?: ICoreInstance;
+    history: IHistoryState[];
 
     // данные из стора
-    private _history: IHistoryState[];
+    // private _history: IHistoryState[];
 
     constructor(private _storage: IStore<Record<string, string>>) {
         const initState = _storage.toObject ? _storage.toObject() : {};
@@ -65,19 +66,19 @@ class RouterData implements IRouterData {
         Object.assign(this, initState);
     }
 
-    get IS_ROUTER_STORAGE(): boolean { return this._storage.get('IS_ROUTER_STORAGE') === 'true' }
+    get IS_ROUTER_STORAGE(): boolean { return this._storage.get('IS_ROUTER_STORAGE') === 'true'}
 
     set IS_ROUTER_STORAGE(val: boolean) {
         // this._IS_ROUTER_STORAGE = val;
         this._storage.set('IS_ROUTER_STORAGE', val.toString());
     }
 
-    get history(): IHistoryState[] { return this._history; }
+    // get history(): IHistoryState[] { return this._history; }
 
-    set history(val: IHistoryState[]) {
-        this._history = val;
-        this._storage.set('history', JSON.stringify(val));
-    }
+    // set history(val: IHistoryState[]) {
+    //     this._history = val;
+    //     this._storage.set('history', JSON.stringify(val));
+    // }
 
     get historyPosition(): number {
         const radix = 10;
