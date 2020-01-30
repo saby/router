@@ -51,50 +51,60 @@ class FakeStore implements IStore<Record<string, string>> {
  */
 class RouterData implements IRouterData {
 
-    // коллбэки, которые не получится хранить в сторе
-    registeredRoutes: Record<string, IRegisteredRoute>;
-    registeredReferences: Record<string, IRegisteredReference>;
-    coreInstance?: ICoreInstance;
-    history: IHistoryState[];
-
-    // данные из стора
-    // private _history: IHistoryState[];
-
-    constructor(private _storage: IStore<Record<string, string>>) {
-        const initState = _storage.toObject ? _storage.toObject() : {};
-        initState.history = initState.history ? JSON.parse(initState.history) : {};
-        Object.assign(this, initState);
+    constructor(private _storage: IStore<Record<string, unknown>>) {
     }
 
-    get IS_ROUTER_STORAGE(): boolean { return this._storage.get('IS_ROUTER_STORAGE') === 'true'}
+    get IS_ROUTER_STORAGE(): boolean { return <boolean>this._storage.get('IS_ROUTER_STORAGE')}
 
     set IS_ROUTER_STORAGE(val: boolean) {
-        // this._IS_ROUTER_STORAGE = val;
-        this._storage.set('IS_ROUTER_STORAGE', val.toString());
+        this._storage.set('IS_ROUTER_STORAGE', val);
     }
 
-    // get history(): IHistoryState[] { return this._history; }
+    get history(): IHistoryState[] { return <IHistoryState[]>this._storage.get('history'); }
 
-    // set history(val: IHistoryState[]) {
-    //     this._history = val;
-    //     this._storage.set('history', JSON.stringify(val));
-    // }
+    set history(val: IHistoryState[]) {
+        this._storage.set('history', val);
+    }
 
     get historyPosition(): number {
-        const radix = 10;
-        return Number.parseInt(this._storage.get('historyPosition'), radix);
+        // const radix = 10;
+        return <number>this._storage.get('historyPosition');
     }
 
     set historyPosition(val: number) {
-        this._storage.set('historyPosition', '' + val);
+        this._storage.set('historyPosition', val);
     }
 
     get relativeUrl(): string {
-        return this._storage.get('relativeUrl');
+        return <string>this._storage.get('relativeUrl');
      }
 
     set relativeUrl(val: string) {
         this._storage.set('relativeUrl', val);
+    }
+
+    get registeredRoutes(): Record<string, IRegisteredRoute> {
+        return <Record<string, IRegisteredRoute>>this._storage.get('registeredRoutes');
+    }
+
+    set registeredRoutes(val: Record<string, IRegisteredRoute>) {
+        this._storage.set('registeredRoutes', val);
+    }
+
+    get registeredReferences(): Record<string, IRegisteredReference> {
+        return <Record<string, IRegisteredReference>>this._storage.get('registeredReferences');
+    }
+
+    set registeredReferences(val: Record<string, IRegisteredReference>) {
+        this._storage.set('registeredReferences', val);
+    }
+
+    get coreInstance(): ICoreInstance {
+        return <ICoreInstance>this._storage.get('coreInstance');
+    }
+
+    set coreInstance(val: ICoreInstance) {
+        this._storage.set('coreInstance', val);
     }
 }
 
@@ -109,7 +119,7 @@ class StoreManager {
     private _routerData: RouterData;
 
     constructor() {
-        let routerStorage: IStore<Record<string, string>>;
+        let routerStorage: IStore<Record<string, unknown>>;
 
         if (AppInit.isInit()) {
             // AppEnv storages exist on the new pages built with
