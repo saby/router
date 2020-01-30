@@ -4,7 +4,6 @@ import * as AppInit from 'Application/Initializer';
 import * as AppEnv from 'Application/Env';
 import { ILocation, IStore } from 'Application/Interface';
 import { IRouterData, IRegisteredRoute, IRegisteredReference, IHistoryState } from 'Router/_private/Data';
-import FakeMessage from 'Browser/_Event/Broadcast/FakeMessage';
 
 const STORAGE_KEY = 'RouterData';
 const CORE_INSTANCE_KEY = 'CoreInstance';
