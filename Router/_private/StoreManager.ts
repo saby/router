@@ -119,31 +119,6 @@ class StoreManager {
     private _fakeStore:FakeStore = new FakeStore();
     private _routerData: RouterData;
 
-    constructor() {
-        // let routerStorage: IStore<Record<string, unknown>>;
-
-        // if (AppInit.isInit()) {
-        //     // AppEnv storages exist on the new pages built with
-        //     // Application/Core, we store Router data there if
-        //     // possible (if the application is initialized)
-        //     routerStorage = AppEnv.getStore(STORAGE_KEY);
-        // } else if (typeof window !== 'undefined') {
-        //      // If the application is not initialized, this means that
-        //     // Router is used on the old page without Application/Core.
-        //     // It is possible for Route to be used inside of a Wasaby
-        //     // popup for example. In this case, return a fake storage
-        //     routerStorage = new FakeStore();
-        // } else {
-        //     // If the old page is built on server, it can't have
-        //     // Router components on it (they can only exist inside
-        //     // popups or sections created by createControl on the
-        //     // client side). Return empty object instead of the
-        //     routerStorage = new FakeStore();
-        // }
-
-        // this._routerData = new RouterData(routerStorage);
-    }
-
     getLocation(): ILocation {
         if (AppInit.isInit()) {
             return AppEnv.location;
