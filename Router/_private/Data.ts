@@ -1,9 +1,10 @@
 /// <amd-module name="Router/_private/Data" />
 
 /**
- * 
+ * Набор методов для хранения состояний истории роутера
  * @module
  * @name Router/_private/Data
+ * @author Черваков Д.В.
  */
 
 import StoreManager, { ICoreInstance } from './StoreManager';
@@ -35,8 +36,8 @@ export interface IRouterData {
     IS_ROUTER_STORAGE: boolean;
     history: IHistoryState[];
     historyPosition: number;
-    registeredRoutes: HashMap<IRegisteredRoute>;
-    registeredReferences: HashMap<IRegisteredReference>;
+    registeredRoutes: Record<string, IRegisteredRoute>;
+    registeredReferences: Record<string, IRegisteredReference>;
     coreInstance?: ICoreInstance;
     relativeUrl: string;
 }
@@ -167,35 +168,35 @@ export function getVisibleRelativeUrl(): string {
 
 /*
  * @function Router/_private/Data#getRegisteredRoutes
- * Get the HashMap of all Routes currently registered by Router
+ * Get the Record of all Routes currently registered by Router
  * @returns {Object}
  * @private
  */
 /**
- * Возвращает HashMap всех Route'ов зарегистрированных в системе роутинга на данный момент.
+ * Возвращает Record всех Route'ов зарегистрированных в системе роутинга на данный момент.
  * @function
  * @name Router/_private/Data#getRegisteredRoutes
  * @returns {Object}
  * @private
  */
-export function getRegisteredRoutes(): HashMap<IRegisteredRoute> {
+export function getRegisteredRoutes(): Record<string, IRegisteredRoute> {
     return _getField('registeredRoutes');
 }
 
 /*
  * @function Router/_private/Data#getRegisteredReferences
- * Get the HashMap of all References currently registered by Router
+ * Get the Record of all References currently registered by Router
  * @returns {Object}
  * @private
  */
 /**
- * Возвращает HashMap всех Reference'ов зарегистрированных в системе роутинга на данный момент.
+ * Возвращает Record всех Reference'ов зарегистрированных в системе роутинга на данный момент.
  * @function
  * @name Router/_private/Data#getRegisteredReferences
  * @returns {Object}
  * @private
  */
-export function getRegisteredReferences(): HashMap<IRegisteredReference> {
+export function getRegisteredReferences(): Record<string, IRegisteredReference> {
     return _getField('registeredReferences');
 }
 
@@ -216,7 +217,7 @@ export function getCoreInstance(): ICoreInstance {
     return StoreManager.getCoreInstance();
 }
 
-function _initNewStorage(storage: Record<string, unknown>): void {
+function _initNewStorage(storage: IRouterData): void {
     const currentUrl = _calculateRelativeUrl();
     const initialHistoryState: IHistoryState = {
         id: 0,
@@ -248,7 +249,7 @@ function _getStorage(): IRouterData {
     if (!storage || (storage && !storage.IS_ROUTER_STORAGE)) {
         _initNewStorage(storage);
     }
-    return storage as IRouterData;
+    return storage;
 }
 
 function _calculateRelativeUrl(): string {
