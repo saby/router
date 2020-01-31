@@ -1,5 +1,6 @@
 /// <amd-module name="Router/_private/StoreManager" />
 
+
 import * as AppInit from 'Application/Initializer';
 import * as AppEnv from 'Application/Env';
 import { ILocation, IStore } from 'Application/Interface';

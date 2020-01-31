@@ -1,5 +1,6 @@
 /// <amd-module name="Router/_private/History" />
 
+
 /**
  * Набор методов для взаимодействия с Историей Роутера
  * @module
