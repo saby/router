@@ -1,5 +1,6 @@
 /// <amd-module name="Router/_private/Popup" />
 
+
 import Control = require('Core/Control');
 import template = require('wml!Router/_private/Popup');
 

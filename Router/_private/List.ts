@@ -1,5 +1,6 @@
 /// <amd-module name="Router/_private/List" />
 
+
 import * as Control from 'Core/Control';
 import * as template from 'wml!Router/_private/List';
 

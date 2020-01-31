@@ -1,5 +1,6 @@
 /// <amd-module name="Router/_private/Route" />
 
+
 import * as Control from 'Core/Control';
 import template = require('wml!Router/_private/Route');
 
