@@ -21,7 +21,7 @@ export interface IHistoryState {
 export type TStateChangeFunction = (newLoc: IHistoryState, oldLoc: IHistoryState) => Promise<boolean>;
 
 export interface IRegisterableComponent {
-    getInstanceId: () => number;
+    getInstanceId: () => string;
 }
 
 export interface IRegisteredRoute {
