@@ -1,10 +1,7 @@
 /// <amd-module name="RouterDemo/Popups" />
 
-// @ts-ignore
 import * as Control from 'Core/Control';
-// @ts-ignore
 import template = require('wml!RouterDemo/Popups');
-// @ts-ignore
 import { Controller, Data } from 'Router/router';
 
 class Popups extends Control {

@@ -1,13 +1,13 @@
 /// <amd-module name="Router/_private/Reference" />
 
-
-import * as Control from 'Core/Control';
+import { Control, TemplateFunction } from 'UI/Base';
 import template = require('wml!Router/_private/Reference');
 
 import * as Controller from './Controller';
 import * as MaskResolver from './MaskResolver';
 import { getReverse } from './UrlRewriter';
 import { IHistoryState, ISyntheticClickEvent } from './Data';
+import { IRegisterableComponent } from 'Router/_private/Data';
 
 interface IReferenceOptions extends Record<string, unknown> {
     content?: Function;
@@ -54,7 +54,7 @@ interface IReferenceOptions extends Record<string, unknown> {
  * @public
  * @author Черваков Д.В.
  */
-class Reference extends Control {
+class Reference extends Control implements IRegisterableComponent {
     /*
      * @name Router/_private/Reference#state
      * @cfg {String} A mask that specifies which part of the actual URL should be changed
@@ -169,7 +169,7 @@ class Reference extends Control {
      * Из обработчика события можно вернуть **false**, чтобы предотвратить переход.
      */
 
-    _template: Function = template;
+    _template: TemplateFunction = template;
 
     private _state: string;
     private _href: string;
@@ -211,7 +211,7 @@ class Reference extends Control {
         }
     }
 
-    private _clickHandler(e: ISyntheticClickEvent): void {
+    protected _clickHandler(e: ISyntheticClickEvent): void {
         // Only respond to the 'main' button click (usually the left mouse
         // button) and ignore the rest
         if (e.nativeEvent.button === 0) {

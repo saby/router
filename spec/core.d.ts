@@ -16,20 +16,17 @@ declare module "tmpl!*" {
     export = tmpl;
 }*/
 
-// @ts-ignore
-declare const process: any;
+// declare module "Core/Control" {
+//    class Control {
+//        public _options: any;
+//        constructor(cfg:any);
+//        _notify(...args): any;
+//       _beforeUpdate(...args): any;
+//       _forceUpdate(...args): any;
+//       getInstanceId(): number;
 
-declare module "Core/Control" {
-   class Control {
-       public _options: any;
-       constructor(cfg:any);
-       _notify(...args): any;
-      _beforeUpdate(...args): any;
-      _forceUpdate(...args): any;
-      getInstanceId(): number;
-
-   }
-   export = Control;
-}
+//    }
+//    export = Control;
+// }
 
 declare let rk: (key: string, ctx?: string | number, num?: number) => string;
