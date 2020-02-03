@@ -1,6 +1,7 @@
 /// <amd-module name="Router/_private/List" />
 
-import * as Control from 'Core/Control';
+import { Control, TemplateFunction } from 'UI/Base';
+// @ts-ignore
 import * as template from 'wml!Router/_private/List';
 
 import { calculateHref } from './MaskResolver';
@@ -191,7 +192,7 @@ export default class ListRouter extends Control {
      */
 
     public _options: IListRouterOptions;
-    protected _template: Function = template;
+    protected _template: TemplateFunction = template;
 
     protected _itemClickHandler(event: Event, record: Record, clickEvent?: ISyntheticClickEvent): void {
         // If Reference already handled the event, do not process
@@ -204,7 +205,6 @@ export default class ListRouter extends Control {
 
         // Fires the same navigate event as Reference does, makes it
         // possible to prevent the navigation
-        // @ts-ignore
         if (this._notify('navigate', [newState, clickEvent, record]) !== false) {
             navigate(newState);
         }
@@ -221,16 +221,19 @@ export default class ListRouter extends Control {
 
     // Getting value from the record by complex path, e. g. First/Second/Third
     private _getRecordField(record: Record, fieldPath: string): string {
+        function isIGet(x: any): x is {get: Function} {
+            return x.hasOwnProperty('get');
+        }
         if (!record) {
             return null;
         }
         const parts = fieldPath.split('/');
         const partsCount = parts.length;
-        let current: any = record;
+        let current: Record | {} | string | null = record;
         let i = 0;
         while (current && i < partsCount) {
             const part = parts[i];
-            if (typeof current.get === 'function') {
+            if (isIGet(current) && typeof current.get === 'function') {
                 current = current.get(part);
             } else if (typeof current[part] !== 'undefined') {
                 current = current[part];
@@ -239,6 +242,6 @@ export default class ListRouter extends Control {
             }
             ++i;
         }
-        return current;
+        return typeof current === 'string' ? current : null;
     }
 }
