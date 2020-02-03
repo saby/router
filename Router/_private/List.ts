@@ -2,6 +2,7 @@
 
 
 import { Control, TemplateFunction } from 'UI/Base';
+// @ts-ignore
 import * as template from 'wml!Router/_private/List';
 
 import { calculateHref } from './MaskResolver';

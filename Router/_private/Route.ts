@@ -2,6 +2,7 @@
 
 
 import { Control, TemplateFunction } from 'UI/Base';
+// @ts-ignore
 import template = require('wml!Router/_private/Route');
 
 import * as Controller from './Controller';
