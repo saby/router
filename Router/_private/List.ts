@@ -229,6 +229,7 @@ export default class ListRouter extends Control {
         const partsCount = parts.length;
         let current: any = record;
         let i = 0;
+        debugger;
         while (current && i < partsCount) {
             const part = parts[i];
             if (typeof current.get === 'function') {
