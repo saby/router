@@ -1,6 +1,7 @@
 /// <amd-module name="Router/_private/Popup" />
 
-import Control = require('Core/Control');
+import { Control, TemplateFunction } from 'UI/Base';
+// @ts-ignore
 import template = require('wml!Router/_private/Popup');
 
 import * as Controller from './Controller';
@@ -187,7 +188,7 @@ class PopupRouter extends Control {
      */
 
     protected _options: IPopupRouterOptions;
-    protected _template: Function = template;
+    protected _template: TemplateFunction = template;
     protected _container: IControlContainer;
 
     private _urlMask: string;
@@ -208,7 +209,7 @@ class PopupRouter extends Control {
         this._urlMask = PopupRouter.getUrlMask(newOpts);
     }
 
-    private _urlChanged(event: Event, newParams: IPopupRouterUrlParams, oldParams: IPopupRouterUrlParams): void {
+    protected _urlChanged(event: Event, newParams: IPopupRouterUrlParams, oldParams: IPopupRouterUrlParams): void {
         const oldPopupParameter = oldParams[URL_PARAM_NAME];
         const newPopupParameter = newParams[URL_PARAM_NAME];
 

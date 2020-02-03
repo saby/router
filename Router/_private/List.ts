@@ -1,6 +1,7 @@
 /// <amd-module name="Router/_private/List" />
 
-import * as Control from 'Core/Control';
+import { Control, TemplateFunction } from 'UI/Base';
+// @ts-ignore
 import * as template from 'wml!Router/_private/List';
 
 import { calculateHref } from './MaskResolver';
@@ -191,7 +192,7 @@ export default class ListRouter extends Control {
      */
 
     public _options: IListRouterOptions;
-    protected _template: Function = template;
+    protected _template: TemplateFunction = template;
 
     protected _itemClickHandler(event: Event, record: Record, clickEvent?: ISyntheticClickEvent): void {
         // If Reference already handled the event, do not process
@@ -204,7 +205,6 @@ export default class ListRouter extends Control {
 
         // Fires the same navigate event as Reference does, makes it
         // possible to prevent the navigation
-        // @ts-ignore
         if (this._notify('navigate', [newState, clickEvent, record]) !== false) {
             navigate(newState);
         }
