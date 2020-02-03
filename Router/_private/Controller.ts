@@ -1,6 +1,5 @@
 /// <amd-module name="Router/_private/Controller" />
 
-
 /**
  * Набор общих функций для управления в системе роутинга.
  * @module

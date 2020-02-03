@@ -1,6 +1,5 @@
 /// <amd-module name="Router/_private/MaskResolver" />
 
-
 /**
  * Набор методов обеспечивающих работу с масками и параметрами URL
  * @module
