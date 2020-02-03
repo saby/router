@@ -373,7 +373,7 @@ function _getFolderNameByUrl(url: string): string {
 }
 
 function _mapParams(obj: Record<string, unknown>, cb: (val: unknown) => string): Record<string, string> {
-    const result = {};
+    const result:Record<string, string> = {};
     for (const i in obj) {
         if (obj.hasOwnProperty(i)) {
             result[i] = cb(obj[i]);

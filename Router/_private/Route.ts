@@ -1,12 +1,14 @@
 /// <amd-module name="Router/_private/Route" />
 
-import * as Control from 'Core/Control';
+import { Control, TemplateFunction } from 'UI/Base';
+// @ts-ignore
 import template = require('wml!Router/_private/Route');
 
 import * as Controller from './Controller';
 import * as Data from './Data';
 import * as MaskResolver from './MaskResolver';
 import * as History from './History';
+import { IRegisterableComponent } from 'Router/_private/Data';
 
 interface IRouteOptions extends Record<string, unknown> {
     content?: Function;
@@ -43,7 +45,7 @@ const FILTERED_OPTIONS_NAMES = ['content', 'mask', 'theme', '_isSeparatedOptions
  * @public
  * @author Черваков Д.В.
  */
-class Route extends Control {
+class Route extends Control implements IRegisterableComponent{
     /*
      * @typedef {Object} IHistoryState
      * @property {Number} id Numeric identifier of the current state.
@@ -162,7 +164,7 @@ class Route extends Control {
      * </pre>
      */
 
-    _template: Function = template;
+    _template: TemplateFunction = template;
 
     private _urlOptions: Record<string, unknown> = null;
     private _isResolved: boolean = false;
@@ -187,7 +189,7 @@ class Route extends Control {
 
     private _register(): void {
         Controller.addRoute(
-            this,
+            <IRegisterableComponent>this,
             async (newLoc, oldLoc) => {
                 return this._beforeApplyNewUrl(newLoc, oldLoc);
             },
@@ -203,28 +205,28 @@ class Route extends Control {
     }
 
     private async _beforeApplyNewUrl(newLoc: Data.IHistoryState, oldLoc: Data.IHistoryState): Promise<boolean> {
-        let result: Promise<boolean>;
+        let result: boolean;
 
         const oldUrlOptions = this._urlOptions;
-        this._urlOptions = MaskResolver.calculateUrlParams(this._options.mask, newLoc.state);
+        this._urlOptions = MaskResolver.calculateUrlParams((<{mask}>this._options).mask, newLoc.state);
         const wasResolvedParam = this._hasResolvedParams(this._urlOptions);
         this._fillUrlOptionsFromCfg(this._options);
 
         if (wasResolvedParam && !this._isResolved) {
-            result = this._notify('enter', [newLoc, oldLoc]);
+            result = <boolean>this._notify('enter', [newLoc, oldLoc]);
             this._isResolved = true;
         } else if (!wasResolvedParam && this._isResolved) {
-            result = this._notify('leave', [newLoc, oldLoc]);
+            result = <boolean>this._notify('leave', [newLoc, oldLoc]);
             this._isResolved = false;
         } else {
-            result = Promise.resolve(true);
+            result = true;
         }
 
         if (this._didOptionsChange(this._urlOptions, oldUrlOptions)) {
             this._notify('change', [this._urlOptions, oldUrlOptions]);
         }
 
-        return result;
+        return Promise.resolve(result);
     }
 
     private _applyNewUrl(mask: string, cfg: IRouteOptions): boolean {
@@ -256,7 +258,7 @@ class Route extends Control {
     }
 
     private _checkUrlResolved(): void {
-        const urlOptions = MaskResolver.calculateUrlParams(this._options.mask, Data.getRelativeUrl());
+        const urlOptions = MaskResolver.calculateUrlParams((<{mask}>this._options).mask, Data.getRelativeUrl());
         const notUndefVal = this._hasResolvedParams(urlOptions);
         this._fillUrlOptionsFromCfg(this._options);
 
@@ -267,7 +269,7 @@ class Route extends Control {
             this._isResolved = true;
             if (!prevState) {
                 prevState = {
-                    state: MaskResolver.calculateHref(this._options.mask, { clear: true })
+                    state: MaskResolver.calculateHref((<{mask}>this._options).mask, { clear: true })
                 };
             }
             this._notify('enter', [currentState, prevState]);
