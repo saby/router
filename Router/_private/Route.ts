@@ -1,6 +1,5 @@
 /// <amd-module name="Router/_private/Route" />
 
-
 import { Control, TemplateFunction } from 'UI/Base';
 // @ts-ignore
 import template = require('wml!Router/_private/Route');

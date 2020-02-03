@@ -1,6 +1,5 @@
 /// <amd-module name="Router/_private/List" />
 
-
 import { Control, TemplateFunction } from 'UI/Base';
 // @ts-ignore
 import * as template from 'wml!Router/_private/List';
@@ -227,12 +226,12 @@ export default class ListRouter extends Control {
         }
         const parts = fieldPath.split('/');
         const partsCount = parts.length;
-        let current: any = record;
+        let current: Record | string | null = record;
         let i = 0;
         debugger;
         while (current && i < partsCount) {
             const part = parts[i];
-            if (typeof current.get === 'function') {
+            if (current instanceof Record && typeof current.get === 'function') {
                 current = current.get(part);
             } else if (typeof current[part] !== 'undefined') {
                 current = current[part];
@@ -241,6 +240,6 @@ export default class ListRouter extends Control {
             }
             ++i;
         }
-        return current;
+        return typeof current === 'string' ? current : null;
     }
 }
