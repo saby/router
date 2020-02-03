@@ -9,6 +9,7 @@ import { navigate } from './Controller';
 import { IHistoryState, ISyntheticClickEvent } from './Data';
 
 import { Record } from 'Types/entity';
+import { object } from 'Types/util';
 
 export interface IListRouterOptions {
     state: string;
@@ -221,17 +222,19 @@ export default class ListRouter extends Control {
 
     // Getting value from the record by complex path, e. g. First/Second/Third
     private _getRecordField(record: Record, fieldPath: string): string {
+        function isIGet(x: any): x is {get: Function} {
+            return x.hasOwnProperty('get');
+        }
         if (!record) {
             return null;
         }
         const parts = fieldPath.split('/');
         const partsCount = parts.length;
-        let current: Record | string | null = record;
+        let current: Record | {} | string | null = record;
         let i = 0;
-        debugger;
         while (current && i < partsCount) {
             const part = parts[i];
-            if (current instanceof Record && typeof current.get === 'function') {
+            if (isIGet(current) && typeof current.get === 'function') {
                 current = current.get(part);
             } else if (typeof current[part] !== 'undefined') {
                 current = current[part];
