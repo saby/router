@@ -221,16 +221,19 @@ export default class ListRouter extends Control {
 
     // Getting value from the record by complex path, e. g. First/Second/Third
     private _getRecordField(record: Record, fieldPath: string): string {
+        function isIGet(x: any): x is {get: Function} {
+            return x.hasOwnProperty('get');
+        }
         if (!record) {
             return null;
         }
         const parts = fieldPath.split('/');
         const partsCount = parts.length;
-        let current: any = record;
+        let current: Record | {} | string | null = record;
         let i = 0;
         while (current && i < partsCount) {
             const part = parts[i];
-            if (typeof current.get === 'function') {
+            if (isIGet(current) && typeof current.get === 'function') {
                 current = current.get(part);
             } else if (typeof current[part] !== 'undefined') {
                 current = current[part];
@@ -239,6 +242,6 @@ export default class ListRouter extends Control {
             }
             ++i;
         }
-        return current;
+        return typeof current === 'string' ? current : null;
     }
 }
