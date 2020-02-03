@@ -9,7 +9,6 @@ import { navigate } from './Controller';
 import { IHistoryState, ISyntheticClickEvent } from './Data';
 
 import { Record } from 'Types/entity';
-import { object } from 'Types/util';
 
 export interface IListRouterOptions {
     state: string;
