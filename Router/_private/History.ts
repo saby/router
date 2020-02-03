@@ -80,7 +80,7 @@ export function back(): void {
     if (historyPosition === 0) {
         // If window has an existing state, use it instead of calculating by ourselves
         const windowHistoryState = typeof window !== 'undefined' && window.history.state;
-        const currentState = windowHistoryState && windowHistoryState.state;
+        const currentState: string | undefined | null = windowHistoryState && windowHistoryState.state;
         const currentHref = Data.getVisibleRelativeUrl();
         history.unshift({
             id: history[0].id - 1,
