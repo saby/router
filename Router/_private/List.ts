@@ -201,7 +201,7 @@ export default class ListRouter extends Control {
             return;
         }
 
-        const newState = this._calculateNewState(record);
+        const newState: IHistoryState = this._calculateNewState(record);
 
         // Fires the same navigate event as Reference does, makes it
         // possible to prevent the navigation
@@ -213,9 +213,9 @@ export default class ListRouter extends Control {
     // Calculating new state for navigation based on the clicked item's record
     // and passed masks for state and href
     private _calculateNewState(record: Record): IHistoryState {
-        const urlId = this._getRecordField(record, this._options.itemKeyProperty);
-        const state = calculateHref(this._options.state, { id: urlId });
-        const href = this._options.href ? calculateHref(this._options.href, { id: urlId }) : null;
+        const urlId: string = this._getRecordField(record, this._options.itemKeyProperty);
+        const state: string = calculateHref(this._options.state, { id: urlId });
+        const href: string = this._options.href ? calculateHref(this._options.href, { id: urlId }) : null;
         return { state, href };
     }
 
@@ -227,12 +227,12 @@ export default class ListRouter extends Control {
         if (!record) {
             return null;
         }
-        const parts = fieldPath.split('/');
-        const partsCount = parts.length;
+        const parts: string[] = fieldPath.split('/');
+        const partsCount: number = parts.length;
         let current: Record | {} | string | null = record;
-        let i = 0;
+        let i: number = 0;
         while (current && i < partsCount) {
-            const part = parts[i];
+            const part: string = parts[i];
             if (isIGet(current) && typeof current.get === 'function') {
                 current = current.get(part);
             } else if (typeof current[part] !== 'undefined') {

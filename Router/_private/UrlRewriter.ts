@@ -8,10 +8,10 @@
  * @author Черваков Д.В.
  */
 
-const httpRE = /^http[s]?:\/\//;
-const multiSlash = /\/{2,}/g;
-const startSlash = /^\//;
-const finishSlash = /\/$/;
+const httpRE: RegExp = /^http[s]?:\/\//;
+const multiSlash: RegExp = /\/{2,}/g;
+const startSlash: RegExp = /^\//;
+const finishSlash: RegExp = /\/$/;
 
 type RouteEntriesArray = string[][];
 
@@ -79,20 +79,20 @@ function getBestMatchFromRouteTree(url: string, rootNode: IRouteTree): string {
         return rootNode.rootRoute + misc;
     }
     if (rootNode) {
-        const urlParts = _getPath(path).split('/');
+        const urlParts: string[] = _getPath(path).split('/');
 
-        let curTreeNode = rootNode.tree;
-        let bestMatching = null;
-        let bestMatchingIndex = -1;
+        let curTreeNode: Record<string, IRouteTreeNode> = rootNode.tree;
+        let bestMatching: string | null = null;
+        let bestMatchingIndex: number = -1;
 
         for (let i = 0; i < urlParts.length; i++) {
-            const urlPart = urlParts[i];
+            const urlPart: string = urlParts[i];
 
             if (!curTreeNode[urlPart]) {
                 break;
             }
 
-            const nodeValue = curTreeNode[urlPart].value;
+            const nodeValue: string = curTreeNode[urlPart].value;
             if (nodeValue) {
                 bestMatching = nodeValue;
                 bestMatchingIndex = i;
@@ -102,8 +102,8 @@ function getBestMatchFromRouteTree(url: string, rootNode: IRouteTree): string {
         }
 
         if (bestMatching) {
-            const prefix = urlParts.slice(0, bestMatchingIndex + 1).join('/');
-            const result = path.replace(prefix, bestMatching).replace(multiSlash, '/');
+            const prefix: string = urlParts.slice(0, bestMatchingIndex + 1).join('/');
+            const result: string = path.replace(prefix, bestMatching).replace(multiSlash, '/');
             return result + misc;
         }
     }
@@ -111,9 +111,9 @@ function getBestMatchFromRouteTree(url: string, rootNode: IRouteTree): string {
 }
 
 function _splitQueryAndHash(url: string): ISplitPath {
-    const splitMatch = url.match(/[?#]/);
+    const splitMatch: RegExpMatchArray = url.match(/[?#]/);
     if (splitMatch) {
-        const index = splitMatch.index;
+        const index: number = splitMatch.index;
         return {
             path: url.substring(0, index),
             misc: url.slice(index)
@@ -127,9 +127,9 @@ function _splitQueryAndHash(url: string): ISplitPath {
 
 // get path by url and normalize it
 function _getPath(url: string): string {
-    let result = url.replace(httpRE, '');
-    const qIndex = result.indexOf('?');
-    const pIndex = result.indexOf('#');
+    let result: string = url.replace(httpRE, '');
+    const qIndex: number = result.indexOf('?');
+    const pIndex: number = result.indexOf('#');
     if (qIndex !== -1) {
         result = result.slice(0, qIndex);
     }
@@ -155,7 +155,7 @@ function _getPath(url: string): string {
  * @private
  */
 export function _prepareRoutes(json: Record<string, string>): void {
-    const entries = getEntries(json);
+    const entries: RouteEntriesArray = getEntries(json);
     routeTree = buildRouteTree(entries);
     reverseRouteTree = buildRouteTree(reverseEntries(entries));
 }
@@ -167,17 +167,17 @@ function buildRouteTree(entries: RouteEntriesArray): IRouteTree {
     };
 
     entries.forEach((entry) => {
-        const routeName = entry[0];
-        const routeDest = entry[1];
+        const routeName: string = entry[0];
+        const routeDest: string = entry[1];
 
         if (routeName === '/') {
             result.rootRoute = '/' + _getPath(routeDest);
             return;
         }
 
-        const routeNameParts = _getPath(routeName).split('/');
+        const routeNameParts: string[] = _getPath(routeName).split('/');
 
-        let curTreeNode = result.tree;
+        let curTreeNode: Record<string, IRouteTreeNode> = result.tree;
         routeNameParts.forEach((part, i) => {
             if (!curTreeNode.hasOwnProperty(part)) {
                 curTreeNode[part] = {
@@ -202,9 +202,9 @@ function getEntries(json: Record<string, string>): RouteEntriesArray {
         return [];
     }
 
-    const ownProps = Object.keys(json);
-    let i = ownProps.length;
-    const result = new Array(i);
+    const ownProps: string[] = Object.keys(json);
+    let i: number = ownProps.length;
+    const result: RouteEntriesArray = new Array(i);
 
     while (i--) {
         result[i] = [ownProps[i], json[ownProps[i]]];
