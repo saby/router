@@ -10,6 +10,7 @@
 import StoreManager, { ICoreInstance } from './StoreManager';
 
 import * as UrlRewriter from './UrlRewriter';
+import { ILocation } from 'Application/Interface';
 
 export interface IHistoryState {
     id?: number;
@@ -218,7 +219,7 @@ export function getCoreInstance(): ICoreInstance {
 }
 
 function _initNewStorage(storage: IRouterData): void {
-    const currentUrl = _calculateRelativeUrl();
+    const currentUrl: string = _calculateRelativeUrl();
     const initialHistoryState: IHistoryState = {
         id: 0,
         state: UrlRewriter.get(currentUrl),
@@ -245,7 +246,7 @@ function _initNewStorage(storage: IRouterData): void {
 }
 
 function _getStorage(): IRouterData {
-    const storage = StoreManager.getRouterStore();
+    const storage: IRouterData = StoreManager.getRouterStore();
     if (!storage || (storage && !storage.IS_ROUTER_STORAGE)) {
         _initNewStorage(storage);
     }
@@ -253,7 +254,7 @@ function _getStorage(): IRouterData {
 }
 
 function _calculateRelativeUrl(): string {
-    const location = StoreManager.getLocation();
+    const location: ILocation = StoreManager.getLocation();
 
     if (location) {
         return location.pathname + location.search + location.hash;
@@ -267,6 +268,6 @@ function _getField<T>(fieldName: string): T {
 }
 
 function _setField<T>(fieldName: string, value: T): T {
-    const storage = _getStorage();
+    const storage: IRouterData = _getStorage();
     return (storage[fieldName] = value);
 }

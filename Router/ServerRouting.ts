@@ -12,7 +12,7 @@ interface IServerRoutingResponse {
     render: (template: string, appOptions: Record<string, unknown>) => void;
 }
 
-let _baseTemplate = 'wml!Controls/Application/Route';
+let _baseTemplate: string = 'wml!Controls/Application/Route';
 
 export function getAppName(request: IServerRoutingRequest): string {
     return MaskResolver.getAppNameByUrl(request.path);

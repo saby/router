@@ -29,7 +29,7 @@ interface IControlContainer extends HTMLElement {
     controlNodes: Array<{ control: Control }>;
 }
 
-const _private = {
+const _private: {_isOpenerControl: (control: Control) => control is IOpenerControl} = {
     // TODO Will be removed
     // https://online.sbis.ru/opendoc.html?guid=403837db-4075-4080-8317-5a37fa71b64a
     _isOpenerControl(control: Control): control is IOpenerControl {
@@ -199,7 +199,7 @@ class PopupRouter extends Control {
     protected _beforeMount(opts: IPopupRouterOptions): void {
         this._urlMask = PopupRouter.getUrlMask(opts);
 
-        const prevState = History.getCurrentState();
+        const prevState: IHistoryState = History.getCurrentState();
         if (prevState && prevState.href !== prevState.state) {
             this._returnHref = prevState.href;
         }
@@ -210,8 +210,8 @@ class PopupRouter extends Control {
     }
 
     protected _urlChanged(event: Event, newParams: IPopupRouterUrlParams, oldParams: IPopupRouterUrlParams): void {
-        const oldPopupParameter = oldParams[URL_PARAM_NAME];
-        const newPopupParameter = newParams[URL_PARAM_NAME];
+        const oldPopupParameter: string = oldParams[URL_PARAM_NAME];
+        const newPopupParameter: string = newParams[URL_PARAM_NAME];
 
         if (newPopupParameter && !oldPopupParameter) {
             this._notify('urlAdded', [newPopupParameter]);
@@ -234,13 +234,13 @@ class PopupRouter extends Control {
         // When the popup is closed, clear the corresponding url part from the
         // address bar (unless ignored)
         if (!this._ignorePopupClose) {
-            const newUrl = MaskResolver.calculateHref(this._urlMask, { clear: true });
+            const newUrl: string = MaskResolver.calculateHref(this._urlMask, { clear: true });
             Controller.navigate({ state: newUrl, href: this._returnHref });
         }
     }
 
     private _closePopup(): void {
-        const opener = this._getOpenerControl();
+        const opener: IOpenerControl = this._getOpenerControl();
         if (opener) {
             opener.close();
         }
@@ -249,9 +249,9 @@ class PopupRouter extends Control {
     private _getOpenerControl(): IOpenerControl {
         // TODO Will be removed
         // https://online.sbis.ru/opendoc.html?guid=403837db-4075-4080-8317-5a37fa71b64a
-        const controlNodes = this._container.controlNodes;
+        const controlNodes: Array<{ control: Control }> = this._container.controlNodes;
         for (let i = 0; i < controlNodes.length; i++) {
-            const node = controlNodes[i];
+            const node: { control: Control } = controlNodes[i];
             if (node && node.control && _private._isOpenerControl(node.control)) {
                 return node.control;
             }
