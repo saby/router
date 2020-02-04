@@ -157,13 +157,13 @@ class StoreManager {
 
     getCoreInstance(): ICoreInstance {
         if (AppInit.isInit()) {
-            const storage = AppEnv.getStore<Record<string, unknown>>(CORE_INSTANCE_KEY);
+            const storage: IStore<Record<string, unknown>> = AppEnv.getStore<Record<string, unknown>>(CORE_INSTANCE_KEY);
             return storage && storage['instance'] as ICoreInstance;
         }
         return null;
     }
 }
 
-const Instance = new StoreManager();
+const Instance: StoreManager = new StoreManager();
 
 export default Instance;
