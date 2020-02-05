@@ -14,8 +14,9 @@ import * as Data from './Data';
 import { getAppNameByUrl } from './MaskResolver';
 import * as History from './History';
 import * as UrlRewriter from './UrlRewriter';
+import { ICoreInstance } from 'Router/_private/StoreManager';
 
-let isNavigating = false;
+let isNavigating: boolean = false;
 
 _initializeController();
 
@@ -59,9 +60,9 @@ export function canChangeApplication(): boolean {
  * @param {Function} [errback] Необязательная функция, будет вызвана если один из компонентов Route отменит переход
  */
 export function navigate(newState: Data.IHistoryState, callback?: Function, errback?: Function): void {
-   const rewrittenNewUrl = UrlRewriter.get(newState.state);
-   const prettyUrl = newState.href || UrlRewriter.getReverse(rewrittenNewUrl);
-   const currentState = History.getCurrentState();
+   const rewrittenNewUrl: string = UrlRewriter.get(newState.state);
+   const prettyUrl: string = newState.href || UrlRewriter.getReverse(rewrittenNewUrl);
+   const currentState: Data.IHistoryState = History.getCurrentState();
 
    if (currentState.state === rewrittenNewUrl || isNavigating) {
       return;
@@ -113,8 +114,8 @@ export function navigate(newState: Data.IHistoryState, callback?: Function, errb
  * @see Router/_private/Controller#navigate
  */
 export function replaceState(newHistoryState: Data.IHistoryState): void {
-    const rewrittenState = UrlRewriter.get(newHistoryState.state);
-    const rewrittenHref = newHistoryState.href || UrlRewriter.getReverse(rewrittenState);
+    const rewrittenState: string = UrlRewriter.get(newHistoryState.state);
+    const rewrittenHref: string = newHistoryState.href || UrlRewriter.getReverse(rewrittenState);
     const rewrittenHistoryState: Data.IHistoryState = {
         state: rewrittenState,
         href: rewrittenHref
@@ -153,18 +154,18 @@ export function removeReference(reference: Data.IRegisterableComponent): void {
 
 function _initializeController(): void {
    if (typeof window !== 'undefined') {
-      let skipNextChange = false;
+      let skipNextChange: boolean = false;
       window.onpopstate = (event: PopStateEvent) => {
          if (skipNextChange) {
             skipNextChange = false;
             return;
          }
 
-         const currentState = History.getCurrentState();
-         const prevState = History.getPrevState();
+         const currentState: Data.IHistoryState = History.getCurrentState();
+         const prevState: Data.IHistoryState = History.getPrevState();
          if ((!event.state && !prevState) || (event.state && event.state.id < currentState.id)) {
             // going back
-            const navigateToState = _getNavigationState(
+            const navigateToState: Data.IHistoryState = _getNavigationState(
                prevState,
                event.state,
                event.state || prevState ? Data.getRelativeUrl() : Data.getVisibleRelativeUrl()
@@ -172,8 +173,8 @@ function _initializeController(): void {
             navigate(navigateToState, () => History.back());
          } else {
             // going forward
-            const nextState = History.getNextState();
-            const navigateToState = _getNavigationState(nextState, event.state, Data.getRelativeUrl());
+            const nextState: Data.IHistoryState = History.getNextState();
+            const navigateToState: Data.IHistoryState = _getNavigationState(nextState, event.state, Data.getRelativeUrl());
             navigate(
                navigateToState,
                () => History.forward(),
@@ -207,11 +208,11 @@ function _getNavigationState(
 }
 
 async function _tryApplyNewState(newState: Data.IHistoryState): Promise<boolean> {
-   const state = History.getCurrentState();
-   const newApp = getAppNameByUrl(newState.state);
-   const currentApp = getAppNameByUrl(state.state);
+   const state: Data.IHistoryState = History.getCurrentState();
+   const newApp: string = getAppNameByUrl(newState.state);
+   const currentApp: string = getAppNameByUrl(state.state);
 
-   const result = await _checkRoutesAcceptNewState(newState);
+   const result: boolean = await _checkRoutesAcceptNewState(newState);
    if (newApp === currentApp) {
       return result;
    } else {
@@ -253,11 +254,11 @@ async function _tryApplyNewState(newState: Data.IHistoryState): Promise<boolean>
    }
 }
 
-function _checkRoutesAcceptNewState(newState: Data.IHistoryState): Promise<boolean> {
-   const currentState = History.getCurrentState();
-   const registeredRoutes = Data.getRegisteredRoutes();
+async function _checkRoutesAcceptNewState(newState: Data.IHistoryState): Promise<boolean> {
+   const currentState: Data.IHistoryState = History.getCurrentState();
+   const registeredRoutes: Record<string, Data.IRegisteredRoute> = Data.getRegisteredRoutes();
 
-   const promises = [];
+   const promises: Array<Promise<boolean>> = [];
    for (const routeId in registeredRoutes) {
       if (registeredRoutes.hasOwnProperty(routeId)) {
          const route: Data.IRegisteredRoute = registeredRoutes[routeId];
@@ -270,8 +271,8 @@ function _checkRoutesAcceptNewState(newState: Data.IHistoryState): Promise<boole
 }
 
 function _notifyStateChanged(newState: Data.IHistoryState, oldState: Data.IHistoryState): void {
-   const registeredRoutes = Data.getRegisteredRoutes();
-   const registeredReferences = Data.getRegisteredReferences();
+   const registeredRoutes: Record<string, Data.IRegisteredRoute> = Data.getRegisteredRoutes();
+   const registeredReferences: Record<string, Data.IRegisteredReference> = Data.getRegisteredReferences();
 
    for (const routeId in registeredRoutes) {
       if (registeredRoutes.hasOwnProperty(routeId)) {
@@ -287,7 +288,7 @@ function _notifyStateChanged(newState: Data.IHistoryState, oldState: Data.IHisto
 }
 
 function _tryChangeApplication(newAppName: string): boolean {
-   const core = Data.getCoreInstance();
+   const core: ICoreInstance = Data.getCoreInstance();
    return core && core.changeApplicationHandler(null, newAppName);
 }
 
