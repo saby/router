@@ -11,25 +11,5 @@ declare module "tmpl!*" {
     const tmpl: (...args: Array<any>) => string;
     export = tmpl;
 }
-/*declare module "wml!*" {
-    const tmpl: (...args: Array<any>) => string;
-    export = tmpl;
-}*/
-
-// @ts-ignore
-declare const process: any;
-
-declare module "Core/Control" {
-   class Control {
-       public _options: any;
-       constructor(cfg:any);
-       _notify(...args): any;
-      _beforeUpdate(...args): any;
-      _forceUpdate(...args): any;
-      getInstanceId(): number;
-
-   }
-   export = Control;
-}
 
 declare let rk: (key: string, ctx?: string | number, num?: number) => string;
