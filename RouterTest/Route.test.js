@@ -85,7 +85,7 @@ function(Router, CM) {
          createdRoute = createRoute({ mask: 'unique/:uid' });
          var notifyStub = sinon.stub(createdRoute, '_notify');
 
-         waitForLifecycle()
+         createdRoute.createPromise
             .then(function() {
                assert(notifyStub.called, 'expected _notify to be called');
                var notifyArgs = notifyStub.getCall(0).args;
