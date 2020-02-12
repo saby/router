@@ -31,6 +31,9 @@ define('RouterTest/resources/controlManager', ['Core/Control'], function(CoreCon
          var control = CoreControl.createControl(ControlClass, Object.assign({}, options), element);
          control._$testElement = element;
          control.mounting = overlayLiveCycle(control,'_afterMount');
+         control.getUpdating = (function(){
+            return overlayLiveCycle(control,'_afterUpdate')
+         });
          return control;
       },
       destroyControl: function(control) {
@@ -38,10 +41,5 @@ define('RouterTest/resources/controlManager', ['Core/Control'], function(CoreCon
          control._$testElement.remove();
          delete control._$testElement;
       },
-      waitForLifecycle: function(timeout) {
-         return new Promise(function(resolve) {
-            setTimeout(resolve, timeout || 100);
-         });
-      }
    };
 });

@@ -7,6 +7,7 @@ import template = require('wml!Router/_private/Popup');
 import * as Controller from './Controller';
 import * as MaskResolver from './MaskResolver';
 import * as History from './History';
+import { IHistoryState } from 'Router/_private/Data';
 
 const URL_PARAM_NAME = 'id';
 const IGNORE_POPUP_CLOSE_TIMEOUT = 250;
