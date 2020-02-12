@@ -12,8 +12,7 @@ function(Router, CM) {
    function createRoute(options) {
       return CM.createControl(Route, Object.assign({}, defaultOptions, options));
    }
-   var destroyRoute = CM.destroyControl,
-      waitForLifecycle = CM.waitForLifecycle;
+   var destroyRoute = CM.destroyControl;
 
    describe('Router/Route', function() {
       var createdRoute;
@@ -35,7 +34,7 @@ function(Router, CM) {
          var registeredRoutes = Data.getRegisteredRoutes();
 
          createdRoute = createRoute();
-         waitForLifecycle()
+         createdRoute.mounting
             .then(function() {
                assert.property(registeredRoutes, createdRoute.getInstanceId());
             })
@@ -46,14 +45,11 @@ function(Router, CM) {
             instanceId;
 
          createdRoute = createRoute();
-         waitForLifecycle()
+         createdRoute.mounting
             .then(function() {
                instanceId = createdRoute.getInstanceId();
                destroyRoute(createdRoute);
                createdRoute = null;
-               return waitForLifecycle();
-            })
-            .then(function() {
                assert.notProperty(registeredRoutes, instanceId);
             })
             .then(done, done);
@@ -65,11 +61,11 @@ function(Router, CM) {
             notifyStub;
 
          createdRoute = createRoute({ mask: 'test/:value' });
-         waitForLifecycle()
+         createdRoute.mounting
             .then(function() {
                notifyStub = sinon.stub(createdRoute, '_notify');
                createdRoute._beforeApplyNewUrl(newLocation, oldLocation);
-               return waitForLifecycle();
+               return createdRoute.getUpdating();
             })
             .then(function() {
                assert(notifyStub.called, 'expected _notify to be called');
@@ -85,7 +81,7 @@ function(Router, CM) {
          createdRoute = createRoute({ mask: 'unique/:uid' });
          var notifyStub = sinon.stub(createdRoute, '_notify');
 
-         waitForLifecycle()
+         createdRoute.mounting
             .then(function() {
                assert(notifyStub.called, 'expected _notify to be called');
                var notifyArgs = notifyStub.getCall(0).args;
@@ -98,7 +94,7 @@ function(Router, CM) {
          createdRoute = createRoute({ mask: 'unique/:uid' });
          var notifyStub = sinon.stub(createdRoute, '_notify');
 
-         waitForLifecycle()
+         createdRoute.mounting
             .then(function() {
                assert(notifyStub.called, 'expected _notify to be called');
                var notifyArgs = notifyStub.getCall(1).args;
@@ -111,18 +107,18 @@ function(Router, CM) {
             nonMatchingLocation = { state: '/' },
             notifyStub;
          createdRoute = createRoute({ mask: 'test/:value' });
-         waitForLifecycle()
+         createdRoute.mounting
             .then(function() {
                // change the location to a matching one
                createdRoute._beforeApplyNewUrl(matchingLocation, nonMatchingLocation);
-               return waitForLifecycle();
+               return createdRoute.getUpdating();
             })
             .then(function() {
                notifyStub = sinon.stub(createdRoute, '_notify');
 
                // change the location to a non-matching one
                createdRoute._beforeApplyNewUrl(nonMatchingLocation, matchingLocation);
-               return waitForLifecycle();
+               return createdRoute.getUpdating();
             })
             .then(function() {
                assert(notifyStub.called, 'expected _notify to be called');
@@ -141,15 +137,15 @@ function(Router, CM) {
          Data.setRelativeUrl(url1.state);
 
          createdRoute = createRoute({ mask: 'test/:value' });
-         waitForLifecycle()
+         createdRoute.mounting
             .then(function() {
                notifyStub = sinon.stub(createdRoute, '_notify');
                createdRoute._beforeApplyNewUrl(url2, url1);
-               return waitForLifecycle();
+               return createdRoute.getUpdating();
             })
             .then(function() {
                createdRoute._beforeApplyNewUrl(url1, url2);
-               return waitForLifecycle();
+               return createdRoute.getUpdating();
             })
             .then(function() {
                assert(notifyStub.calledOnce, 'expected _notify to be called');
@@ -164,11 +160,11 @@ function(Router, CM) {
       it('correctly resolves the url parameters', function(done) {
          var options = { mask: 'myparam=:value' };
          createdRoute = createRoute(options);
-         waitForLifecycle()
+         createdRoute.mounting
             .then(function() {
                Data.setRelativeUrl('/my/url?myparam=abc&test=true');
                createdRoute._beforeUpdate(options);
-               return waitForLifecycle();
+               return createdRoute.getUpdating();
             })
             .then(function() {
                assert.deepEqual(createdRoute._urlOptions.value, 'abc');
