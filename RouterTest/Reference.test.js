@@ -17,8 +17,7 @@ function(Router, CM) {
    function createReference(options) {
       return CM.createControl(Reference, Object.assign({}, defaultOptions, options));
    }
-   var destroyReference = CM.destroyControl,
-      waitForLifecycle = CM.waitForLifecycle;
+   var destroyReference = CM.destroyControl;
 
    describe('Router/Reference', function() {
       var createdReference;
@@ -40,7 +39,7 @@ function(Router, CM) {
          var registeredReferences = Data.getRegisteredReferences();
 
          createdReference = createReference();
-         waitForLifecycle()
+         createdReference.mounting
             .then(function() {
                assert.property(registeredReferences, createdReference.getInstanceId());
             })
@@ -51,14 +50,11 @@ function(Router, CM) {
             instanceId;
 
          createdReference = createReference();
-         waitForLifecycle()
+         createdReference.mounting
             .then(function() {
                instanceId = createdReference.getInstanceId();
                destroyReference(createdReference);
                createdReference = null;
-               return waitForLifecycle();
-            })
-            .then(function() {
                assert.notProperty(registeredReferences, instanceId);
             })
             .then(done, done);
@@ -68,7 +64,7 @@ function(Router, CM) {
          Data.setRelativeUrl('/name/value');
 
          createdReference = createReference({ state: 'test/:tvalue', tvalue: 'true' });
-         waitForLifecycle()
+         createdReference.mounting
             .then(function() {
                assert.strictEqual(createdReference._state, '/name/value/test/true');
             })
@@ -79,7 +75,7 @@ function(Router, CM) {
          Data.setRelativeUrl('/name/value');
 
          createdReference = createReference(options);
-         waitForLifecycle()
+         createdReference.mounting
             .then(function() {
                Data.setRelativeUrl('/my/test/false/abc');
                createdReference._beforeUpdate(options);
@@ -94,7 +90,7 @@ function(Router, CM) {
          Data.setRelativeUrl('/random/url/here?test=true');
 
          createdReference = createReference({ state: 'url/:location', href: '/:location', location: 'website' });
-         waitForLifecycle()
+         createdReference.mounting
             .then(function() {
                assert.strictEqual(createdReference._href, '/website');
             })
@@ -104,7 +100,7 @@ function(Router, CM) {
          Data.setRelativeUrl('/random/url/here?test=true');
 
          createdReference = createReference({ state: 'url/:location', href: '/:location', location: 'website' });
-         waitForLifecycle()
+         createdReference.mounting
             .then(function() {
                var newOptions = Object.assign({}, createdReference._options, { location: 'book' });
                createdReference._beforeUpdate(newOptions);
@@ -118,10 +114,10 @@ function(Router, CM) {
             navigateStub = sinon.stub(Controller, 'navigate');
 
          createdReference = createReference();
-         waitForLifecycle()
+         createdReference.mounting
             .then(function() {
                createdReference._clickHandler(eventObject);
-               return waitForLifecycle(50);
+               return createReference.getUpdating();
             })
             .then(function() {
                assert(eventObject.preventDefault.calledOnce, 'expected preventDefault to be called for click event');
