@@ -1,33 +1,36 @@
 define('RouterTest/resources/controlManager', ['Core/Control'], function(CoreControl) {
    return {
       createControl: function(ControlClass, options) {
+         function overlayLiveCycle(control, functionName){
+            return new Promise((res,rej) =>{
+               // stores initial "control.functionName"
+               var protoFunc = control[functionName] && control[functionName].bind(control);
+               const REJECTION_TIME = 20000;
+               // assigns initial "control.functionName" in control
+               function revert() {
+                  control[functionName] = protoFunc;
+                  protoFunc = null;
+               }
+               // reject promise on timeout
+               var timer = setTimeout(() => {
+                  revert();
+                  rej();
+               }, REJECTION_TIME);
+               // overlays "control.functionName" to resolve promise on "control.functionName" call;
+               control[functionName] = (function(...args) {
+                  protoFunc && typeof protoFunc === 'function' && protoFunc(...args);
+                  revert();
+                  clearTimeout(timer);
+                  res();
+               }).bind(control);
+            });
+         }
          var element = document.createElement('div');
          element.className = 'router-tests-control';
 
          var control = CoreControl.createControl(ControlClass, Object.assign({}, options), element);
          control._$testElement = element;
-         control.createPromise=new Promise(function(res,res){
-            const protoFunc=control._afterMount.bind(control);
-            var resolved=false;
-            var timer=setTimeout(()=>{
-               if (!resolved){
-                  resolved=true;
-                  rej();
-               }
-            },20000);
-            control._afterMount=(function(...args){
-               if(protoFunc && typeof protoFunc === 'function'){
-                  protoFunc(...args);
-               }
-               if (!resolved){
-                  resolved=true;
-                  clearTimeout(timer);
-                  res();
-               }
-            }).bind(control);
-         })
-         
-
+         control.mounting = overlayLiveCycle(control,'_afterMount');
          return control;
       },
       destroyControl: function(control) {
