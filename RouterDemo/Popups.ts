@@ -7,6 +7,13 @@ import template = require('wml!RouterDemo/Popups');
 // @ts-ignore
 import { Controller, Data } from 'Router/router';
 
+/**
+ * @deprecated
+ * Пример открытия и закрытия всплывающих сообщений, основанный на изменении URL,
+ * с использованием событий {@link Router.router:Route#enter} и {@link Router.router:Route#leave}
+ */
+
+
 class Popups extends Control {
    _template: Function = template;
 

@@ -3,6 +3,9 @@
 // TODO Move this file to Presentation Service?
 import { MaskResolver } from 'Router/router';
 
+/**
+ * Роутинг для серверного рендеринга
+ */
 interface IServerRoutingRequest {
     path: string;
     compatible: boolean;

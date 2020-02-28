@@ -3,6 +3,9 @@ import template = require('wml!RouterDemo/resources/SamplePopup');
 
 import SampleOpener from './SampleOpener';
 
+/**
+ * реализация всплывающего сообщения для демонстрации
+ */
 interface ISamplePopupOptions {
     popupDepth: number;
     isRecursive: boolean;

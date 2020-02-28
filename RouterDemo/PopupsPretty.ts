@@ -7,6 +7,11 @@ import template = require('wml!RouterDemo/PopupsPretty');
 // @ts-ignore
 import { Controller, Data } from 'Router/router';
 
+
+/**
+ * @deprecated
+ * Пример идентичный {@link RouterDemo/Popups}, но с использованием опции {@link Router/Reference.href} для скрытия длинных URL
+ */
 class PopupsPretty extends Control {
    _template: Function = template;
 

@@ -6,6 +6,11 @@ import SampleOpener from './SampleOpener';
 import 'RouterDemo/resources/SamplePopup';
 import 'css!RouterDemo/resources/SampleRegistry';
 
+/**
+ * контрол, слушающий события URL
+ * закрывает и открывает всплывающие сообщения по событию
+ */
+
 export interface ISampleRegistryItem {
     id: string;
     text: string;

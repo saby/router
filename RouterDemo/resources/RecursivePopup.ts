@@ -9,6 +9,10 @@ import { Controller, Data } from 'Router/router';
 
 import 'css!RouterDemo/resources/RecursivePopup';
 
+
+/**
+ * Пример контрола, для управления рекурсивным открытием всплывающих окон
+ */
 interface IRecursivePopupOptions {
    displayDepth?: number;
 }

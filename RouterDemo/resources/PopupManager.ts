@@ -3,6 +3,9 @@ import template = require('wml!RouterDemo/resources/PopupManager');
 
 import 'css!RouterDemo/resources/PopupManager';
 
+/**
+ * Менеджер всплывающих окон
+ */
 interface IPopupConfig {
     openerId: string;
     template: string;
