@@ -222,7 +222,7 @@ export default class ListRouter extends Control {
     // Getting value from the record by complex path, e. g. First/Second/Third
     private _getRecordField(record: Record, fieldPath: string): string {
         function isIGet(x: any): x is {get: Function} {
-            return x.hasOwnProperty('get');
+            return 'get' in x;
         }
         if (!record) {
             return null;
