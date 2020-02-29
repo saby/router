@@ -7,6 +7,10 @@ import template = require('wml!RouterDemo/resources/TabsBlock');
 
 import 'css!RouterDemo/resources/TabsBlock';
 
+/**
+ * Простая реализация блока вкладок для демонстрации работы роутинга
+ */
+
 interface ITabsBlockOptions {
    selectedTab?: string;
 }

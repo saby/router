@@ -1,6 +1,9 @@
 import Control = require('Core/Control');
 import template = require('wml!RouterDemo/resources/SampleOpener');
 
+/**
+ * Контрол, используемый менеджером всплывающих сообщений
+ */
 export default class SampleOpener extends Control {
     _template: Function = template;
 

@@ -8,6 +8,10 @@ import * as AppInit from 'Application/Initializer';
 
 import 'css!RouterDemo/Main';
 
+/**
+ * Точка входа для демонстрации роутинга
+ */
+
 export default class Main extends Control {
    _template: Function = template;
 

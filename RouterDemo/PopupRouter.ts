@@ -2,6 +2,9 @@ import Control = require('Core/Control');
 import template = require('wml!RouterDemo/PopupRouter');
 import { ISmallRegistryItem } from './resources/SmallRegistry';
 
+/**
+ * Пример открытия и закрытия всплывающих сообщений, основанный на изменении URL
+ */
 class PopupRouter extends Control {
     _template: Function = template;
 
