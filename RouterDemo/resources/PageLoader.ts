@@ -5,6 +5,10 @@ import * as Control from 'Core/Control';
 // @ts-ignore
 import template = require('wml!RouterDemo/resources/PageLoader');
 
+/**
+ * Загрузчик страниц, используется в {@link RouterDemo/Main}
+ */
+
 class PageLoader extends Control {
    _template: Function = template;
 
