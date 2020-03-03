@@ -242,6 +242,6 @@ export default class ListRouter extends Control {
             }
             ++i;
         }
-        return typeof current === 'string' ? current : null;
+        return current !== null ? String(current) : null;
     }
 }
