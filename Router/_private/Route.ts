@@ -43,7 +43,7 @@ const FILTERED_OPTIONS_NAMES: string[] = ['content', 'mask', 'theme', '_isSepara
  * @extends Core/Control
  * @control
  * @public
- * @author Черваков Д.В.
+ * @author Санников К.А.
  */
 class Route extends Control implements IRegisterableComponent{
     /*

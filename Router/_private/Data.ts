@@ -4,7 +4,7 @@
  * Набор методов для хранения состояний истории роутера
  * @module
  * @name Router/_private/Data
- * @author Черваков Д.В.
+ * @author Санников К.А.
  */
 
 import StoreManager, { ICoreInstance } from './StoreManager';
@@ -56,7 +56,7 @@ export interface ISyntheticClickEvent {
  * @returns {IHistoryState[]} list of history states
  */
 /**
- * 
+ *
  * Возвращает список состояний истории роутера.
  * @function
  * @name Router/_private/Data#getHistory
@@ -67,7 +67,7 @@ export function getHistory(): IHistoryState[] {
 }
 
 /*
- * 
+ *
  * Replaces the list of stored history states.
  * @function
  * @name Router/_private/Data#setHistory
@@ -75,7 +75,7 @@ export function getHistory(): IHistoryState[] {
  * @private
  */
 /**
- * 
+ *
  * Заменяет список состояний истории роутера
  * @function
  * @name Router/_private/Data#setHistory
@@ -87,7 +87,7 @@ export function setHistory(value: IHistoryState[]): void {
 }
 
 /*
- * 
+ *
  * Get the index of the history state that is currently active
  * @function
  * @name Router/_private/Data#getHistoryPosition
@@ -127,7 +127,7 @@ export function setHistoryPosition(value: number): void {
  */
 /**
 * Возвращает текущее значение действительного URL, с которым работает роутинг.
- * @function 
+ * @function
  * @name Router/_private/Data#getRelativeUrl
  * @returns {String} действительный URL
  */

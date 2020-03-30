@@ -4,7 +4,7 @@
  * Набор методов обеспечивающих работу с масками и параметрами URL
  * @module
  * @name Router/_private/MaskResolver
- * @author Черваков Д.В.
+ * @author Санников К.А.
  */
 
 import { IoC } from 'Env/Env';

@@ -84,7 +84,7 @@ export interface IListRouterOptions {
  * @extends Core/Control
  * @control
  * @public
- * @author Черваков Д.В.
+ * @author Санников К.А.
  */
 export default class ListRouter extends Control {
     /*
