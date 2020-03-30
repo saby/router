@@ -74,7 +74,7 @@ const _private: {_isOpenerControl: (control: Control) => control is IOpenerContr
  * @extends Core/Control
  * @control
  * @public
- * @author Черваков Д.В.
+ * @author Санников К.А.
  */
 class PopupRouter extends Control {
     /*

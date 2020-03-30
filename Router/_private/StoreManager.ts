@@ -16,7 +16,7 @@ export interface ICoreInstance {
  * Класс-заглушка на случай, если нету VDOM или если код выполняется на сервисе представления
  * @class Router/_private/StoreManager#FakeStore
  * @public
- * @author Черваков Д.В.
+ * @author Санников К.А.
  */
 class FakeStore implements IStore<Record<string, unknown>> {
     private _store: Record<string, unknown> = {};
@@ -47,7 +47,7 @@ class FakeStore implements IStore<Record<string, unknown>> {
  * Класс-обертка над IStore. Реализует интерфейс IRouterData
  * @class Router/_private/StoreManager#RouterData
  * @public
- * @author Черваков Д.В.
+ * @author Санников К.А.
  */
 class RouterData implements IRouterData {
 
@@ -112,7 +112,7 @@ class RouterData implements IRouterData {
  * Класс-менеджер хранилища
  * @class Router/_private/StoreManager
  * @public
- * @author Черваков Д.В.
+ * @author Санников К.А.
  */
 class StoreManager {
 

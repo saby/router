@@ -2,8 +2,9 @@ import * as Control from 'Core/Control';
 import * as template from 'wml!RouterDemo/ListRouter';
 
 /**
- * Пример использования Router.router:List 
+ * Пример использования Router.router:List
  * для изменения URL, когда дочерний "List Control" вызывает событие @event #itemClick
+ * @author Санников К.А.
  */
 
 interface IListItem {

@@ -53,7 +53,7 @@ interface IReferenceOptions extends Record<string, unknown> {
  * @extends Core/Control
  * @control
  * @public
- * @author Черваков Д.В.
+ * @author Санников К.А.
  */
 class Reference extends Control implements IRegisterableComponent {
     /*

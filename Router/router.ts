@@ -13,7 +13,7 @@
  * @includes Popup Router/_private/Popup
  * @includes List Router/_private/List
  * @public
- * @author Черваков Д.В.
+ * @author Санников К.А.
  */
 /**
  * Библиотека single-page роутинга
@@ -28,7 +28,7 @@
  * @includes Popup Router/_private/Popup
  * @includes List Router/_private/List
  * @public
- * @author Черваков Д.В.
+ * @author Санников К.А.
  */
 
 import * as Controller from './_private/Controller';

@@ -1,4 +1,7 @@
 /// <amd-module name="Router/ServerRouting" />
+/**
+ * @author Санников К.А.
+ */
 
 // TODO Move this file to Presentation Service?
 import { MaskResolver } from 'Router/router';

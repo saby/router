@@ -5,7 +5,7 @@
  * между текущим путем и его короткой записью - "красивым" URL
  * @module
  * @name Router/_private/MaskResolver
- * @author Черваков Д.В.
+ * @author Санников К.А.
  */
 
 const httpRE: RegExp = /^http[s]?:\/\//;

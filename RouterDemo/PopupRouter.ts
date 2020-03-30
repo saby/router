@@ -1,3 +1,6 @@
+/**
+ * @author Санников К.А.
+ */
 import Control = require('Core/Control');
 import template = require('wml!RouterDemo/PopupRouter');
 import { ISmallRegistryItem } from './resources/SmallRegistry';

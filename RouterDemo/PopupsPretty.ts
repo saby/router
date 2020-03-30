@@ -1,4 +1,7 @@
 /// <amd-module name="RouterDemo/PopupsPretty" />
+/**
+ * @author Санников К.А.
+ */
 
 // @ts-ignore
 import * as Control from 'Core/Control';

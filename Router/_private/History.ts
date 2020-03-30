@@ -4,7 +4,7 @@
  * Набор методов для взаимодействия с Историей Роутера
  * @module
  * @name Router/_private/History
- * @author Черваков Д.В.
+ * @author Санников К.А.
  */
 
 import * as UrlRewriter from './UrlRewriter';

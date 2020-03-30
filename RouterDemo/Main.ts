@@ -1,4 +1,8 @@
 /// <amd-module name="RouterDemo/Main" />
+/**
+ * @author Санников К.А.
+ */
+
 // @ts-ignore
 import * as Control from 'Core/Control';
 // @ts-ignore
