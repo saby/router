@@ -1,5 +1,5 @@
 {
-   "name": "Router",
+   "name": "router",
    "version": "20.4000.0",
    "repository": {
       "type": "git",
@@ -15,11 +15,7 @@
       "compile": "saby-typescript --compiler",
       "start": "wasaby-cli --tasks=startTest --server",
       "test": "wasaby-cli --tasks=startTest --node --report=console",
-      "test:node": "wasaby-cli --tasks=startTest --node",
-      "test:node-coverage": "wasaby-cli --tasks=startTest --node --coverage",
-      "test:browser": "wasaby-cli --tasks=startTest --browser --report",
-      "test:browser-coverage": "wasaby-cli --tasks=startTest --browser --report --coverage",
-      "require-min": "node node_modules/uglify-js/bin/uglifyjs --compress --mangle -o ws/ext/requirejs/require-min.js -- ws/ext/requirejs/require.js",
+      "test:coverage": "wasaby-cli --tasks=startTest --node --coverage",
       "lint": "node ./node_modules/eslint/bin/eslint --ext .js --ext .es --color --no-eslintrc -c=.eslintrc.json -f=stylish .",
       "lint:fix": "node ./node_modules/eslint/bin/eslint --ext .js --ext .es --color --no-eslintrc -c=.eslintrc.json -f=stylish --fix .",
       "prepare": "npm run update-cli-store && npm run build:typescript",
