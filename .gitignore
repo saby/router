@@ -1,17 +1,16 @@
 .idea
 .history
+.nyc_output/
 .DS_Store
-node_modules
 *.log
+/node_modules
 /application
 /builder-ui
 /builderCfg.json
 /package-lock.json
-/tsconfig.base.json
-/SBIS3.CONTROLS
-
-.nyc_output/
-artifacts/
+/tsconfig.json
+/tslib.js
+/tslint.json
 
 Router/router.js
 Router/ServerRouting.js
