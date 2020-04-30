@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ui_module id="a857d050-c754-4d39-90ec-fca5e2ddf033" name="RouterTest" package="Платформа" responsible="Шипин А.А." required="1" version="1.00">
+
+  <description>Router for WaSaby</description>
+
+    <depends>
+      <module id="a857d050-c754-4d39-90ec-fca5e2ddf022" name="Router"/>
+      <module id="0df0fce3-53ba-47f8-987d-edf1fd078295" name="WS.Core"/>
+      <module id="832cda0a-e19c-4ffc-a1d1-47edbb6b7501" name="I18n"/>
+    </depends>
+
+  <load_after/>
+
+  <parameters/>
+
+  <resources/>
+
+  <preload/>
+
+</ui_module>
