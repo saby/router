@@ -8,7 +8,7 @@
  */
 
 import { IoC } from 'Env/Env';
-
+import UrlModifirer from './UrlModifirer';
 import * as Data from './Data';
 import * as UrlRewriter from './UrlRewriter';
 
@@ -219,51 +219,39 @@ function _getCfgParams(params: IParam[]): Record<string, unknown> {
     return res;
 }
 
+/**
+ * @todo необходимо пересмотреть всю логику работы роутера.
+ *  Логика старая, проведён лишь рефакторинг кода.
+ */
 function _resolveHref(href: string, mask: string, cfg: Record<string, unknown>): string {
     const params: IParam[] = _calculateParams(mask, cfg);
     const cfgParams: Record<string, unknown> = _getCfgParams(params);
     const urlParams: Record<string, unknown> = _getUrlParams(params);
 
     const toFind: string = _getMaskFindValue(mask, urlParams, href);
-    const toReplace: string = _getMaskReplaceValue(mask, cfgParams);
+    let toReplace: string = _getMaskReplaceValue(mask, cfgParams);
+    toReplace = toReplace ? toReplace : '';
 
-    let result: string = href;
-    if (toReplace && toReplace[0] === '/') {
-        result = toReplace;
-    } else if (toFind) {
-        if (toReplace) {
-            result = href.replace(toFind, toReplace);
-        } else {
-            if (href.indexOf('/' + toFind) !== -1) {
-                result = href.replace('/' + toFind, '');
-            } else if (href.indexOf('?' + toFind) !== -1) {
-                const hasOtherParams: boolean = href.indexOf('?' + toFind + '&') !== -1;
-                if (hasOtherParams) {
-                    result = href.replace('?' + toFind + '&', '?');
-                } else {
-                    result = href.replace('?' + toFind, '');
-                }
-            } else if (href.indexOf('&' + toFind) !== -1) {
-                result = href.replace('&' + toFind, '');
-            }
-        }
-    } else if (toReplace) {
-        const qIndex: number = href.indexOf('?');
-        if (toReplace.indexOf('=') !== -1) {
-            if (qIndex !== -1) {
-                result += '&' + toReplace;
-            } else {
-                result += '?' + toReplace;
-            }
-        } else {
-            if (qIndex !== -1) {
-                result = _appendSlash(href.slice(0, qIndex)) + toReplace + href.slice(qIndex);
-            } else {
-                result = _appendSlash(href) + toReplace;
-            }
-        }
+    if (!toFind && !toReplace) {
+        return href;
     }
-    return result;
+
+    if (toReplace && toReplace[0] === '/') {
+        return toReplace;
+    }
+
+    const modify = new UrlModifirer(href);
+
+    if (toFind) {
+        modify.replace(toFind, toReplace);
+        modify.removeQuery(toFind);
+    }
+
+    if (toReplace.indexOf('=') !== -1) {
+        modify.addQuery(toReplace)
+    }
+
+    return modify.generate();
 }
 
 function _getMaskFindValue(mask: string, urlParams: Record<string, unknown>, href: string): string {
