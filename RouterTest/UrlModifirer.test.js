@@ -8,13 +8,13 @@ function(UrlModifirerMod) {
       it('add', function() {
          const modifirer = new UrlModifirer('/');
          modifirer.add('contract');
-         assert.strictEqual(modifirer.generate(), '/contract/');
+         assert.strictEqual(modifirer.generate(), '/contract');
       });
 
       it('replace', function() {
          const modifirer = new UrlModifirer('/contract/one');
          modifirer.replace('contract/one', 'dialog/one');
-         assert.strictEqual(modifirer.generate(), '/dialog/one/');
+         assert.strictEqual(modifirer.generate(), '/dialog/one');
       });
 
       it('add query', function() {
@@ -27,14 +27,14 @@ function(UrlModifirerMod) {
          const modifirer = new UrlModifirer('/contract');
          modifirer.addQuery('param=value');
          modifirer.addQuery('first=second');
-         assert.strictEqual(modifirer.generate(), '/contract/?param=value&first=second');
+         assert.strictEqual(modifirer.generate(), '/contract?param=value&first=second');
       });
 
       it('replace query', function() {
          const modifirer = new UrlModifirer('/contract?param=value');
          modifirer.removeQuery('param=value');
          modifirer.addQuery('first=second');
-         assert.strictEqual(modifirer.generate(), '/contract/?first=second');
+         assert.strictEqual(modifirer.generate(), '/contract?first=second');
       });
 
    });
