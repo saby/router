@@ -231,24 +231,37 @@ function _resolveHref(href: string, mask: string, cfg: Record<string, unknown>):
     const toFind: string = _getMaskFindValue(mask, urlParams, href);
     let toReplace: string = _getMaskReplaceValue(mask, cfgParams);
     toReplace = toReplace ? toReplace : '';
+    if (toReplace && toReplace[0] === '/') {
+        return toReplace;
+    }
 
     if (!toFind && !toReplace) {
         return href;
     }
 
-    if (toReplace && toReplace[0] === '/') {
-        return toReplace;
-    }
+    const isFindQuery = toFind.indexOf('=') !== -1;
+    const isReplaceQuery = toReplace.indexOf('=') !== -1;
 
     const modify = new UrlModifirer(href);
 
-    if (toFind) {
+    if (!isFindQuery && toFind) {
         modify.replace(toFind, toReplace);
-        modify.removeQuery(toFind);
     }
 
-    if (toReplace.indexOf('=') !== -1) {
+    if (!toFind && !isReplaceQuery) {
+        modify.add(toReplace);
+    }
+
+    if (!isFindQuery && isReplaceQuery) {
         modify.addQuery(toReplace)
+    }
+
+    if (isFindQuery && isReplaceQuery) {
+        modify.replaceQuery(toFind, toReplace);
+    }
+
+    if (isFindQuery && !isReplaceQuery) {
+        modify.removeQuery(toFind);
     }
 
     return modify.generate();
@@ -326,16 +339,6 @@ function _resolveMask(mask: string, params: Record<string, unknown>): string {
         result = resolvedMask;
     }
     return result;
-}
-
-// Adds a forward slash to the end of href if it doesn't end
-// with a slash already
-function _appendSlash(href: string): string {
-    if (href[href.length - 1] === '/') {
-        return href;
-    } else {
-        return href + '/';
-    }
 }
 
 function _getFolderNameByUrl(url: string): string {

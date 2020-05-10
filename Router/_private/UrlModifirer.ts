@@ -4,24 +4,20 @@ const REG_HASH = /\#(.+)$/;
 
 export default class UrlModifirer {
     private path: string;
-    /**
-     * @todo Если будем усложнять логику,
-     *  то необходимо преваращть в класс и уже целиком парсить query.
-     */
-    private query: string;
+    private query: string[];
     private hash: string;
     constructor(url: string) {
         this.path = REG_PATH.exec(url)[0];
 
         let match = REG_QUERY.exec(url);
-        this.query = match !== null ? match[1] : '';
+        this.query = match !== null ? match[1].split('&') : [];
 
         match = REG_HASH.exec(url);
         this.hash = match !== null ? match[1] : '';
     }
 
     add(path: string): void {
-        this.path += path;
+        this.path += '/' + path;
     }
 
     replace(search: string, path: string): void {
@@ -29,28 +25,26 @@ export default class UrlModifirer {
     }
 
     addQuery(query: string): void {
-        if (this.query.length > 0) {
-            this.query += '&';
+        this.query.push(query);
+    }
+
+    replaceQuery(search: string, replace: string): void {
+        for (let i = 0; i < this.query.length; i++) {
+            if (this.query[i] === search) {
+                this.query[i] = replace;
+                return;
+            }
         }
-        this.query += query;
     }
 
     removeQuery(query: string): void {
-        const pos = this.query.indexOf(query);
-        if (pos === 0) {
-            this.query = this.query.slice(query.length);
-            return;
-        }
-        this.query.replace(`&${query}`, '');
+        this.query = this.query.filter(item => item !== query);
     }
 
     generate(): string {
-        let url = this.path;
-        if (this.path[this.path.length - 1] !== '/') {
-            url += '/';
-        }
+        let url = this.path.replace(/(\/)+/g, '/');
         if (this.query.length > 0) {
-            url += `?${this.query}`;
+            url += `?${this.query.join('&')}`;
         }
         if (this.hash.length > 0) {
             url += `#${this.hash}`;
