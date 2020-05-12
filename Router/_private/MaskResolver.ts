@@ -8,7 +8,7 @@
  */
 
 import { IoC } from 'Env/Env';
-
+import UrlModifirer from './UrlModifirer';
 import * as Data from './Data';
 import * as UrlRewriter from './UrlRewriter';
 
@@ -219,51 +219,52 @@ function _getCfgParams(params: IParam[]): Record<string, unknown> {
     return res;
 }
 
+/**
+ * @todo необходимо пересмотреть всю логику работы роутера.
+ *  Логика старая, проведён лишь рефакторинг кода.
+ */
 function _resolveHref(href: string, mask: string, cfg: Record<string, unknown>): string {
     const params: IParam[] = _calculateParams(mask, cfg);
     const cfgParams: Record<string, unknown> = _getCfgParams(params);
     const urlParams: Record<string, unknown> = _getUrlParams(params);
 
     const toFind: string = _getMaskFindValue(mask, urlParams, href);
-    const toReplace: string = _getMaskReplaceValue(mask, cfgParams);
-
-    let result: string = href;
+    let toReplace: string = _getMaskReplaceValue(mask, cfgParams);
+    toReplace = toReplace ? toReplace : '';
     if (toReplace && toReplace[0] === '/') {
-        result = toReplace;
-    } else if (toFind) {
-        if (toReplace) {
-            result = href.replace(toFind, toReplace);
-        } else {
-            if (href.indexOf('/' + toFind) !== -1) {
-                result = href.replace('/' + toFind, '');
-            } else if (href.indexOf('?' + toFind) !== -1) {
-                const hasOtherParams: boolean = href.indexOf('?' + toFind + '&') !== -1;
-                if (hasOtherParams) {
-                    result = href.replace('?' + toFind + '&', '?');
-                } else {
-                    result = href.replace('?' + toFind, '');
-                }
-            } else if (href.indexOf('&' + toFind) !== -1) {
-                result = href.replace('&' + toFind, '');
-            }
-        }
-    } else if (toReplace) {
-        const qIndex: number = href.indexOf('?');
-        if (toReplace.indexOf('=') !== -1) {
-            if (qIndex !== -1) {
-                result += '&' + toReplace;
-            } else {
-                result += '?' + toReplace;
-            }
-        } else {
-            if (qIndex !== -1) {
-                result = _appendSlash(href.slice(0, qIndex)) + toReplace + href.slice(qIndex);
-            } else {
-                result = _appendSlash(href) + toReplace;
-            }
-        }
+        return toReplace;
     }
-    return result;
+
+    if (!toFind && !toReplace) {
+        return href;
+    }
+
+    const isFindQuery = toFind.indexOf('=') !== -1;
+    const isReplaceQuery = toReplace.indexOf('=') !== -1;
+
+    const modify = new UrlModifirer(href);
+
+    if (!isFindQuery && toFind) {
+        modify.replace(toFind, toReplace);
+    }
+
+    if (!toFind && !isReplaceQuery) {
+        modify.add(toReplace);
+    }
+
+    if (!isFindQuery && isReplaceQuery) {
+        modify.addQuery(toReplace)
+    }
+
+    if (isFindQuery && isReplaceQuery) {
+        modify.replaceQuery(toFind, toReplace);
+    }
+
+    if (isFindQuery && !isReplaceQuery) {
+        modify.removeQuery(toFind);
+    }
+
+    return modify.generate();
 }
 
 function _getMaskFindValue(mask: string, urlParams: Record<string, unknown>, href: string): string {
@@ -338,16 +339,6 @@ function _resolveMask(mask: string, params: Record<string, unknown>): string {
         result = resolvedMask;
     }
     return result;
-}
-
-// Adds a forward slash to the end of href if it doesn't end
-// with a slash already
-function _appendSlash(href: string): string {
-    if (href[href.length - 1] === '/') {
-        return href;
-    } else {
-        return href + '/';
-    }
 }
 
 function _getFolderNameByUrl(url: string): string {
