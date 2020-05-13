@@ -30,11 +30,17 @@ function(UrlModifirerMod) {
          assert.strictEqual(modifirer.generate(), '/contract?param=value&first=second');
       });
 
-      it('replace query', function() {
+      it('remove/add query', function() {
          const modifirer = new UrlModifirer('/contract?param=value');
          modifirer.removeQuery('param=value');
          modifirer.addQuery('first=second');
          assert.strictEqual(modifirer.generate(), '/contract?first=second');
+      });
+
+      it('replace query', function() {
+         const modifirer = new UrlModifirer('/contract?param=value&second=value2');
+         modifirer.replaceQuery('param=value&second=value2', 'a=b&b=c');
+         assert.strictEqual(modifirer.generate(), '/contract?a=b&b=c');
       });
 
    });
