@@ -25,20 +25,27 @@ export default class UrlModifirer {
     }
 
     addQuery(query: string): void {
-        this.query.push(query);
+        query.split('&').forEach(item => {
+            this.query.push(item);
+        });
     }
 
     replaceQuery(search: string, replace: string): void {
+        const searchItems = search.split('&');
+        const replaceItems = replace.split('&');
+        let position;
         for (let i = 0; i < this.query.length; i++) {
-            if (this.query[i] === search) {
-                this.query[i] = replace;
-                return;
+            if (this.query[i] === searchItems[0]) {
+                position = i;
+                break;
             }
         }
+        this.query.splice(position, searchItems.length, ...replaceItems);
     }
 
     removeQuery(query: string): void {
-        this.query = this.query.filter(item => item !== query);
+        const queryItems = query.split('&');
+        this.query = this.query.filter(item => queryItems.indexOf(item) === -1 );
     }
 
     generate(): string {
