@@ -14,11 +14,7 @@ function (Router, fakeAppManager, AppInit, EnvNode) {
 
    var env;
    if (typeof window === 'undefined') {
-      /** имитация СП */
-      process.domain = process.domain || {};
-      process.domain.req = process.domain.req || {};
       env = new EnvNode.default();
-      env.initRequest = true;
    }
    AppInit.default({}, env);
 
