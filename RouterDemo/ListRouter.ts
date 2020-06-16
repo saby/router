@@ -16,7 +16,7 @@ interface IListItem {
 class ListRouter extends Control {
     protected _template: Function = template;
 
-    private _items: IListItem[] = [
+    protected _items: IListItem[] = [
         {
             itemUrlName: 'fred-bloggs',
             personName: 'Fred Bloggs',
@@ -38,7 +38,7 @@ class ListRouter extends Control {
             personAge: 41
         }
     ];
-    private _displayProperty: string = 'personName';
+    protected _displayProperty: string = 'personName';
 }
 
 export = ListRouter;

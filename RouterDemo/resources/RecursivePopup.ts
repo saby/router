@@ -19,8 +19,8 @@ interface IRecursivePopupOptions {
 
 class RecursivePopup extends Control {
    _template: Function = template;
-   private _isPopupDisplayed: boolean = false;
-   private _topCoordinate: number = 80;
+   protected _isPopupDisplayed: boolean = false;
+   protected _topCoordinate: number = 80;
 
    private _returnPrettyUrl: string;
    private _returnUrl: string;
