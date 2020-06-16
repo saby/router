@@ -20,7 +20,7 @@ import { Controller, Data } from 'Router/router';
 class Popups extends Control {
    _template: Function = template;
 
-   private _isPopupDisplayed: boolean = false;
+   protected _isPopupDisplayed: boolean = false;
 
    _displayPopup(): void {
       this._isPopupDisplayed = true;

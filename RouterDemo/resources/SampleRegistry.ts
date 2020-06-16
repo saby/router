@@ -33,8 +33,8 @@ export default class SampleRegistry extends Control {
 
     _template: Function = template;
 
-    private _isRecursive: boolean = false;
-    private _popupOpened: boolean = false;
+    protected _isRecursive: boolean = false;
+    protected _popupOpened: boolean = false;
 
     protected _beforeMount(): void {
         if (typeof window !== 'undefined') {
@@ -44,7 +44,7 @@ export default class SampleRegistry extends Control {
         }
     }
 
-    private _urlAddedHandler(e: Event, param: string): void {
+    protected _urlAddedHandler(e: Event, param: string): void {
         this._children.logResult.value += `urlAdded fired, param: ${param}\n`;
         this._children.opener.open({
             template: 'RouterDemo/resources/SamplePopup',
@@ -57,7 +57,7 @@ export default class SampleRegistry extends Control {
         this._popupOpened = true;
     }
 
-    private _urlChangedHandler(e: Event, newParam: string, oldParam: string): void {
+    protected _urlChangedHandler(e: Event, newParam: string, oldParam: string): void {
         this._children.logResult.value += `urlChanged fired, newParam: ${newParam}, oldParam: ${oldParam}\n`;
         this._children.opener.open({
             template: 'RouterDemo/resources/SamplePopup',
@@ -69,13 +69,13 @@ export default class SampleRegistry extends Control {
         });
     }
 
-    private _urlRemovedHandler(e: Event): void {
+    protected _urlRemovedHandler(e: Event): void {
         this._children.logResult.value += 'urlRemoved fired\n';
         // this._children.opener.close(); - PopupRouter calls this automatically
         this._popupOpened = false;
     }
 
-    private _recursiveChanged(e: Event, value: boolean): void {
+    protected _recursiveChanged(e: Event, value: boolean): void {
         this._isRecursive = this._children.recursiveCheck.checked;
         localStorage.setItem('recursiveCheck-checked', JSON.stringify(this._isRecursive));
     }

@@ -12,7 +12,7 @@ import template = require('wml!RouterDemo/resources/PageLoader');
 class PageLoader extends Control {
    _template: Function = template;
 
-   private pageClassLoaded: Function = null;
+   protected pageClassLoaded: Function = null;
 
    private async changePage(newPage: String): Promise<void> {
       return new Promise((resolve, reject) => {
