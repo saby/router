@@ -23,7 +23,7 @@ class SamplePopup extends Control {
 
     _template: Function = template;
 
-    private _urlAddedOrChanged(e: Event, newParam: string): void {
+    protected _urlAddedOrChanged(e: Event, newParam: string): void {
         this._children.opener.open({
             template: 'RouterDemo/resources/SamplePopup',
             itemId: newParam,

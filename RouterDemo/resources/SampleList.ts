@@ -10,7 +10,7 @@ import 'css!RouterDemo/resources/SampleList';
 class SampleList extends Control {
     protected _template: Function = template;
 
-    private _itemClickHandler(event: Event, item: any): void {
+    protected _itemClickHandler(event: Event, item: any): void {
         this._notify('itemClick', [item, event], { bubbling: true });
     }
 }
