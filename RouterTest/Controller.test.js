@@ -1,9 +1,9 @@
 /* global assert, sinon */
-define(['Router/router', 'RouterTest/resources/fakeAppManager', 'Application/Initializer', 'SbisEnv/PresentationService'], /**
+define(['Router/router', 'RouterTest/resources/fakeAppManager'], /**
  * @param { import('../Router/router') } Router
  * @param { import('./resources/fakeAppManager') } fakeAppManager
  */
-function (Router, fakeAppManager, AppInit, EnvNode) {
+function (Router, fakeAppManager) {
    // Controller, Data, History, UrlRewriter
    var Controller = Router.Controller,
       Data = Router.Data,
@@ -11,12 +11,6 @@ function (Router, fakeAppManager, AppInit, EnvNode) {
       UrlRewriter = Router.UrlRewriter,
       stubSandbox = sinon.createSandbox(),
       navigationDelay = 80;
-
-   var env;
-   if (typeof window === 'undefined') {
-      env = EnvNode.default;
-   }
-   AppInit.default({}, env);
 
    function getFakeControl(id) {
       var randomId = Math.random();
