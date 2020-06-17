@@ -19,7 +19,7 @@ class TabsBlock extends Control {
    _template: Function = template;
 
    private _tabCount: number = 3;
-   private _selectedTabId: number = 0;
+   protected _selectedTabId: number = 0;
 
    _beforeMount(cfg: ITabsBlockOptions): void {
       // cfg.selectedTab is passed in options as a string by Router.Route
