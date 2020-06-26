@@ -4,345 +4,31 @@
  * Набор методов обеспечивающих работу с масками и параметрами URL
  * @module
  * @name Router/_private/MaskResolver
- * @author Санников К.А.
+ * @author Мустафин Л.И.
  */
 
 import { IoC } from 'Env/Env';
-import UrlModifirer from './UrlModifirer';
 import * as Data from './Data';
 import * as UrlRewriter from './UrlRewriter';
-
-interface IParam {
-    name: string;
-    value: unknown;
-    urlValue?: string;
-}
-
-interface IMatchPosition {
-    prefixEnd: number;
-    suffixStart: number;
-    name?: string;
-}
+import {IParam, UrlModifier} from './UrlModifier';
+import PathModifier from './PathModifier';
+import QueryModifier from './QueryModifier';
 
 interface ISplitPath {
     path: string;
-    misc: string;
+    query: string;
+    fragment: string;
 }
 
-/*
- * @function Router/_private/MaskResolver#calculateUrlParams
- * Extract values from the current URL based on the specified mask
- * @param {String} mask mask with parameter placeholders
- * @param {String} [url] URL to extract values from (current URL will be used by default)
- * @returns {Record<string, string>} the key-value store of extracted parameters
- */
-/**
- * Извлекает значения из текущего адреса по заданной маске.
- * @function
- * @name Router/_private/MaskResolver#calculateUrlParams
- * @param {String} mask Параметризованная маска.
- * @param {String} [url] Адрес, из которого будут извлекаться значения. По умолчанию используется текущий URL.
- * @returns {Record<string, string>} Объект, в котором ключи - названия параметров, а значения - значения параметров.
- */
-export function calculateUrlParams(mask: string, url?: string): Record<string, unknown> {
-    _validateMask(mask);
-
-    const params: IParam[] = _calculateParams(mask, {}, url);
-    const urlParams: Record<string, unknown> = _getUrlParams(params);
-    return _mapParams(urlParams, _decodeParam);
+interface IModifier {
+    path?: PathModifier;
+    query?: QueryModifier;
+    fragment?: string;
 }
 
-/**
- * @function Router/_private/MaskResolver#calculateCfgParams
- * @private
- */
-export function calculateCfgParams(mask: string, cfg: Record<string, unknown>): Record<string, unknown> {
-    _validateMask(mask);
-
-    const params: IParam[] = _calculateParams(mask, cfg);
-    return _getCfgParams(params);
-}
-
-/*
- * @function Router/_private/MaskResolver#calculateHref
- * Calculates a new URL based on the current URL, specified mask
- * and the hash map of parameters to fill the mask
- * @param {String} mask mask with parameter placeholders
- * @param {Record<string, string>} cfg key-value store with specified parameters
- * @returns {String} the new calculated URL
- */
-/**
- * Вычисляет новый URL-адрес, применяя к текущему маску и значения параметров для ее заполнения.
- * @function
- * @name Router/_private/MaskResolver#calculateHref
- * @param {String} mask Параметризованная маска.
- * @param {Record<string, string>} cfg Объект со значениями параметров, используемых в маске.
- * @returns {String} Вычисленный адрес.
- */
-export function calculateHref(mask: string, cfg: Record<string, unknown>): string {
-    _validateMask(mask);
-    const actualCfg: Record<string, unknown> = cfg.clear ? {} : cfg;
-    const url: string = UrlRewriter.get(Data.getRelativeUrl());
-    return _resolveHref(url, mask, actualCfg);
-}
-
-// TODO Remove this?
+// TODO Remove this? используется в Route.Controller
 export function getAppNameByUrl(url: string): string {
-    const rewrittenUrl: string = UrlRewriter.get(url);
-    return _getFolderNameByUrl(rewrittenUrl) + '/Index';
-}
-
-function _validateMask(mask: string): void {
-    if (!_isSlashMask(mask) && !_isQueryMask(mask)) {
-        IoC.resolve('ILogger').error('Router.MaskResolver', `Mask "${mask}" is invalid`);
-    }
-}
-
-const postfix: string = '/undefined/undefined/undefined/undefined/undefined/undefined/undefined/undefined/undefined/undefined';
-function _splitQueryAndHash(url: string): ISplitPath {
-    const splitMatch: RegExpMatchArray = url.match(/[?#]/);
-    if (splitMatch) {
-        const index: number = splitMatch.index;
-        return {
-            path: url.substring(0, index).replace(/\/$/, ''),
-            misc: url.slice(index)
-        };
-    }
-    return {
-        path: url.replace(/\/$/, ''),
-        misc: ''
-    };
-}
-
-const MASK_RESULTS_OFFSET: number = 2;
-function _calculateParams(mask: string, cfg: Record<string, unknown>, url?: string): IParam[] {
-    const result: IParam[] = [];
-    const fullMask: string = _generateFullMaskWithoutParams(mask, (param) => {
-        result.push({
-            name: param.name,
-            value: cfg[param.name]
-        });
-    });
-
-    let originUrl: string = url || Data.getRelativeUrl();
-    const { path, misc }: ISplitPath = _splitQueryAndHash(originUrl);
-    originUrl = path + postfix + misc;
-
-    const actualUrl: string = UrlRewriter.get(originUrl);
-    const fields: RegExpMatchArray = actualUrl.match(fullMask);
-
-    if (fields) {
-        // fields[0] is the full url, fields[1] is prefix and fields[fields.length - 1] is suffix
-        for (let j = MASK_RESULTS_OFFSET; j < fields.length - 1; j++) {
-            result[j - MASK_RESULTS_OFFSET].urlValue = fields[j];
-
-            // convert 'undefined' to undefined
-            if (result[j - MASK_RESULTS_OFFSET].urlValue === 'undefined') {
-                result[j - MASK_RESULTS_OFFSET].urlValue = undefined;
-            }
-        }
-    }
-    return result;
-}
-
-function _generateFullMaskWithoutParams(mask: string, matchedParamCb?: (param: IMatchPosition) => void): string {
-    let fullMask: string = _generateFullMask(mask);
-
-    const paramIndexes: IMatchPosition[] = [];
-    _matchParams(fullMask, (param) => {
-        paramIndexes.push({
-            prefixEnd: param.prefixEnd,
-            suffixStart: param.suffixStart
-        });
-        if (matchedParamCb) {
-            matchedParamCb(param);
-        }
-    });
-
-    for (let i = paramIndexes.length - 1; i >= 0; i--) {
-        fullMask =
-            fullMask.slice(0, paramIndexes[i].prefixEnd) + '([^\\/?&#]+)' + fullMask.slice(paramIndexes[i].suffixStart);
-    }
-    return fullMask;
-}
-
-function _generateFullMask(mask: string): string {
-    let fullMask: string = mask;
-
-    if (_isSlashMask(fullMask)) {
-        if (fullMask[0] === '/') {
-            fullMask = '([/]|.*?\\.html/)' + fullMask.slice(1);
-        } else {
-            fullMask = '(.*?/)' + fullMask;
-        }
-    } else if (_isQueryMask(fullMask)) {
-        fullMask = '(.*?\\?|.*?&)' + fullMask;
-    } else {
-        fullMask = '(.*?/)' + fullMask;
-    }
-
-    if (_isQueryMask(fullMask)) {
-        fullMask = fullMask + '(#.*|&.+)?';
-    } else {
-        fullMask = fullMask + '(#.*|/.*|\\?.+)?';
-    }
-
-    return fullMask;
-}
-
-function _matchParams(mask: string, cb: (param: IMatchPosition) => void): void {
-    const re: RegExp = /:(\w+)/g;
-    let paramMatched: RegExpExecArray = re.exec(mask);
-    while (paramMatched) {
-        cb({
-            prefixEnd: paramMatched.index,
-            suffixStart: paramMatched.index + paramMatched[0].length,
-            name: paramMatched[1]
-        });
-        paramMatched = re.exec(mask);
-    }
-}
-
-function _getUrlParams(params: IParam[]): Record<string, unknown> {
-    const res: Record<string, unknown> = {};
-    params.forEach((param) => {
-        res[param.name] = param.urlValue;
-    });
-    return res;
-}
-
-function _getCfgParams(params: IParam[]): Record<string, unknown> {
-    const res: Record<string, unknown> = {};
-    params.forEach((param) => {
-        res[param.name] = param.value;
-    });
-    return res;
-}
-
-/**
- * @todo необходимо пересмотреть всю логику работы роутера.
- *  Логика старая, проведён лишь рефакторинг кода.
- */
-function _resolveHref(href: string, mask: string, cfg: Record<string, unknown>): string {
-    const params: IParam[] = _calculateParams(mask, cfg);
-    const cfgParams: Record<string, unknown> = _getCfgParams(params);
-    const urlParams: Record<string, unknown> = _getUrlParams(params);
-
-    const toFind: string = _getMaskFindValue(mask, urlParams, href);
-    let toReplace: string = _getMaskReplaceValue(mask, cfgParams);
-    toReplace = toReplace ? toReplace : '';
-    if (toReplace && toReplace[0] === '/') {
-        return toReplace;
-    }
-
-    if (!toFind && !toReplace) {
-        return href;
-    }
-
-    const isFindQuery = toFind.indexOf('=') !== -1;
-    const isReplaceQuery = toReplace.indexOf('=') !== -1;
-
-    const modify = new UrlModifirer(href);
-
-    if (!isFindQuery && toFind) {
-        modify.replace(toFind, toReplace);
-    }
-
-    if (!toFind && !isReplaceQuery) {
-        modify.add(toReplace);
-    }
-
-    if (!isFindQuery && isReplaceQuery) {
-        modify.addQuery(toReplace)
-    }
-
-    if (isFindQuery && isReplaceQuery) {
-        modify.replaceQuery(toFind, toReplace);
-    }
-
-    if (isFindQuery && !isReplaceQuery) {
-        modify.removeQuery(toFind);
-    }
-
-    return modify.generate();
-}
-
-function _getMaskFindValue(mask: string, urlParams: Record<string, unknown>, href: string): string {
-    let findValue: string = _resolveMask(mask, urlParams);
-
-    // Если полную маску не получается найти в URL, но есть префикс
-    // этой маски, который совпадает с окончанием URL-адреса, можно
-    // использовать его в качестве findValue
-    //
-    // Например, текущий адрес: /page/posts
-    // Маска: page/:pName/:pParam, urlParams: { pName: "posts", pParam: undefined }
-    // Полная маска не вычислится, так как есть неопределенный параметр. Но при этом
-    // неполную маску page/:pName можно вычислить, и так как page/posts находится
-    // в самом конце адреса, эту строку можно безопасно вернуть в качестве findValue.
-    if (!findValue) {
-        findValue = _getIncompleteMaskFindValue(mask, urlParams, href);
-    }
-
-    return findValue;
-}
-
-function _getIncompleteMaskFindValue(mask: string, urlParams: Record<string, unknown>, href: string): string {
-    let incompleteMask: string = mask;
-    while (_isSlashMask(incompleteMask) && _maskHasParams(incompleteMask)) {
-        // Пока в маске есть слэши и параметры, отрезаем от маски часть после последнего
-        // слэша и вычисляем неполную маску
-        incompleteMask = _removeLastSlashPart(incompleteMask);
-        const findValue: string = _resolveMask(incompleteMask, urlParams);
-
-        // Если неполная маска вычислена, и при этом находится в самом конце
-        // href, можно вернуть ее в качестве findValue
-        if (findValue && _hrefMainPartEndsWith(href, findValue)) {
-            return findValue;
-        }
-    }
-
-    // Если подходящую неполную маску найти не удалось findValue будет
-    // пустой, то есть новое значение будет добавляться к URL, а не
-    // заменять старое
-    return '';
-}
-
-function _hrefMainPartEndsWith(href: string, ending: string): boolean {
-    // Основная часть URL заканчивается маской, если эта маска присутствует
-    // в адресе, при этом сразу после нее идет конец строки, или начинаются
-    // query или hash
-    const escapedEnding: string = _escapeForRegex(ending);
-    const endingPattern: string = `${escapedEnding}/?($|\\?|#)`;
-    return new RegExp(endingPattern).test(href);
-}
-
-function _getMaskReplaceValue(mask: string, cfgParams: Record<string, unknown>): string {
-    const encodedParams: Record<string, string> = _mapParams(cfgParams, _encodeParam);
-    return _resolveMask(mask, encodedParams);
-}
-
-function _resolveMask(mask: string, params: Record<string, unknown>): string {
-    let paramCount: number = 0;
-    let resolvedCount: number = 0;
-    let resolvedMask: string = mask;
-
-    _matchParams(resolvedMask, (param) => {
-        paramCount++;
-        if (params[param.name] !== undefined) {
-            resolvedCount++;
-            resolvedMask = resolvedMask.replace(':' + param.name, params[param.name] as string);
-        }
-    });
-
-    let result: string = '';
-    if (resolvedCount === paramCount) {
-        result = resolvedMask;
-    }
-    return result;
-}
-
-function _getFolderNameByUrl(url: string): string {
-    let folderName: string = url || '';
+    let folderName: string = UrlRewriter.get(url) || '';
 
     // Folder name for url '/sign_in?return=mainpage' should be 'sign_in'
     if (folderName.indexOf('?') !== -1) {
@@ -360,30 +46,22 @@ function _getFolderNameByUrl(url: string): string {
         folderName = folderName.split('/')[1];
     }
 
-    return folderName;
+    return folderName + '/Index';
 }
 
-function _mapParams(obj: Record<string, unknown>, cb: (val: unknown) => string): Record<string, string> {
-    const result:Record<string, string> = {};
-    for (const i in obj) {
-        if (obj.hasOwnProperty(i)) {
-            result[i] = cb(obj[i]);
-        }
-    }
-    return result;
+export function calculateUrlParams(mask: string, url?: string): Record<string, unknown> {
+    const resolver: MaskResolver = new MaskResolver(mask, {}, url);
+    return resolver.getUrlParams();
 }
 
-function _encodeParam(param: unknown): string {
-    const type: "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function" = typeof param;
-    let result: unknown = param;
-    if (type !== 'undefined') {
-        if (type !== 'string') {
-            // Convert parameter to string by calling JSON.stringify
-            result = JSON.stringify(result);
-        }
-        result = encodeURIComponent(result as string);
-    }
-    return result as string;
+// export function calculateCfgParams(mask: string, cfg: Record<string, unknown>): Record<string, unknown> {
+//     const resolver: MaskResolver = new MaskResolver(mask, cfg);
+//     return resolver.getCfgParams();
+// }
+
+export function calculateHref(mask: string, cfg: Record<string, unknown>): string {
+    const resolver: MaskResolver = new MaskResolver(mask, cfg);
+    return resolver.rewrite();
 }
 
 function _decodeParam(param: string): string {
@@ -401,32 +79,138 @@ function _decodeParam(param: string): string {
     return result;
 }
 
-function _isSlashMask(mask: string): boolean {
-    return mask.indexOf('/') >= 0;
-}
+class MaskResolver {
+    private readonly mask: string;
+    private readonly url: string;
+    private readonly actualCfg: Record<string, unknown>;
+    private readonly urlParts: ISplitPath;
+    private readonly modifier: IModifier;
+    constructor(mask: string, cfg: Record<string, unknown>, url?: string) {
+        this.mask = mask;
+        this._validateMask();
+        this.url = url || UrlRewriter.get(Data.getRelativeUrl());
+        this.actualCfg = cfg.clear ? {} : cfg;
 
-function _isQueryMask(mask: string): boolean {
-    return mask.indexOf('=') >= 0;
-}
+        // когда нужно заменить url переданной маской
+        if (cfg.replace) {
+            this.urlParts = {path: '', query: '', fragment: ''};
+        } else {
+            this.urlParts = this._splitUrlPath();
+        }
 
-function _maskHasParams(mask: string): boolean {
-    return mask.indexOf(':') >= 0;
-}
-
-function _removeLastSlashPart(url: string): string {
-    let result: string = url;
-    const lastSlash: number = url.lastIndexOf('/');
-    if (lastSlash >= 0) {
-        result = url.slice(0, lastSlash);
+        // определим тип маски
+        this.modifier = this._getModifier();
     }
-    return result;
-}
 
-// Символы, которые должны быть экранированы при использовании в регулярном
-// выражении
-const escapedCharacters: RegExp = /[|\\{}()[\]^$+*?.-]/g;
-function _escapeForRegex(str: string): string {
-    // Перед всеми символами, которые необходимо экранировать,
-    // добавляем бэк-слэш
-    return str.replace(escapedCharacters, '\\$&');
+    private _validateMask(): void {
+        if (this.mask.indexOf('/') < 0 && this.mask.indexOf('=') < 0) {
+            IoC.resolve('ILogger').error('Router.MaskResolver', `Mask "${this.mask}" is invalid`);
+        }
+    }
+
+    private _splitUrlPath(): ISplitPath {
+        const url: string = this.url;
+        const queryPos: number = url.indexOf('?');
+        const hashPos: number = url.indexOf('#');
+        if (queryPos >= 0 && hashPos >= 0) {
+            return {
+                path: url.substring(0, queryPos).replace(/\/$/, ''),
+                query: url.substring(queryPos, hashPos),
+                fragment: url.substring(hashPos, url.length)
+            };
+        }
+        if (queryPos >= 0) {
+            return {
+                path: url.substring(0, queryPos).replace(/\/$/, ''),
+                query: url.substring(queryPos, url.length),
+                fragment: ''
+            };
+        }
+        if (hashPos >= 0) {
+            return {
+                path: url.substring(0, hashPos).replace(/\/$/, ''),
+                query: '',
+                fragment: url.substring(hashPos, url.length)
+            };
+        }
+        return {
+            path: url.replace(/\/$/, ''),
+            query: '',
+            fragment: ''
+        };
+    }
+
+    private _getModifier(): IModifier {
+        // par1/:val1
+        if (/[^\/?&#]+\/:[^\/?&#]+/.test(this.mask)) {
+            return {path: new PathModifier(this.mask, this.urlParts.path)};
+        }
+        // par1=:val1
+        if (/[^\/?&#]+=:[^\/?&#]+/.test(this.mask)) {
+            return {query: new QueryModifier(this.mask, this.urlParts.query)};
+        }
+        return undefined;
+    }
+
+    private calculateParams(): IParam[] {
+        if (this.modifier) {
+            const modifier: UrlModifier = this.modifier.path || this.modifier.query;
+            return modifier.calculateParams(this.actualCfg);
+        }
+        return [];
+    }
+
+    getUrlParams(): Record<string, string> {
+        const urlParams: Record<string, unknown> = {};
+        this.calculateParams().forEach((param) => {
+            urlParams[param.name] = param.urlValue;
+        });
+        return this._mapParams(urlParams, _decodeParam);
+    }
+
+    getCfgParams(): Record<string, unknown> {
+        const cfgParams: Record<string, unknown> = {};
+        this.calculateParams().forEach((param) => {
+            cfgParams[param.name] = param.value;
+        });
+        return cfgParams;
+    }
+
+    private _mapParams(obj: Record<string, unknown>, cb: (val: unknown) => string): Record<string, string> {
+        const result: Record<string, string> = {};
+        for (const i in obj) {
+            if (obj.hasOwnProperty(i)) {
+                result[i] = cb(obj[i]);
+            }
+        }
+        return result;
+    }
+
+    rewrite(): string {
+        if (!this.modifier) {
+            return this.url;
+        }
+        if (this.modifier.path) {
+            this.urlParts.path = this.modifier.path.rewrite(this.actualCfg);
+        }
+        if (this.modifier.query) {
+            this.urlParts.query = this.modifier.query.rewrite(this.actualCfg);
+        }
+        // this.urlParts.fragment = this.modifier.fragment?.rewrite(this.actualCfg);
+        return this._joinUrlParts();
+    }
+
+    private _joinUrlParts(): string {
+        const urlParts: ISplitPath = this.urlParts;
+        const path = urlParts.path + '/';
+        let query: string = urlParts.query === '?' ? '' : urlParts.query;
+        if (query.length > 0) {
+            query = query.indexOf('?') < 0 ? '?' + query : query;
+        }
+        let fragment: string = urlParts.fragment === '#' ? '' : urlParts.fragment;
+        if (fragment.length > 0) {
+            fragment = fragment.indexOf('#') < 0 ? '#' + fragment : fragment;
+        }
+        return [path, query, fragment].join('');
+    }
 }
