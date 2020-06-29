@@ -18,7 +18,7 @@ export interface IParam {
 /**
  *
  */
-export class UrlParamsManager {
+export class UrlParamsGetter {
     private mask: string;
     private url: string;
     private maskType: MaskType;
@@ -27,7 +27,7 @@ export class UrlParamsManager {
         this.url = url;
         this.maskType = MaskTypeManager.calculateMaskType(mask, url);
     }
-    getUrlParams(): Record<string, string> {
+    get(): Record<string, string> {
         let params: IParam[];
         const urlParts: IUrlParts = UrlPartsManager.getUrlParts(this.url);
         switch (this.maskType) {

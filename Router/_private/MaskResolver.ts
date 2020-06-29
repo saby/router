@@ -9,8 +9,8 @@
 
 import * as Data from './Data';
 import * as UrlRewriter from './UrlRewriter';
-import {UrlParamsManager} from './MaskResolver/UrlParamsManager';
-import {UrlModifyManager} from './MaskResolver/UrlRewriteManager';
+import {UrlParamsGetter} from './MaskResolver/UrlParamsGetter';
+import {UrlModifier} from './MaskResolver/UrlModifier';
 
 // TODO Remove this? используется в Route.Controller
 export function getAppNameByUrl(url: string): string {
@@ -36,11 +36,11 @@ export function getAppNameByUrl(url: string): string {
 }
 
 export function calculateUrlParams(mask: string, url?: string): Record<string, string> {
-    const manager: UrlParamsManager = new UrlParamsManager(mask, url || UrlRewriter.get(Data.getRelativeUrl()));
-    return manager.getUrlParams();
+    const getter: UrlParamsGetter = new UrlParamsGetter(mask, url || UrlRewriter.get(Data.getRelativeUrl()));
+    return getter.get();
 }
 
 export function calculateHref(mask: string, cfg: Record<string, unknown>): string {
-    const manager: UrlModifyManager = new UrlModifyManager(mask, cfg, UrlRewriter.get(Data.getRelativeUrl()));
-    return manager.rewrite();
+    const modifier: UrlModifier = new UrlModifier(mask, cfg, UrlRewriter.get(Data.getRelativeUrl()));
+    return modifier.modify();
 }

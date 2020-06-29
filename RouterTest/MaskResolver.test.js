@@ -106,6 +106,24 @@ function (Router, AppInit, EnvNode) {
 
                assert.doesNotThrow(MaskResolver.calculateUrlParams.bind(MaskResolver, mask, url));
             });
+
+            it('few parameters in mask', function() {
+               var mask = 'tab/:tabName/subtab/:subName',
+                   url = '/order/tab/taxi/subtab/cars',
+                   calculated = MaskResolver.calculateUrlParams(mask, url);
+
+               assert.strictEqual(calculated.tabName, 'taxi');
+               assert.strictEqual(calculated.subName, 'cars');
+            });
+
+            it('few parameters in mask not in url', function() {
+               var mask = 'tab/:tabName/subtab/:subName',
+                   url = '/order/tab/taxi',
+                   calculated = MaskResolver.calculateUrlParams(mask, url);
+
+               assert.strictEqual(calculated.tabName, 'taxi');
+               assert.strictEqual(calculated.subName, undefined);
+            });
          });
 
          describe('one parameter with query', function() {
@@ -139,6 +157,24 @@ function (Router, AppInit, EnvNode) {
                    calculated = MaskResolver.calculateUrlParams(mask, url);
 
                assert.strictEqual(calculated.pvalue, 'value');
+            });
+
+            it('few parameters in mask', function() {
+               var mask = 'param=:pvalue&query=:qvalue',
+                   url = '/path?param=value&query=different',
+                   calculated = MaskResolver.calculateUrlParams(mask, url);
+
+               assert.strictEqual(calculated.pvalue, 'value');
+               assert.strictEqual(calculated.qvalue, 'different');
+            });
+
+            it('few parameters in mask not in url', function() {
+               var mask = 'param=:pvalue&query=:qvalue',
+                   url = '/path?param=value',
+                   calculated = MaskResolver.calculateUrlParams(mask, url);
+
+               assert.strictEqual(calculated.pvalue, 'value');
+               assert.strictEqual(calculated.qvalue, undefined);
             });
          });
 
@@ -478,6 +514,45 @@ function (Router, AppInit, EnvNode) {
                   { pageName: 'login', pageParam: 'now' }
                );
                assert.strictEqual(newUrl, '/root/page/login/now/#hashparam');
+            });
+         });
+
+         describe('fragments with slash', function() {
+            beforeEach(function() {
+               Data.setRelativeUrl('/path/#first/fvalue/second/svalue');
+            });
+            it('can change an existing value', function() {
+               var newUrl = MaskResolver.calculateHref('first/:value', { value: 'abc' });
+               assert.strictEqual(newUrl, '/path/#first/abc/second/svalue');
+               newUrl = MaskResolver.calculateHref('second/:value', { value: 'abc' });
+               assert.strictEqual(newUrl, '/path/#first/fvalue/second/abc');
+            });
+            it('can add a new value', function() {
+               var newUrl = MaskResolver.calculateHref('#newval/:value', { value: 'supernew' });
+               assert.strictEqual(newUrl, '/path/#first/fvalue/second/svalue/newval/supernew');
+            });
+            // it('can add a new value and change an existing value', function() {
+            //    var newUrl = MaskResolver.calculateHref('first/:fvalue/newval/:value',
+            //        {fvalue: 'fnew', value: 'supernew'});
+            //    assert.strictEqual(newUrl, '/first/fnew/second/svalue/newval/supernew/');
+            //    // то же самое, но в маске порядок полей не как в url
+            //    newUrl = MaskResolver.calculateHref('newval/:value/second/:svalue',
+            //        {value: 'supernew', svalue: 'snew'});
+            //    assert.strictEqual(newUrl, '/first/fvalue/second/snew/newval/supernew/');
+            // });
+            // it('can remove an existing value', function() {
+            //    var newUrl = MaskResolver.calculateHref('first/:value', { clear: true });
+            //    assert.strictEqual(newUrl, '/second/svalue/');
+            // });
+         });
+
+         describe('fragments with queries', function() {
+            beforeEach(function() {
+               Data.setRelativeUrl('/path/#first=fvalue&second=svalue');
+            });
+            it('can change an existing value', function() {
+               var newUrl = MaskResolver.calculateHref('second=:value', { value: 'abc' });
+               assert.strictEqual(newUrl, '/path/#first=fvalue&second=abc');
             });
          });
       });

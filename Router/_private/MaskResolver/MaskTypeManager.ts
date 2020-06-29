@@ -38,6 +38,9 @@ export class MaskTypeManager {
         if (!fragment) {
             return false;
         }
+        if (mask.indexOf('#') === 0) {
+            return true;
+        }
         const reQueryParam: RegExp = /([^\/?&#:]+\/):[^\/?&#]/g;
         let match: RegExpMatchArray = reQueryParam.exec(mask);
         while (match) {
@@ -52,6 +55,9 @@ export class MaskTypeManager {
     private static isQueryFragment(mask: string, fragment: string): boolean {
         if (!fragment) {
             return false;
+        }
+        if (mask.indexOf('#') === 0) {
+            return true;
         }
         const reQueryParam: RegExp = /([^\/?&#:]+=)/g;
         let match: RegExpMatchArray = reQueryParam.exec(mask);
