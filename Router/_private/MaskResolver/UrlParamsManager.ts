@@ -4,13 +4,13 @@
 
 import {MaskType, MaskTypeManager} from './MaskTypeManager';
 import {decodeParam} from './Helpers';
+import {IUrlParts, UrlPartsManager} from './UrlPartsManager';
 
 /**
  *
  */
 export interface IParam {
     maskId: string;
-    newValue: unknown;
     urlValue: string;
     urlId: string;
 }
@@ -28,59 +28,57 @@ export class UrlParamsManager {
         this.maskType = MaskTypeManager.calculateMaskType(mask, url);
     }
     getUrlParams(): Record<string, string> {
-        let manager: UrlParams;
+        let params: IParam[];
+        const urlParts: IUrlParts = UrlPartsManager.getUrlParts(this.url);
         switch (this.maskType) {
             case MaskType.Path:
-                manager = new PathParams(this.mask, this.url);
+                params = PathParams.calculateParams(this.mask, urlParts.path);
                 break;
             case MaskType.Query:
-                manager = new QueryParams(this.mask, this.url);
+                params = QueryParams.calculateParams(this.mask, urlParts.query);
                 break;
             case MaskType.PathFragment:
-                manager = new PathFragmentParams(this.mask, this.url);
+                params = PathParams.calculateParams(this.mask, urlParts.fragment);
                 break;
             case MaskType.QueryFragment:
-                manager = new QueryFragmentParams(this.mask, this.url);
+                params = QueryParams.calculateParams(this.mask, urlParts.fragment);
                 break;
             case MaskType.Undefined:
                 return {};
         }
         const urlParams: Record<string, string> = {};
-        manager.calculateParams().forEach((param) => {
-            urlParams[param.maskId] = decodeParam(param.urlValue);
+        params.forEach((param) => {
+            if (param.maskId) {
+                urlParams[param.maskId] = decodeParam(param.urlValue);
+            }
         });
         return urlParams;
     }
 }
 
-abstract class UrlParams {
-    protected mask: string;
-    // здесь лежит часть url адреса: path, query или fragment
-    protected urlPart: string;
-    // регулярка, по которой выявляются параметры из маски
-    protected abstract reMaskValues: RegExp;
-    constructor(mask: string, urlPart: string) {
-        this.mask = mask;
-        this.urlPart = urlPart;
-    }
-
-    calculateParams(cfg?: Record<string, unknown>): IParam[] {
-        cfg = cfg || {};
+export class PathParams {
+    /**
+     * Вычислить параметры из url по переданной маске
+     * @param mask  маска, по которой разбирается url
+     * @param urlPart   часть url адреса, /path/param/value
+     */
+    static calculateParams(mask: string, urlPart: string): IParam[] {
         const params: IParam[] = [];
-        let maskMatched: RegExpExecArray = this.reMaskValues.exec(this.mask);
+        // регулярка, по которой выявляются параметры из маски
+        const reMaskValues: RegExp = /(?:([^\/?&#:]+)\/)?:([^\/?&#]+)/g;
+        let maskMatched: RegExpExecArray = reMaskValues.exec(mask);
         let hasAllUrlValues: boolean = true;  // признак, что нашли из url значения всех параметров
         while (maskMatched) {
             const urlId: string = maskMatched[1];
             params.push({
                 maskId: maskMatched[2],
-                newValue: cfg[maskMatched[2]],
-                urlValue: this._getUrlValue(urlId),
+                urlValue: PathParams._getUrlValue(urlPart, urlId),
                 urlId
             });
             if (hasAllUrlValues) {
                 hasAllUrlValues = !!urlId;
             }
-            maskMatched = this.reMaskValues.exec(this.mask);
+            maskMatched = reMaskValues.exec(mask);
         }
 
         // если ранее нашли значения всех параметров из url, то дальше ничего не ищем
@@ -88,50 +86,13 @@ abstract class UrlParams {
             return params;
         }
 
-        return this._getOtherUrlParams(params);
-    }
-
-    /**
-     * Получить значение параметра из url для указанного параметра
-     * напр. mask = 'param/:value'
-     *       url = '/param/pvalue'
-     *       urlId = 'param'
-     * в итоге получим value = 'pvalue'
-     * @param urlId
-     * @private
-     */
-    protected abstract _getUrlValue(urlId: string): string;
-
-    /**
-     * Получить значения параметров указанных в маске из url
-     * напр. mask = 'param/:value/:ident'
-     *       url = '/param/pvalue/pid/'
-     * в итоге получим:
-     *       value = 'pvalue'
-     *       ident = 'pid'
-     * @param params
-     * @private
-     */
-    protected abstract _getOtherUrlParams(params: IParam[]): IParam[];
-}
-
-class PathParams extends UrlParams {
-    protected reMaskValues: RegExp = /(?:([^\/?&#:]+)\/)?:([^\/?&#]+)/g;
-
-    protected _getUrlValue(urlId: string): string {
-        const urlValueMatched: RegExpMatchArray =
-            this.urlPart.match(new RegExp('[\/]' + urlId + '/([^\/?&#]+)'));
-        return urlValueMatched ? urlValueMatched[1] : undefined;
-    }
-
-    protected _getOtherUrlParams(params: IParam[]): IParam[] {
-        const fullMask: string = this.mask.replace(new RegExp('(\/?):([^\/?&#]+)', 'g'),
+        const fullMask: string = mask.replace(new RegExp('(\/?):([^\/?&#]+)', 'g'),
             (fullMatch, slash, paramName) => {
                 // в итоге получим что-то типа '(?:\/(?<id>[^\/?&#]+))?'
                 return '(?:' + (slash ? '\/' : '') + '(?<' + paramName + '>[^\\/?&#]+))?';
             });
 
-        const fields: RegExpMatchArray = this.urlPart.match(fullMask);
+        const fields: RegExpMatchArray = urlPart.match(fullMask);
 
         if (fields) {
             // в поле fields.groups[<name>] лежит значение параметра
@@ -143,34 +104,59 @@ class PathParams extends UrlParams {
         }
         return params;
     }
-}
 
-class QueryParams extends UrlParams {
-    protected reMaskValues: RegExp = /([^\/?&#:]+)=:([^\/?&#]+)/g;
-
-    protected _getUrlValue(urlId: string): string {
+    protected static _getUrlValue(urlPart: string, urlId: string): string {
         const urlValueMatched: RegExpMatchArray =
-            this.urlPart.match(new RegExp('[?&]' + urlId + '=([^\/?&#]+)?'));
+            urlPart.match(new RegExp('[#\/]' + urlId + '/([^\/?&#]+)'));
         return urlValueMatched ? urlValueMatched[1] : undefined;
     }
+}
 
-    protected _getOtherUrlParams(params: IParam[]): IParam[] {
+// export class PathFragmentParams extends PathParams {}
+
+export class QueryParams {
+    /**
+     * Вычислить параметры из url по переданной маске
+     * @param mask  маска, по которой разбирается url
+     * @param urlPart   часть url адреса, ?param=value, из которой достаются значения
+     * @param includeUrlParams  включать или нет в результат параметры из url, которых не было в маске
+     */
+    static calculateParams(mask: string, urlPart: string, includeUrlParams: boolean = false): IParam[] {
+        // маска вида query1=:qId1&query3=:qId3 разбивается в объект {query1: 'qId1', query3: 'qId3'}
+        const maskParams: Record<string, string> = QueryParams._getQueryParamsFromString(mask);
+        // url вида ?query1=value1&query2=value2 разбивается в объект {query1: 'value1', query2: 'value2'}
+        const urlParams: Record<string, string> = QueryParams._getQueryParamsFromString(urlPart);
+        const params: IParam[] = [];
+        const calculatedFields: string[] = [];
+
+        [urlParams, maskParams].forEach((data) => {
+            for (const urlId in data) {
+                if (!data.hasOwnProperty(urlId) || calculatedFields.indexOf(urlId) > -1) {
+                    continue;
+                }
+                params.push({
+                    maskId: maskParams[urlId],
+                    urlValue: urlParams[urlId],
+                    urlId
+                });
+                calculatedFields.push(urlId);
+            }
+        });
+        return params;
+    }
+
+    protected static _getQueryParamsFromString(input: string): Record<string, string> {
+        const params: Record<string, string> = {};  // параметры из входной строки
+        const urlFields: string[] = input.split(/[?#&]/);
+        for (let i = 0; i < urlFields.length; i++) {
+            if (!urlFields[i]) {
+                continue;
+            }
+            const field: string[] = urlFields[i].split('=');
+            params[field[0]] = field[1].indexOf(':') > -1 ? field[1].slice(1) : field[1];
+        }
         return params;
     }
 }
 
-class PathFragmentParams extends PathParams {
-    protected _getUrlValue(urlId: string): string {
-        const urlValueMatched: RegExpMatchArray =
-            this.urlPart.match(new RegExp('[\/#]' + urlId + '/([^\/?&#]+)'));
-        return urlValueMatched ? urlValueMatched[1] : undefined;
-    }
-}
-
-class QueryFragmentParams extends QueryParams {
-    protected _getUrlValue(urlId: string): string {
-        const urlValueMatched: RegExpMatchArray =
-            this.urlPart.match(new RegExp('[&#]' + urlId + '=([^\/?&#]+)?'));
-        return urlValueMatched ? urlValueMatched[1] : undefined;
-    }
-}
+// export class QueryFragmentParams extends QueryParams {}

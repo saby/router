@@ -1,4 +1,17 @@
 
+export function encodeParam(param: unknown): string {
+    const type: 'string'|'number'|'bigint'|'boolean'|'symbol'|'undefined'|'object'|'function' = typeof param;
+    let result: unknown = param;
+    if (type !== 'undefined') {
+        if (type !== 'string') {
+            // Convert parameter to string by calling JSON.stringify
+            result = JSON.stringify(result);
+        }
+        result = encodeURIComponent(result as string);
+    }
+    return result as string;
+}
+
 export function decodeParam(param: string): string {
     let result: string = param;
     if (typeof result !== 'undefined') {

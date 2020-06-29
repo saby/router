@@ -15,7 +15,7 @@ export interface IUrlParts {
  *
  */
 export class UrlPartsManager {
-    static _getUrlParts(url: string): IUrlParts {
+    static getUrlParts(url: string): IUrlParts {
         const queryPos: number = url.indexOf('?');
         const hashPos: number = url.indexOf('#');
         if (queryPos >= 0 && hashPos >= 0) {
@@ -46,7 +46,7 @@ export class UrlPartsManager {
         };
     }
 
-    static _joinUrlParts(urlParts: IUrlParts): string {
+    static joinUrlParts(urlParts: IUrlParts): string {
         const path = urlParts.path + '/';
         let query: string = urlParts.query === '?' ? '' : urlParts.query;
         if (query.length > 0) {

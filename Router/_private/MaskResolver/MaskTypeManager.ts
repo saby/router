@@ -21,7 +21,7 @@ export enum MaskType {
  */
 export class MaskTypeManager {
     static calculateMaskType(mask: string, url: string): MaskType {
-        const urlParts: IUrlParts = UrlPartsManager._getUrlParts(url);
+        const urlParts: IUrlParts = UrlPartsManager.getUrlParts(url);
         // par1/:val1 - это либо path либо fragment
         if (mask.indexOf('/') > -1) {
             return MaskTypeManager.isPathFragment(mask, urlParts.fragment) ? MaskType.PathFragment : MaskType.Path;
