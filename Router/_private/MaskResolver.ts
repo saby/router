@@ -10,9 +10,10 @@
 import { IoC } from 'Env/Env';
 import * as Data from './Data';
 import * as UrlRewriter from './UrlRewriter';
-import {IParam, UrlModifier} from './UrlModifier';
-import PathModifier from './PathModifier';
-import QueryModifier from './QueryModifier';
+import {IParam, UrlModifier} from './MaskResolver/UrlModifier';
+import PathModifier from './MaskResolver/PathModifier';
+import QueryModifier from './MaskResolver/QueryModifier';
+import {UrlParamsManager} from './MaskResolver/UrlParamsManager';
 
 interface ISplitPath {
     path: string;
@@ -49,15 +50,10 @@ export function getAppNameByUrl(url: string): string {
     return folderName + '/Index';
 }
 
-export function calculateUrlParams(mask: string, url?: string): Record<string, unknown> {
-    const resolver: MaskResolver = new MaskResolver(mask, {}, url);
-    return resolver.getUrlParams();
+export function calculateUrlParams(mask: string, url?: string): Record<string, string> {
+    const manager: UrlParamsManager = new UrlParamsManager(mask, url || UrlRewriter.get(Data.getRelativeUrl()));
+    return manager.getUrlParams();
 }
-
-// export function calculateCfgParams(mask: string, cfg: Record<string, unknown>): Record<string, unknown> {
-//     const resolver: MaskResolver = new MaskResolver(mask, cfg);
-//     return resolver.getCfgParams();
-// }
 
 export function calculateHref(mask: string, cfg: Record<string, unknown>): string {
     const resolver: MaskResolver = new MaskResolver(mask, cfg);

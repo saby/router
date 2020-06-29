@@ -183,61 +183,6 @@ function (Router, AppInit, EnvNode) {
          });
       });
 
-      // The majority of the code is shared with #calculateUrlParams, so there
-      // are fewer tests for this one
-      // describe('#calculateCfgParams', function() {
-      //    beforeEach(function() {
-      //       Data.setRelativeUrl('/page/data/main/order/test?first=number&second=string');
-      //    });
-      //
-      //    it('returns value from cfg if mask is resolved', function() {
-      //       var mask = 'data/:type',
-      //           cfg = { type: 'override' },
-      //           calculated = MaskResolver.calculateCfgParams(mask, cfg);
-      //
-      //       assert.strictEqual(calculated.type, 'override');
-      //    });
-      //
-      //    it('returns undefined if cfg does not specify a value', function() {
-      //       var mask = 'data/:type',
-      //           cfg = { otherThing: 'ok' },
-      //           calculated = MaskResolver.calculateCfgParams(mask, cfg);
-      //
-      //       // mask has :type, but cfg does not
-      //       assert.propertyVal(calculated, 'type', undefined);
-      //
-      //       // mask does not have :otherThing
-      //       assert.notProperty(calculated, 'otherThing');
-      //    });
-      //
-      //    it('returns value from cfg from query mask', function() {
-      //       var mask = 'first=:value',
-      //           cfg = { value: 27 },
-      //           calculated = MaskResolver.calculateCfgParams(mask, cfg);
-      //
-      //       assert.strictEqual(calculated.value, 27);
-      //    });
-      //
-      //    it('returns undefined if cfg does not specify a value from query mask', function() {
-      //       var mask = 'first=:value',
-      //           cfg = { otherThing: 27 },
-      //           calculated = MaskResolver.calculateCfgParams(mask, cfg);
-      //
-      //       assert.propertyVal(calculated, 'value', undefined);
-      //       assert.notProperty(calculated, 'otherThing');
-      //    });
-      //
-      //    it('returns all fields for multiparameter masks', function() {
-      //       var mask = 'data/:typeA/:typeB/:typeC',
-      //           cfg = { typeB: 'bbb' },
-      //           calculated = MaskResolver.calculateCfgParams(mask, cfg);
-      //
-      //       assert.propertyVal(calculated, 'typeA', undefined);
-      //       assert.propertyVal(calculated, 'typeB', 'bbb');
-      //       assert.propertyVal(calculated, 'typeC', undefined);
-      //    });
-      // });
-
       describe('#calculateHref', function() {
          describe('simple masks', function() {
             describe('starting at root url', function() {
