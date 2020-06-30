@@ -1,9 +1,13 @@
 /**
- *
+ * Методы разбивки/сборки частей url адреса
  */
 
 /**
- *
+ * Интерфейс, для частей url адреса.
+ * Напр., url вида /path/?query=value#fragment будет разбит на
+ * path: /path
+ * query: ?query=value
+ * fragment: #fragment
  */
 export interface IUrlParts {
     path: string;
@@ -12,9 +16,13 @@ export interface IUrlParts {
 }
 
 /**
- *
+ * Класс разбивает url адрес на составные части и собирает его обратно в url адрес
  */
 export class UrlPartsManager {
+    /**
+     * Разбивает url адрес на составные части path, query и fragment
+     * @param url
+     */
     static getUrlParts(url: string): IUrlParts {
         const queryPos: number = url.indexOf('?');
         const hashPos: number = url.indexOf('#');
@@ -46,15 +54,19 @@ export class UrlPartsManager {
         };
     }
 
+    /**
+     * Собирает из частей path, query и fragment целый url адрес
+     * @param urlParts
+     */
     static joinUrlParts(urlParts: IUrlParts): string {
         const path = urlParts.path + '/';
-        let query: string = urlParts.query === '?' ? '' : urlParts.query;
+        let query: string = urlParts.query.replace(/^[#/?]/, '');
         if (query.length > 0) {
-            query = query.indexOf('?') < 0 ? '?' + query : query;
+            query = '?' + query;
         }
-        let fragment: string = urlParts.fragment === '#' ? '' : urlParts.fragment;
+        let fragment: string = urlParts.fragment.replace(/^[#/?]/, '');
         if (fragment.length > 0) {
-            fragment = fragment.indexOf('#') < 0 ? '#' + fragment : fragment;
+            fragment = '#' + fragment;
         }
         return [path, query, fragment].join('');
     }

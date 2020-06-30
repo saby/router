@@ -41,6 +41,6 @@ export function calculateUrlParams(mask: string, url?: string): Record<string, s
 }
 
 export function calculateHref(mask: string, cfg: Record<string, unknown>): string {
-    const modifier: UrlModifier = new UrlModifier(mask, cfg, UrlRewriter.get(Data.getRelativeUrl()));
+    const modifier: UrlModifier = new UrlModifier(mask, cfg);
     return modifier.modify();
 }

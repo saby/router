@@ -2,6 +2,8 @@
 /* eslint-disable max-nested-callbacks */
 define(['Router/router', 'Application/Initializer', 'SbisEnv/PresentationService'], /**
  * @param { import('../Router/router') } Router
+ * @param AppInit
+ * @param EnvNode
  */
 function (Router, AppInit, EnvNode) {
    var MaskResolver = Router.MaskResolver,

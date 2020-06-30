@@ -1,32 +1,33 @@
 /**
- *
+ * Классы для получения параметров из url в зависимости от типа маски
  */
 
 import {MaskType, MaskTypeManager} from './MaskTypeManager';
-import {decodeParam} from './Helpers';
+import {decodeParam, getParamsFromQueryString} from './Helpers';
 import {IUrlParts, UrlPartsManager} from './UrlPartsManager';
 
 /**
- *
+ * Интерфейс параметров url адреса
  */
 export interface IParam {
-    maskId: string;
-    urlValue: string;
-    urlId: string;
+    maskId: string;  // идентификатор параметра из маски, param/:valueId -> valueId
+    urlValue: string;  // значение параметра из url, /param/value -> value
+    urlId: string;  // название параметра в url, /param/value -> param
 }
 
 /**
- *
+ * Класс для получения параметров из url адреса, в зависимости от типа маски и url адреса
  */
 export class UrlParamsGetter {
-    private mask: string;
-    private url: string;
-    private maskType: MaskType;
+    private readonly mask: string;
+    private readonly url: string;
+    private readonly maskType: MaskType;
     constructor(mask: string, url: string) {
         this.mask = mask;
         this.url = url;
         this.maskType = MaskTypeManager.calculateMaskType(mask, url);
     }
+
     get(): Record<string, string> {
         let params: IParam[];
         const urlParts: IUrlParts = UrlPartsManager.getUrlParts(this.url);
@@ -56,6 +57,9 @@ export class UrlParamsGetter {
     }
 }
 
+/**
+ * Класс для получения параметров из url адреса типа /param/value или /path#param/value
+ */
 export class PathParams {
     /**
      * Вычислить параметры из url по переданной маске
@@ -105,6 +109,12 @@ export class PathParams {
         return params;
     }
 
+    /**
+     * Получить значение указанного параметра из части url
+     * @param urlPart   часть url вида /path/param/value/
+     * @param urlId     название параметра, напр. param
+     * @private
+     */
     protected static _getUrlValue(urlPart: string, urlId: string): string {
         const urlValueMatched: RegExpMatchArray =
             urlPart.match(new RegExp('[#\/]' + urlId + '/([^\/?&#]+)'));
@@ -112,20 +122,20 @@ export class PathParams {
     }
 }
 
-// export class PathFragmentParams extends PathParams {}
-
+/**
+ * Класс для получения параметров из url адреса типа /path/?param=value или /path#param=value
+ */
 export class QueryParams {
     /**
      * Вычислить параметры из url по переданной маске
      * @param mask  маска, по которой разбирается url
      * @param urlPart   часть url адреса, ?param=value, из которой достаются значения
-     * @param includeUrlParams  включать или нет в результат параметры из url, которых не было в маске
      */
-    static calculateParams(mask: string, urlPart: string, includeUrlParams: boolean = false): IParam[] {
+    static calculateParams(mask: string, urlPart: string): IParam[] {
         // маска вида query1=:qId1&query3=:qId3 разбивается в объект {query1: 'qId1', query3: 'qId3'}
-        const maskParams: Record<string, string> = QueryParams._getQueryParamsFromString(mask);
+        const maskParams: Record<string, string> = getParamsFromQueryString(mask);
         // url вида ?query1=value1&query2=value2 разбивается в объект {query1: 'value1', query2: 'value2'}
-        const urlParams: Record<string, string> = QueryParams._getQueryParamsFromString(urlPart);
+        const urlParams: Record<string, string> = getParamsFromQueryString(urlPart);
         const params: IParam[] = [];
         const calculatedFields: string[] = [];
 
@@ -144,19 +154,4 @@ export class QueryParams {
         });
         return params;
     }
-
-    protected static _getQueryParamsFromString(input: string): Record<string, string> {
-        const params: Record<string, string> = {};  // параметры из входной строки
-        const urlFields: string[] = input.split(/[?#&]/);
-        for (let i = 0; i < urlFields.length; i++) {
-            if (!urlFields[i]) {
-                continue;
-            }
-            const field: string[] = urlFields[i].split('=');
-            params[field[0]] = field[1].indexOf(':') > -1 ? field[1].slice(1) : field[1];
-        }
-        return params;
-    }
 }
-
-// export class QueryFragmentParams extends QueryParams {}

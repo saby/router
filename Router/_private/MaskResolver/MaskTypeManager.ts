@@ -1,9 +1,10 @@
 /**
- *
+ * Набор методов, которые определяют тип маски, по которой нужно обработать текущий url
  */
 
 import {IUrlParts, UrlPartsManager} from './UrlPartsManager';
 import {IoC} from "Env/Env";
+import {getParamsFromQueryString} from './Helpers';
 
 /**
  * Типы поддерживаемых масок
@@ -17,7 +18,7 @@ export enum MaskType {
 }
 
 /**
- *
+ * Класс, который определяет тип маски
  */
 export class MaskTypeManager {
     static calculateMaskType(mask: string, url: string): MaskType {
@@ -34,12 +35,18 @@ export class MaskTypeManager {
         return MaskType.Undefined;
     }
 
+    /**
+     * Проверить, что маска для фрагмента url'а или нет. Проверить fragment вида #param/value
+     * Из фрагмента на входе поэлементно проверит, что fragment хоть частично совпадает с ним
+     * @param mask  маска, напр. param/:value
+     * @param fragment  фрагмент url'а, напр. #param/value
+     */
     private static isPathFragment(mask: string, fragment: string): boolean {
-        if (!fragment) {
-            return false;
-        }
         if (mask.indexOf('#') === 0) {
             return true;
+        }
+        if (!fragment) {
+            return false;
         }
         const reQueryParam: RegExp = /([^\/?&#:]+\/):[^\/?&#]/g;
         let match: RegExpMatchArray = reQueryParam.exec(mask);
@@ -52,20 +59,25 @@ export class MaskTypeManager {
         return false;
     }
 
+    /**
+     * Проверить, что маска для фрагмента url'а или нет. Проверить fragment вида #param=value
+     * Из фрагмента на входе поэлементно проверит, что fragment хоть частично совпадает с ним
+     * @param mask  маска, напр. param=:value
+     * @param fragment  фрагмент url'а, напр. #param=value
+     */
     private static isQueryFragment(mask: string, fragment: string): boolean {
-        if (!fragment) {
-            return false;
-        }
         if (mask.indexOf('#') === 0) {
             return true;
         }
-        const reQueryParam: RegExp = /([^\/?&#:]+=)/g;
-        let match: RegExpMatchArray = reQueryParam.exec(mask);
-        while (match) {
-            if (fragment.indexOf(match[1]) > -1) {
+        if (!fragment) {
+            return false;
+        }
+        const maskParams: Record<string, string> = getParamsFromQueryString(mask);
+        const urlParams: Record<string, string> = getParamsFromQueryString(fragment);
+        for (const urlId in maskParams) {
+            if (maskParams.hasOwnProperty(urlId) && urlParams.hasOwnProperty(urlId)) {
                 return true;
             }
-            match = reQueryParam.exec(mask);
         }
         return false;
     }

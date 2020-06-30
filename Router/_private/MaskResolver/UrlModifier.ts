@@ -1,5 +1,5 @@
 /**
- *
+ * Классы для перезаписи url адреса по заданной маске
  */
 
 import * as UrlRewriter from '../UrlRewriter';
@@ -10,14 +10,14 @@ import {IParam, PathParams, QueryParams} from './UrlParamsGetter';
 import {IUrlParts, UrlPartsManager} from './UrlPartsManager';
 
 /**
- *
+ * Класс, который по типу маски обрабатывает (замена, добавление, удаление параметров) url адрес
  */
 export class UrlModifier {
-    private mask: string;
-    private url: string;
-    private cfg: Record<string, unknown>;
+    private readonly mask: string;
+    private readonly url: string;
+    private readonly cfg: Record<string, unknown>;
     private readonly urlParts: IUrlParts;
-    private maskType: MaskType;
+    private readonly maskType: MaskType;
     constructor(mask: string, cfg: Record<string, unknown>, url?: string) {
         this.mask = mask;
         this.url = url || UrlRewriter.get(Data.getRelativeUrl());
@@ -55,6 +55,9 @@ export class UrlModifier {
     }
 }
 
+/**
+ * Обработка (замена, добавление, удаление параметров по маске) url адреса вида /path/param/value или /path#param/value
+ */
 class PathModifier {
     static modify(mask: string, cfg: Record<string, unknown>, urlPart: string): string {
         const params: IParam[] = PathParams.calculateParams(mask, urlPart);
@@ -69,10 +72,10 @@ class PathModifier {
             // если новое значение не задано, тогда удаляем параметр из url
             if (newValue === undefined) {
                 if (param.urlId) {
-                    newPath = newPath.replace(new RegExp('\/' + param.urlId + '\/' + param.urlValue), '');
+                    newPath = newPath.replace(new RegExp('[#\/]' + param.urlId + '\/' + param.urlValue), '');
                     continue;
                 }
-                newPath = newPath.replace(new RegExp('\/' + param.urlValue), '');
+                newPath = newPath.replace(new RegExp('[#\/]' + param.urlValue), '');
                 continue;
             }
             const value: string = encodeParam(newValue);
@@ -92,9 +95,12 @@ class PathModifier {
     }
 }
 
+/**
+ * Обработка (замена, добавление, удаление параметров по маске) url адреса вида /path/?param=value или /path#param=value
+ */
 class QueryModifier {
     static modify(mask: string, cfg: Record<string, unknown>, urlPart: string): string {
-        const params: IParam[] = QueryParams.calculateParams(mask, urlPart, true);
+        const params: IParam[] = QueryParams.calculateParams(mask, urlPart);
         const newQueryParams: Record<string, string> = {};
         for (let i = 0; i < params.length; i++) {
             const param: IParam = params[i];

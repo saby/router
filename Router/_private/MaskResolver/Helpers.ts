@@ -1,4 +1,7 @@
-
+/**
+ * Кодирует значения параметров url (пробелы, проценты и т.п.)
+ * @param param
+ */
 export function encodeParam(param: unknown): string {
     const type: 'string'|'number'|'bigint'|'boolean'|'symbol'|'undefined'|'object'|'function' = typeof param;
     let result: unknown = param;
@@ -12,6 +15,10 @@ export function encodeParam(param: unknown): string {
     return result as string;
 }
 
+/**
+ * Раскодирует значения параметров из url (пробелы, проценты и т.п.)
+ * @param param
+ */
 export function decodeParam(param: string): string {
     let result: string = param;
     if (typeof result !== 'undefined') {
@@ -25,4 +32,23 @@ export function decodeParam(param: string): string {
         }
     }
     return result;
+}
+
+/**
+ * Из строки вида param=value или param=:value достает все параметры и возвращает в виде объекта
+ * Строка вида query1=:qId1&query3=:qId3 разбивается в объект {query1: 'qId1', query3: 'qId3'}
+ * Строка вида ?query1=value1&query2=value2 разбивается в объект {query1: 'value1', query2: 'value2'}
+ * @param input
+ */
+export function getParamsFromQueryString(input: string): Record<string, string> {
+    const params: Record<string, string> = {};  // параметры из входной строки
+    const urlFields: string[] = input.split(/[?#&]/);
+    for (let i = 0; i < urlFields.length; i++) {
+        if (!urlFields[i]) {
+            continue;
+        }
+        const field: string[] = urlFields[i].split('=');
+        params[field[0]] = field[1].indexOf(':') > -1 ? field[1].slice(1) : field[1];
+    }
+    return params;
 }
