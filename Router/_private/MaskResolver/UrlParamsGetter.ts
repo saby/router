@@ -4,7 +4,7 @@
 
 import {MaskType, MaskTypeManager} from './MaskTypeManager';
 import {decodeParam, getParamsFromQueryString} from './Helpers';
-import {IUrlParts, UrlPartsManager} from './UrlPartsManager';
+import {UrlParts} from './UrlParts';
 
 /**
  * Интерфейс параметров url адреса
@@ -20,29 +20,28 @@ export interface IParam {
  */
 export class UrlParamsGetter {
     private readonly mask: string;
-    private readonly url: string;
+    private readonly urlParts: UrlParts;
     private readonly maskType: MaskType;
     constructor(mask: string, url: string) {
         this.mask = mask;
-        this.url = url;
-        this.maskType = MaskTypeManager.calculateMaskType(mask, url);
+        this.urlParts = new UrlParts(url);
+        this.maskType = MaskTypeManager.calculateMaskType(mask, this.urlParts);
     }
 
     get(): Record<string, string> {
         let params: IParam[];
-        const urlParts: IUrlParts = UrlPartsManager.getUrlParts(this.url);
         switch (this.maskType) {
             case MaskType.Path:
-                params = PathParams.calculateParams(this.mask, urlParts.path);
+                params = PathParams.calculateParams(this.mask, this.urlParts.getPath());
                 break;
             case MaskType.Query:
-                params = QueryParams.calculateParams(this.mask, urlParts.query);
+                params = QueryParams.calculateParams(this.mask, this.urlParts.getQuery());
                 break;
             case MaskType.PathFragment:
-                params = PathParams.calculateParams(this.mask, urlParts.fragment);
+                params = PathParams.calculateParams(this.mask, this.urlParts.getFragment());
                 break;
             case MaskType.QueryFragment:
-                params = QueryParams.calculateParams(this.mask, urlParts.fragment);
+                params = QueryParams.calculateParams(this.mask, this.urlParts.getFragment());
                 break;
             case MaskType.Undefined:
                 return {};

@@ -1,10 +1,10 @@
 /* global assert */
-define(['Router/_private/MaskResolver/UrlPartsManager', 'Router/_private/MaskResolver/UrlParamsGetter'], /**
- * @param UrlPartsManagerMod
+define(['Router/_private/MaskResolver/UrlParts', 'Router/_private/MaskResolver/UrlParamsGetter'], /**
+ * @param UrlPartsMod
  * @param UrlParamsGetterMod
  */
-function(UrlPartsManagerMod, UrlParamsGetterMod) {
-   const UrlPartsManager = UrlPartsManagerMod.UrlPartsManager,
+function(UrlPartsMod, UrlParamsGetterMod) {
+   const UrlParts = UrlPartsMod.UrlParts,
        UrlParamsGetter = UrlParamsGetterMod.UrlParamsGetter,
        PathParams = UrlParamsGetterMod.PathParams,
        QueryParams = UrlParamsGetterMod.QueryParams;
@@ -30,15 +30,15 @@ function(UrlPartsManagerMod, UrlParamsGetterMod) {
       });
       describe('PathParams', function() {
          it('simple url', function () {
-            const urlParts = UrlPartsManager.getUrlParts('/path/param/value');
-            const params = PathParams.calculateParams('param/:valueId', urlParts.path);
+            const urlParts = new UrlParts('/path/param/value');
+            const params = PathParams.calculateParams('param/:valueId', urlParts.getPath());
             assert.strictEqual(params[0].maskId, 'valueId');
             assert.strictEqual(params[0].urlValue, 'value');
             assert.strictEqual(params[0].urlId, 'param');
          });
          it('fragment url', function () {
-            const urlParts = UrlPartsManager.getUrlParts('/path/#param/value');
-            const params = PathParams.calculateParams('param/:valueId', urlParts.fragment);
+            const urlParts = new UrlParts('/path/#param/value');
+            const params = PathParams.calculateParams('param/:valueId', urlParts.getFragment());
             assert.strictEqual(params[0].maskId, 'valueId');
             assert.strictEqual(params[0].urlValue, 'value');
             assert.strictEqual(params[0].urlId, 'param');
@@ -46,15 +46,15 @@ function(UrlPartsManagerMod, UrlParamsGetterMod) {
       });
       describe('QueryParams', function() {
          it('simple url', function () {
-            const urlParts = UrlPartsManager.getUrlParts('/path/?param=value');
-            const params = QueryParams.calculateParams('param=:valueId', urlParts.query);
+            const urlParts = new UrlParts('/path/?param=value');
+            const params = QueryParams.calculateParams('param=:valueId', urlParts.getQuery());
             assert.strictEqual(params[0].maskId, 'valueId');
             assert.strictEqual(params[0].urlValue, 'value');
             assert.strictEqual(params[0].urlId, 'param');
          });
          it('fragment url', function () {
-            const urlParts = UrlPartsManager.getUrlParts('/path/#param=value');
-            const params = QueryParams.calculateParams('param=:valueId', urlParts.fragment);
+            const urlParts = new UrlParts('/path/#param=value');
+            const params = QueryParams.calculateParams('param=:valueId', urlParts.getFragment());
             assert.strictEqual(params[0].maskId, 'valueId');
             assert.strictEqual(params[0].urlValue, 'value');
             assert.strictEqual(params[0].urlId, 'param');

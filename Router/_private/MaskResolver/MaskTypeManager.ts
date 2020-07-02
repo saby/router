@@ -2,8 +2,8 @@
  * Набор методов, которые определяют тип маски, по которой нужно обработать текущий url
  */
 
-import {IUrlParts, UrlPartsManager} from './UrlPartsManager';
 import {IoC} from "Env/Env";
+import {UrlParts} from './UrlParts';
 import {getParamsFromQueryString} from './Helpers';
 
 /**
@@ -21,15 +21,15 @@ export enum MaskType {
  * Класс, который определяет тип маски
  */
 export class MaskTypeManager {
-    static calculateMaskType(mask: string, url: string): MaskType {
-        const urlParts: IUrlParts = UrlPartsManager.getUrlParts(url);
+    static calculateMaskType(mask: string, urlParts: UrlParts): MaskType {
         // par1/:val1 - это либо path либо fragment
         if (mask.indexOf('/') > -1) {
-            return MaskTypeManager.isPathFragment(mask, urlParts.fragment) ? MaskType.PathFragment : MaskType.Path;
+            return MaskTypeManager.isPathFragment(mask, urlParts) ? MaskType.PathFragment : MaskType.Path;
         }
         // par1=:val1 - это либо query либо fragment
         if (mask.indexOf('=') > -1) {
-            return MaskTypeManager.isQueryFragment(mask, urlParts.fragment) ? MaskType.QueryFragment : MaskType.Query;
+            return MaskTypeManager.isQueryFragment(mask, urlParts)
+                ? MaskType.QueryFragment : MaskType.Query;
         }
         IoC.resolve('ILogger').error('Router.MaskResolver', `Mask "${mask}" is invalid`);
         return MaskType.Undefined;
@@ -39,12 +39,13 @@ export class MaskTypeManager {
      * Проверить, что маска для фрагмента url'а или нет. Проверить fragment вида #param/value
      * Из фрагмента на входе поэлементно проверит, что fragment хоть частично совпадает с ним
      * @param mask  маска, напр. param/:value
-     * @param fragment  фрагмент url'а, напр. #param/value
+     * @param urlParts  фрагмент url'а, напр. #param/value
      */
-    private static isPathFragment(mask: string, fragment: string): boolean {
+    private static isPathFragment(mask: string, urlParts: UrlParts): boolean {
         if (mask.indexOf('#') === 0) {
             return true;
         }
+        const fragment: string = urlParts.getFragment();
         if (!fragment) {
             return false;
         }
@@ -63,12 +64,13 @@ export class MaskTypeManager {
      * Проверить, что маска для фрагмента url'а или нет. Проверить fragment вида #param=value
      * Из фрагмента на входе поэлементно проверит, что fragment хоть частично совпадает с ним
      * @param mask  маска, напр. param=:value
-     * @param fragment  фрагмент url'а, напр. #param=value
+     * @param urlParts  фрагмент url'а, напр. #param=value
      */
-    private static isQueryFragment(mask: string, fragment: string): boolean {
+    private static isQueryFragment(mask: string, urlParts: UrlParts): boolean {
         if (mask.indexOf('#') === 0) {
             return true;
         }
+        const fragment: string = urlParts.getFragment();
         if (!fragment) {
             return false;
         }

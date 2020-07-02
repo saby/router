@@ -10,20 +10,25 @@
  * fragment: #fragment
  */
 export interface IUrlParts {
-    path: string;
-    query: string;
-    fragment: string;
+    path?: string;
+    query?: string;
+    fragment?: string;
 }
 
 /**
  * Класс разбивает url адрес на составные части и собирает его обратно в url адрес
  */
-export class UrlPartsManager {
+export class UrlParts {
+    private urlParts: IUrlParts;
+    constructor(url: string) {
+        this.urlParts = this.parseUrl(url);
+    }
+
     /**
      * Разбивает url адрес на составные части path, query и fragment
      * @param url
      */
-    static getUrlParts(url: string): IUrlParts {
+    private parseUrl(url: string): IUrlParts {
         const queryPos: number = url.indexOf('?');
         const hashPos: number = url.indexOf('#');
         if (queryPos >= 0 && hashPos >= 0) {
@@ -54,17 +59,42 @@ export class UrlPartsManager {
         };
     }
 
+    getPath(): string {
+        return this.urlParts.path;
+    }
+
+    getQuery(): string {
+        return this.urlParts.query;
+    }
+
+    getFragment(): string {
+        return this.urlParts.fragment;
+    }
+
     /**
      * Собирает из частей path, query и fragment целый url адрес
-     * @param urlParts
      */
-    static joinUrlParts(urlParts: IUrlParts): string {
-        const path = urlParts.path + '/';
-        let query: string = urlParts.query.replace(/^[#/?]/, '');
+    join(newUrlParts: IUrlParts): string {
+        let path: string = this.urlParts.path;
+        if (newUrlParts.hasOwnProperty('path')) {
+            path = newUrlParts.path;
+        }
+        path = path.replace(/[#/?&=]+$/, '') + '/';
+
+        let query: string = this.urlParts.query;
+        if (newUrlParts.hasOwnProperty('query')) {
+            query = newUrlParts.query;
+        }
+        query = query.replace(/^[#/?]/, '');
         if (query.length > 0) {
             query = '?' + query;
         }
-        let fragment: string = urlParts.fragment.replace(/^[#/?]/, '');
+
+        let fragment: string = this.urlParts.fragment;
+        if (newUrlParts.hasOwnProperty('fragment')) {
+            fragment = newUrlParts.fragment;
+        }
+        fragment = fragment.replace(/^[#/?]/, '');
         if (fragment.length > 0) {
             fragment = '#' + fragment;
         }

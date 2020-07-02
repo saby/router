@@ -2,56 +2,49 @@
  * Классы для перезаписи url адреса по заданной маске
  */
 
-import * as UrlRewriter from '../UrlRewriter';
-import * as Data from '../Data';
 import {MaskType, MaskTypeManager} from './MaskTypeManager';
 import {encodeParam} from './Helpers';
 import {IParam, PathParams, QueryParams} from './UrlParamsGetter';
-import {IUrlParts, UrlPartsManager} from './UrlPartsManager';
+import {IUrlParts, UrlParts} from './UrlParts';
 
 /**
  * Класс, который по типу маски обрабатывает (замена, добавление, удаление параметров) url адрес
  */
 export class UrlModifier {
     private readonly mask: string;
-    private readonly url: string;
     private readonly cfg: Record<string, unknown>;
-    private readonly urlParts: IUrlParts;
+    private readonly urlParts: UrlParts;
     private readonly maskType: MaskType;
-    constructor(mask: string, cfg: Record<string, unknown>, url?: string) {
+    constructor(mask: string, cfg: Record<string, unknown>, url: string) {
         this.mask = mask;
-        this.url = url || UrlRewriter.get(Data.getRelativeUrl());
+        this.urlParts = new UrlParts(url);
+        // определим тип маски
+        this.maskType = MaskTypeManager.calculateMaskType(mask, this.urlParts);
 
         this.cfg = cfg.clear ? {} : cfg;
         // когда нужно заменить url переданной маской
         if (cfg.replace) {
-            this.urlParts = {path: '', query: '', fragment: ''};
-        } else {
-            this.urlParts = UrlPartsManager.getUrlParts(this.url);
+            this.urlParts = new UrlParts('');
         }
-
-        // определим тип маски
-        this.maskType = MaskTypeManager.calculateMaskType(mask, this.url);
     }
 
     modify(): string {
+        const newUrlParts: IUrlParts = {};
         switch (this.maskType) {
             case MaskType.Path:
-                this.urlParts.path = PathModifier.modify(this.mask, this.cfg, this.urlParts.path);
+                newUrlParts.path = PathModifier.modify(this.mask, this.cfg, this.urlParts.getPath());
                 break;
             case MaskType.Query:
-                this.urlParts.query =  QueryModifier.modify(this.mask, this.cfg, this.urlParts.query);
+                newUrlParts.query =  QueryModifier.modify(this.mask, this.cfg, this.urlParts.getQuery());
                 break;
             case MaskType.PathFragment:
-                this.urlParts.fragment = PathModifier.modify(this.mask, this.cfg, this.urlParts.fragment);
+                newUrlParts.fragment = PathModifier.modify(this.mask, this.cfg, this.urlParts.getFragment());
                 break;
             case MaskType.QueryFragment:
-                this.urlParts.fragment = QueryModifier.modify(this.mask, this.cfg, this.urlParts.fragment);
+                newUrlParts.fragment = QueryModifier.modify(this.mask, this.cfg, this.urlParts.getFragment());
                 break;
-            case MaskType.Undefined:
-                return this.url;
         }
-        return UrlPartsManager.joinUrlParts(this.urlParts);
+        return this.urlParts.join(newUrlParts);
     }
 }
 
