@@ -49,8 +49,14 @@ function(UrlPartsMod, UrlParamsGetterMod) {
             assert.strictEqual(urlParts.getQuery(), '?param=value');
             assert.strictEqual(urlParts.getFragment(), '#fragment=value');
          });
+         it('bad urls', function () {
+            let urlParts = new UrlParts('/path/#fragment?query=value');
+            assert.strictEqual(urlParts.getPath(), '/path');
+            assert.strictEqual(urlParts.getQuery(), '');
+            assert.strictEqual(urlParts.getFragment(), '#fragment?query=value');
+         });
       });
-      describe('joinUrlParts', function() {
+      describe('join UrlParts', function() {
          it('simple url', function () {
             let urlParts = {path: '', query: '', fragment: ''};
             let url = emptyUrlParts.join(urlParts);

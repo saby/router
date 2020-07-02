@@ -29,8 +29,11 @@ export class UrlParts {
      * @param url
      */
     private parseUrl(url: string): IUrlParts {
-        const queryPos: number = url.indexOf('?');
+        let queryPos: number = url.indexOf('?');
         const hashPos: number = url.indexOf('#');
+        if (hashPos >= 0 && queryPos > hashPos) {
+            queryPos = -1;
+        }
         if (queryPos >= 0 && hashPos >= 0) {
             return {
                 path: url.substring(0, queryPos).replace(/\/$/, ''),
