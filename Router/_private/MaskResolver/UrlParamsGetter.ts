@@ -2,7 +2,7 @@
  * Классы для получения параметров из url в зависимости от типа маски
  */
 
-import {MaskType, MaskTypeManager} from './MaskTypeManager';
+import {MaskType, calculateMaskType} from './MaskType';
 import {decodeParam, getParamsFromQueryString} from './Helpers';
 import {UrlParts} from './UrlParts';
 
@@ -25,7 +25,7 @@ export class UrlParamsGetter {
     constructor(mask: string, url: string) {
         this.mask = mask;
         this.urlParts = new UrlParts(url);
-        this.maskType = MaskTypeManager.calculateMaskType(mask, this.urlParts);
+        this.maskType = calculateMaskType(mask, this.urlParts);
     }
 
     get(): Record<string, string> {

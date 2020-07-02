@@ -2,7 +2,7 @@
  * Классы для перезаписи url адреса по заданной маске
  */
 
-import {MaskType, MaskTypeManager} from './MaskTypeManager';
+import {MaskType, calculateMaskType} from './MaskType';
 import {encodeParam} from './Helpers';
 import {IParam, PathParams, QueryParams} from './UrlParamsGetter';
 import {IUrlParts, UrlParts} from './UrlParts';
@@ -19,7 +19,7 @@ export class UrlModifier {
         this.mask = mask;
         this.urlParts = new UrlParts(url);
         // определим тип маски
-        this.maskType = MaskTypeManager.calculateMaskType(mask, this.urlParts);
+        this.maskType = calculateMaskType(mask, this.urlParts);
 
         this.cfg = cfg.clear ? {} : cfg;
         // когда нужно заменить url переданной маской
