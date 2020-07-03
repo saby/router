@@ -1,0 +1,6 @@
+{
+  "include": [
+    "Router/router"
+  ],
+  "extendsTo": "online-superbundle.package.js"
+}
