@@ -206,6 +206,7 @@ class Reference extends Control implements IRegisterableComponent {
     private _recalcHref(cfg: IReferenceOptions): void {
         this._state = MaskResolver.calculateHref(cfg.state, cfg);
         if (cfg.href) {
+            cfg.replace = true;
             this._href = MaskResolver.calculateHref(cfg.href, cfg);
         } else {
             this._href = getReverse(this._state);
