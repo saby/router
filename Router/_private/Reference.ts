@@ -15,6 +15,7 @@ interface IReferenceOptions extends Record<string, unknown> {
     state?: string;
     href?: string;
     clear?: boolean;
+    replace?: boolean;
 }
 
 /*

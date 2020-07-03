@@ -16,8 +16,13 @@ function(UrlModifierMod) {
             assert.strictEqual(modifier.modify(), '/path/param/newvalue/');
          });
          it('change value', function () {
-            const modifier = new UrlModifier('param/:valueId', {valueId: 'newvalue'}, '/param/value/');
+            let modifier = new UrlModifier('param/:valueId', {valueId: 'newvalue'}, '/param/value/');
             assert.strictEqual(modifier.modify(), '/param/newvalue/');
+            modifier = new UrlModifier('path/param/:valueId', {valueId: 'newvalue'}, '/path/old/');
+            assert.strictEqual(modifier.modify(), '/path/param/newvalue/');
+            modifier = new UrlModifier('path/param/:valueId/second/:svalueId',
+                                       {valueId: 'newvalue', svalue: 'snewvalue'}, '/path/old/second/sold');
+            assert.strictEqual(modifier.modify(), '/path/param/newvalue/');
          });
          it('add value and change value', function () {
             const modifier = new UrlModifier('param/:valueId/second/:sId', {valueId: 'newvalue', sId: 'svalue'},

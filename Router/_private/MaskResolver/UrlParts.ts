@@ -82,7 +82,8 @@ export class UrlParts {
         if (newUrlParts.hasOwnProperty('path')) {
             path = newUrlParts.path;
         }
-        path = path.replace(/[#/?&=]+$/, '') + '/';
+        path = path.replace(/^[#/?&=]+/, '').replace(/[#/?&=]+$/, '');
+        path = path.length ? '/' + path + '/' : '/';
 
         let query: string = this.urlParts.query;
         if (newUrlParts.hasOwnProperty('query')) {

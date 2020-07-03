@@ -54,7 +54,7 @@ export class UrlModifier {
 class PathModifier {
     static modify(mask: string, cfg: Record<string, unknown>, urlPart: string): string {
         const params: IParam[] = PathParams.calculateParams(mask, urlPart);
-        let newPath: string = urlPart;
+        let newPath: string = PathModifier._calculateNewUrlPart(urlPart, mask, params);
         for (let i = 0; i < params.length; i++) {
             const param: IParam = params[i];
             const newValue: unknown = cfg[param.maskId];
@@ -85,6 +85,66 @@ class PathModifier {
             newPath = newPath.replace(new RegExp('\/' + param.urlValue), '/' + value);
         }
         return newPath;
+    }
+
+    /**
+     * Вычисляет новую часть url для замены.
+     * Вырезает из маски все, что есть в params (urlPartFromMask).
+     * Если получили пустую строку, то вернет исходный urlParts.
+     * Если из маски что-то осталось, то ищет этот кусок в исходном urlPart и возвращает все,
+     * до правой границы urlPartFromMask.
+     * Примеры:
+     * 1) urlPart = '/path/param'
+     *    mask = 'param/:value'
+     *    Результат: '/path/param'
+     * 2) urlPart = '/path/old'
+     *    mask = '/path/param/:value'
+     *    Результат: '/path/param'
+     * @param urlPart
+     * @param mask
+     * @param params
+     * @private
+     */
+    private static _calculateNewUrlPart(urlPart: string, mask: string, params: IParam[]): string {
+        let reMaskReplace: string = '';
+        let reUrlReplaceItem: string = '';
+        const reUrlReplaceItems: string[] = [];
+        params.forEach((param) => {
+            if (param.urlId) {
+                if (reUrlReplaceItem) {
+                    reUrlReplaceItems.push(reUrlReplaceItem);
+                }
+                reUrlReplaceItem = '\\/?' + param.urlId + '(\\/[^\\/?&#:]+)?';
+                reMaskReplace += '\\/?' + param.urlId + '(\\/:[^\\/?&#:]+)?';
+            } else {
+                reUrlReplaceItem += '(\\/[^\\/?&#:]+)?';
+                reMaskReplace += '(\\/:[^\\/?&#:]+)?';
+            }
+        });
+        if (reUrlReplaceItem) {
+            reUrlReplaceItems.push(reUrlReplaceItem);
+        }
+
+        let urlPartFromMask: string = mask.replace(new RegExp(reMaskReplace), '');
+        urlPartFromMask = urlPartFromMask.replace(/[?#/]/, '');
+        if (!urlPartFromMask) {
+            return urlPart;
+        }
+
+        const maskIndexInUrl: number = urlPart.indexOf(urlPartFromMask);
+        if (maskIndexInUrl === -1) {
+            return urlPartFromMask;
+        }
+
+        let newUrlPart: string = urlPart.slice(0, maskIndexInUrl + urlPartFromMask.length);
+        reUrlReplaceItems.forEach((reUrlReplace) => {
+            const _match: RegExpMatchArray = urlPart.slice(maskIndexInUrl + urlPartFromMask.length)
+                                                    .match(new RegExp(reUrlReplace));
+            if (_match) {
+                newUrlPart += _match[0];
+            }
+        });
+        return newUrlPart;
     }
 }
 
