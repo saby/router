@@ -17,7 +17,7 @@ const requirejs = require(path.join(root, 'node_modules', 'saby-units', 'lib', '
 global.requirejs = requirejs;
 
 
-const createConfig = require(path.join(root, 'application', 'WS.Core', 'ext', 'requirejs', 'config.js'));
+const createConfig = require(path.join(root, 'node_modules', 'sbis3-ws', 'WS.Core', 'ext', 'requirejs', 'config.js'));
 const config = createConfig(path.join(root, 'application'),
    path.join(root, 'application', 'WS.Core'),
    path.join(root, 'application'),
