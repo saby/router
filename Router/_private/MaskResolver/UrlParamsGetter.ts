@@ -100,7 +100,9 @@ export class PathParams {
         if (fields) {
             // в поле fields.groups[<name>] лежит значение параметра
             for (let i = 0; i < params.length; i++) {
+                // @ts-ignore ждем обновления TS до 3.9
                 if (fields.groups) {
+                    // @ts-ignore ждем обновления TS до 3.9
                     params[i].urlValue = fields.groups[params[i].maskId];
                 }
             }
