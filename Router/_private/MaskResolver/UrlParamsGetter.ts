@@ -95,7 +95,7 @@ export class PathParams {
                 return '(?:' + (slash ? '\/' : '') + '(?<' + paramName + '>[^\\/?&#]+))?';
             });
 
-        const fields: RegExpMatchArray = urlPart.match(fullMask);
+        const fields: RegExpMatchArray = urlPart.match(new RegExp(fullMask));
 
         if (fields) {
             // в поле fields.groups[<name>] лежит значение параметра
