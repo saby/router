@@ -35,11 +35,42 @@ export function getAppNameByUrl(url: string): string {
     return folderName + '/Index';
 }
 
+/*
+ * @function Router/_private/MaskResolver#calculateUrlParams
+ * Extract values from the current URL based on the specified mask
+ * @param {String} mask mask with parameter placeholders
+ * @param {String} [url] URL to extract values from (current URL will be used by default)
+ * @returns {Record<string, string>} the key-value store of extracted parameters
+ */
+/**
+ * Извлекает значения из текущего адреса по заданной маске.
+ * @function
+ * @name Router/_private/MaskResolver#calculateUrlParams
+ * @param {String} mask Параметризованная маска.
+ * @param {String} [url] Адрес, из которого будут извлекаться значения. По умолчанию используется текущий URL.
+ * @returns {Record<string, string>} Объект, в котором ключи - названия параметров, а значения - значения параметров.
+ */
 export function calculateUrlParams(mask: string, url?: string): Record<string, string> {
     const getter: UrlParamsGetter = new UrlParamsGetter(mask, url || UrlRewriter.get(Data.getRelativeUrl()));
     return getter.get();
 }
 
+/*
+ * @function Router/_private/MaskResolver#calculateHref
+ * Calculates a new URL based on the current URL, specified mask
+ * and the hash map of parameters to fill the mask
+ * @param {String} mask mask with parameter placeholders
+ * @param {Record<string, string>} cfg key-value store with specified parameters
+ * @returns {String} the new calculated URL
+ */
+/**
+ * Вычисляет новый URL-адрес, применяя к текущему маску и значения параметров для ее заполнения.
+ * @function
+ * @name Router/_private/MaskResolver#calculateHref
+ * @param {String} mask Параметризованная маска.
+ * @param {Record<string, string>} cfg Объект со значениями параметров, используемых в маске.
+ * @returns {String} Вычисленный адрес.
+ */
 export function calculateHref(mask: string, cfg: Record<string, unknown>): string {
     const modifier: UrlModifier = new UrlModifier(mask, cfg, UrlRewriter.get(Data.getRelativeUrl()));
     return modifier.modify();

@@ -23,6 +23,9 @@ function(UrlModifierMod) {
             modifier = new UrlModifier('path/param/:valueId/second/:svalueId',
                                        {valueId: 'newvalue', svalue: 'snewvalue'}, '/path/old/second/sold');
             assert.strictEqual(modifier.modify(), '/path/param/newvalue/');
+            modifier = new UrlModifier('/pbx-admin/:valueId',
+                                       {valueId: 'server'}, '/pbx-admin/pbx');
+            assert.strictEqual(modifier.modify(), '/pbx-admin/server/');
          });
          it('add value and change value', function () {
             const modifier = new UrlModifier('param/:valueId/second/:sId', {valueId: 'newvalue', sId: 'svalue'},
@@ -36,8 +39,12 @@ function(UrlModifierMod) {
             assert.strictEqual(modifier.modify(), '/path/second/svalue/');
          });
          it('replace url', function () {
-            let modifier = new UrlModifier('newpath/:valueId', {valueId: 'value', replace: true}, '/path/param/value');
+            let modifier = new UrlModifier('/', {}, '/path/param/value');
+            assert.strictEqual(modifier.modify(), '/');
+            modifier = new UrlModifier('/newpath/:valueId', {valueId: 'value'}, '/path/param/value');
             assert.strictEqual(modifier.modify(), '/newpath/value/');
+            modifier = new UrlModifier('/:location', {location: 'website'}, '/path/param/value?test=value');
+            assert.strictEqual(modifier.modify(), '/website/');
          });
       });
 
@@ -65,8 +72,8 @@ function(UrlModifierMod) {
             assert.strictEqual(modifier.modify(), '/path/');
          });
          it('replace url', function () {
-            const modifier = new UrlModifier('newpath/:valueId/:svalueId',
-                                             {valueId: 'newvalue', svalueId: 'snewvalue', replace: true},
+            const modifier = new UrlModifier('/newpath/:valueId/:svalueId',
+                                             {valueId: 'newvalue', svalueId: 'snewvalue'},
                                              '/param/value/svalue');
             assert.strictEqual(modifier.modify(), '/newpath/newvalue/snewvalue/');
          });
