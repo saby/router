@@ -33,6 +33,10 @@ export class UrlModifier {
         switch (this.maskType) {
             case MaskType.Path:
                 newUrlParts.path = PathModifier.modify(this.mask, this.cfg, this.urlParts.getPath());
+                if (this.mask.startsWith('/')) {
+                    newUrlParts.query = '';
+                    newUrlParts.fragment = '';
+                }
                 break;
             case MaskType.Query:
                 newUrlParts.query =  QueryModifier.modify(this.mask, this.cfg, this.urlParts.getQuery());
@@ -71,17 +75,23 @@ class PathModifier {
                 newPath = newPath.replace(new RegExp('[#\/]' + param.urlValue), '');
                 continue;
             }
-            const value: string = encodeParam(newValue);
+            let value: string = encodeParam(newValue);
             // если нет текущего значения из url, значит нужно добавить его
             if (param.urlValue === undefined) {
                 if (param.urlId) {
-                    newPath = [newPath, '/', param.urlId, '/', value].join('');
-                    continue;
+                    value = [param.urlId, '/', value].join('');
                 }
-                newPath = [newPath, '/', value].join('');
+                newPath = [newPath, (newPath.slice(-1) === '/' ? '' : '/'), value].join('');
                 continue;
             }
             // заменяем значение параметра в url новым значением
+            if (param.urlId) {
+                newPath = newPath.replace(new RegExp('([#\/]' + param.urlId + '\/)' + param.urlValue),
+                    (fullMatch, matchUrlId) => {
+                        return matchUrlId + value;
+                    });
+                continue;
+            }
             newPath = newPath.replace(new RegExp('\/' + param.urlValue), '/' + value);
         }
         return newPath;
@@ -114,11 +124,11 @@ class PathModifier {
                 if (reUrlReplaceItem) {
                     reUrlReplaceItems.push(reUrlReplaceItem);
                 }
-                reUrlReplaceItem = '\\/?' + param.urlId + '(\\/[^\\/?&#:]+)?';
-                reMaskReplace += '\\/?' + param.urlId + '(\\/:[^\\/?&#:]+)?';
+                reUrlReplaceItem = param.urlId + '(\\/[^\\/?&#:]+)?\\/?';
+                reMaskReplace += param.urlId + '(\\/:[^\\/?&#:]+)\\/?';
             } else {
-                reUrlReplaceItem += '(\\/[^\\/?&#:]+)?';
-                reMaskReplace += '(\\/:[^\\/?&#:]+)?';
+                reUrlReplaceItem += '([^\\/?&#:]+\\/?)?';
+                reMaskReplace += '(:[^\\/?&#:]+\\/?)';
             }
         });
         if (reUrlReplaceItem) {
@@ -126,7 +136,7 @@ class PathModifier {
         }
 
         let urlPartFromMask: string = mask.replace(new RegExp(reMaskReplace), '');
-        urlPartFromMask = urlPartFromMask.replace(/[?#/]/, '');
+        urlPartFromMask = urlPartFromMask.replace(/[?#]/, '');
         if (!urlPartFromMask) {
             return urlPart;
         }

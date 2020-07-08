@@ -284,7 +284,7 @@ function (Router, AppInit, EnvNode) {
                   assert.strictEqual(newUrl, '/second/svalue/?qfrst=fvalue&qscnd=svalue');
                });
                it('can replace value', function() {
-                  var newUrl = MaskResolver.calculateHref('/test/:value', { value: 'abc', replace: true });
+                  var newUrl = MaskResolver.calculateHref('/test/:value', { value: 'abc' });
                   assert.strictEqual(newUrl, '/test/abc/');
                });
             });
@@ -343,8 +343,8 @@ function (Router, AppInit, EnvNode) {
                   assert.strictEqual(newUrl, '/svalue/?qfrst=fvalue&qscnd=svalue');
                });
                it('can replace value', function() {
-                  var newUrl = MaskResolver.calculateHref('/a/:bv/:cv', { bv: 'b', cv: 35, replace: true });
-                  assert.strictEqual(newUrl, '/a/b/35/');
+                  var newUrl = MaskResolver.calculateHref('/newpath/:bv/:cv', { bv: 'b', cv: 35 });
+                  assert.strictEqual(newUrl, '/newpath/b/35/');
                });
             });
 
