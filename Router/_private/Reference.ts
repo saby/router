@@ -174,8 +174,10 @@ class Reference extends Control implements IRegisterableComponent {
 
     private _state: string;
     private _href: string;
+    private _recalcUrlBeforeNavigate: boolean;
 
     _beforeMount(cfg: IReferenceOptions): void {
+        this._recalcUrlBeforeNavigate = !!cfg.recalcUrlBeforeNavigate;
         this._recalcHref(cfg);
     }
 
@@ -237,6 +239,12 @@ class Reference extends Control implements IRegisterableComponent {
 
     private _changeUrlState(newState: IHistoryState): void {
         Controller.navigate(newState);
+    }
+
+    protected _mouseoverHandler(e: ISyntheticClickEvent): void {
+        if (this._recalcUrlBeforeNavigate) {
+            this._recalcHref(this._options);
+        }
     }
 }
 
