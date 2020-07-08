@@ -89,21 +89,22 @@ export class PathParams {
             return params;
         }
 
+        const maskParamIds: Record<string, number> = {};
+        let paramIndex: number = 1;
         const fullMask: string = mask.replace(new RegExp('(\/?):([^\/?&#]+)', 'g'),
-            (fullMatch, slash, paramName) => {
-                // в итоге получим что-то типа '(?:\/(?<id>[^\/?&#]+))?'
-                return '(?:' + (slash ? '\/' : '') + '(?<' + paramName + '>[^\\/?&#]+))?';
+            (fullMatch, slash, maskId) => {
+                maskParamIds[maskId] = paramIndex++;
+                // в итоге получим что-то типа '(?:\/([^\/?&#]+))?'
+                return '(?:' + (slash ? '\/' : '') + '([^\\/?&#]+))?';
             });
 
-        const fields: RegExpMatchArray = urlPart.match(fullMask);
-
+        const fields: RegExpMatchArray = urlPart.match(new RegExp(fullMask));
         if (fields) {
-            // в поле fields.groups[<name>] лежит значение параметра
+            // в поле fields[1..n] лежат значения параметров из маски
             for (let i = 0; i < params.length; i++) {
-                // @ts-ignore ждем обновления TS до 3.9
-                if (fields.groups) {
-                    // @ts-ignore ждем обновления TS до 3.9
-                    params[i].urlValue = fields.groups[params[i].maskId];
+                const maskId: string = params[i].maskId;
+                if (maskId in maskParamIds && fields[maskParamIds[maskId]]) {
+                    params[i].urlValue = fields[maskParamIds[maskId]];
                 }
             }
         }
