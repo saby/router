@@ -1,4 +1,5 @@
 <ws:partial
    template="{{ _options.content }}"
    href="{{ _href || _state }}"
-   on:click="_clickHandler()" />
+   on:click="_clickHandler()"
+   on:mouseover="_mouseoverHandler()" />
