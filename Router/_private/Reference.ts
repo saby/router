@@ -174,11 +174,8 @@ class Reference extends Control implements IRegisterableComponent {
 
     private _state: string;
     private _href: string;
-    private _recalcUrlBeforeNavigate: boolean;
-    private _mousoverRecalcCalled: boolean = false;
 
     _beforeMount(cfg: IReferenceOptions): void {
-        this._recalcUrlBeforeNavigate = !!cfg.recalcUrlBeforeNavigate;
         this._recalcHref(cfg);
     }
 
@@ -187,11 +184,7 @@ class Reference extends Control implements IRegisterableComponent {
     }
 
     _beforeUpdate(cfg: IReferenceOptions): void {
-        if (this._mousoverRecalcCalled) {
-            this._mousoverRecalcCalled = false;
-        } else {
-            this._recalcHref(cfg);
-        }
+        this._recalcHref(cfg);
     }
 
     _beforeUnmount(): void {
@@ -244,14 +237,6 @@ class Reference extends Control implements IRegisterableComponent {
 
     private _changeUrlState(newState: IHistoryState): void {
         Controller.navigate(newState);
-    }
-
-    protected _mouseoverHandler(e: ISyntheticClickEvent): void {
-        if (this._recalcUrlBeforeNavigate) {
-            this._mousoverRecalcCalled = true;
-            const newCfg: Record<string, string> = MaskResolver.calculateUrlParams(this._options.state);
-            this._recalcHref({...this._options, ...newCfg});
-        }
     }
 }
 
