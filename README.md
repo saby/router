@@ -26,7 +26,7 @@ To start the unit testing server, run the following commands:
     npm run build
     npm start
 
-Go to [http://localhost:1023](http://localhost:1023) in your browser to execute the tests and see the results. The tests themselves are located in the `RouterTest` folder, filename of every test file ends with `.test.js`.
+Go to [http://localhost:1024](http://localhost:1024) in your browser to execute the tests and see the results. The tests themselves are located in the `RouterTest` folder, filename of every test file ends with `.test.js`.
 
 ## Running the Demo
 
