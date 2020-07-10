@@ -71,7 +71,7 @@ export function calculateUrlParams(mask: string, url?: string): Record<string, s
  * @param {Record<string, string>} cfg Объект со значениями параметров, используемых в маске.
  * @returns {String} Вычисленный адрес.
  */
-export function calculateHref(mask: string, cfg: Record<string, unknown>): string {
-    const modifier: UrlModifier = new UrlModifier(mask, cfg, UrlRewriter.get(Data.getRelativeUrl()));
+export function calculateHref(mask: string, cfg: Record<string, unknown>, currentUrl?: string): string {
+    const modifier: UrlModifier = new UrlModifier(mask, cfg, currentUrl || UrlRewriter.get(Data.getRelativeUrl()));
     return modifier.modify();
 }
