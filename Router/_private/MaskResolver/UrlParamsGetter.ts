@@ -96,7 +96,7 @@ export class PathParams {
                 maskParamIds[maskId] = paramIndex++;
                 // в итоге получим что-то типа '(?:\/([^\/?&#]+))?'
                 return '(?:' + (slash ? '\/' : '') + '([^\\/?&#]+))?';
-            });
+            }).replace(/\/+$/, '');
 
         const fields: RegExpMatchArray = urlPart.match(new RegExp(fullMask));
         if (fields) {
@@ -118,6 +118,9 @@ export class PathParams {
      * @private
      */
     protected static _getUrlValue(urlPart: string, urlId: string): string {
+        if (!urlId) {
+            return undefined;
+        }
         const urlValueMatched: RegExpMatchArray =
             urlPart.match(new RegExp('[#\/]' + urlId + '/([^\/?&#]+)'));
         return urlValueMatched ? urlValueMatched[1] : undefined;

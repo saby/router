@@ -218,6 +218,15 @@ function (Router, AppInit, EnvNode) {
                assert.strictEqual(calculated.name, 'main');
                assert.strictEqual(calculated.tab, undefined);
             });
+
+            it('mask with slash at the end', function() {
+               var mask = 'tab/:page/:key/',
+                   url = '/path/tab/complect/20384325',
+                   calculated = MaskResolver.calculateUrlParams(mask, url);
+
+               assert.strictEqual(calculated.page, 'complect');
+               assert.strictEqual(calculated.key, '20384325');
+            });
          });
       });
 
