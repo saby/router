@@ -8,7 +8,7 @@ import * as Controller from './Controller';
 import * as MaskResolver from './MaskResolver';
 import { getReverse } from './UrlRewriter';
 import { IHistoryState, ISyntheticClickEvent } from './Data';
-import { IRegisterableComponent } from 'Router/_private/Data';
+import { IRegisterableComponent, getVisibleRelativeUrl } from 'Router/_private/Data';
 
 interface IReferenceOptions extends Record<string, unknown> {
     content?: Function;
@@ -174,8 +174,11 @@ class Reference extends Control implements IRegisterableComponent {
 
     private _state: string;
     private _href: string;
+    private _recalcUrlBeforeNavigate: boolean;
+    private _mousoverRecalcCalled: boolean = false;
 
     _beforeMount(cfg: IReferenceOptions): void {
+        this._recalcUrlBeforeNavigate = !!cfg.recalcUrlBeforeNavigate;
         this._recalcHref(cfg);
     }
 
@@ -184,7 +187,11 @@ class Reference extends Control implements IRegisterableComponent {
     }
 
     _beforeUpdate(cfg: IReferenceOptions): void {
-        this._recalcHref(cfg);
+        if (this._mousoverRecalcCalled) {
+            this._mousoverRecalcCalled = false;
+        } else {
+            this._recalcHref(cfg);
+        }
     }
 
     _beforeUnmount(): void {
@@ -203,10 +210,10 @@ class Reference extends Control implements IRegisterableComponent {
         Controller.removeReference(this);
     }
 
-    private _recalcHref(cfg: IReferenceOptions): void {
-        this._state = MaskResolver.calculateHref(cfg.state, cfg);
+    private _recalcHref(cfg: IReferenceOptions, url?: string): void {
+        this._state = MaskResolver.calculateHref(cfg.state, cfg, url);
         if (cfg.href) {
-            this._href = MaskResolver.calculateHref(cfg.href, cfg);
+            this._href = MaskResolver.calculateHref(cfg.href, cfg, url);
         } else {
             this._href = getReverse(this._state);
         }
@@ -237,6 +244,14 @@ class Reference extends Control implements IRegisterableComponent {
 
     private _changeUrlState(newState: IHistoryState): void {
         Controller.navigate(newState);
+    }
+
+    // TODO Костыль для https://online.sbis.ru/opendoc.html?guid=fc34605f-3642-4a94-acdf-d2804df07069
+    protected _mouseoverHandler(e: ISyntheticClickEvent): void {
+        if (this._recalcUrlBeforeNavigate) {
+            this._mousoverRecalcCalled = true;
+            this._recalcHref(this._options, getVisibleRelativeUrl());
+        }
     }
 }
 

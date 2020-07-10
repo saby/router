@@ -79,10 +79,10 @@ export function calculateCfgParams(mask: string, cfg: Record<string, unknown>): 
  * @param {Record<string, string>} cfg Объект со значениями параметров, используемых в маске.
  * @returns {String} Вычисленный адрес.
  */
-export function calculateHref(mask: string, cfg: Record<string, unknown>): string {
+export function calculateHref(mask: string, cfg: Record<string, unknown>, currentUrl?: string): string {
     _validateMask(mask);
     const actualCfg: Record<string, unknown> = cfg.clear ? {} : cfg;
-    const url: string = UrlRewriter.get(Data.getRelativeUrl());
+    const url: string = currentUrl || UrlRewriter.get(Data.getRelativeUrl());
     return _resolveHref(url, mask, actualCfg);
 }
 
