@@ -121,9 +121,12 @@ export class PathParams {
         if (!urlId) {
             return undefined;
         }
-        const urlValueMatched: RegExpMatchArray =
-            urlPart.match(new RegExp('[#\/]' + urlId + '/([^\/?&#]+)'));
-        return urlValueMatched ? urlValueMatched[1] : undefined;
+        const urlPartsArray: string[] = urlPart.split(/[#\/]/);
+        const urlIdIndex: number = urlPartsArray.indexOf(urlId);
+        if (!urlPartsArray.length || urlIdIndex < 0) {
+            return undefined;
+        }
+        return urlPartsArray[urlIdIndex + 1] || '';
     }
 }
 

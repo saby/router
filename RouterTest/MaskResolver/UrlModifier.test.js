@@ -15,6 +15,10 @@ function(UrlModifierMod) {
             modifier = new UrlModifier('param/:valueId', {valueId: 'newvalue'}, '/path/');
             assert.strictEqual(modifier.modify(), '/path/param/newvalue/');
          });
+         it('add complicated value', function () {
+            let modifier = new UrlModifier('update/:page', {page: 'updates'}, '/update/');
+            assert.strictEqual(modifier.modify(), '/update/updates/');
+         });
          it('change value', function () {
             let modifier = new UrlModifier('param/:valueId', {valueId: 'newvalue'}, '/param/value/');
             assert.strictEqual(modifier.modify(), '/param/newvalue/');
@@ -23,9 +27,17 @@ function(UrlModifierMod) {
             modifier = new UrlModifier('path/param/:valueId/second/:svalueId',
                                        {valueId: 'newvalue', svalue: 'snewvalue'}, '/path/old/second/sold');
             assert.strictEqual(modifier.modify(), '/path/param/newvalue/');
-            modifier = new UrlModifier('/pbx-admin/:valueId',
-                                       {valueId: 'server'}, '/pbx-admin/pbx');
+         });
+         it('change complicated value', function () {
+            let modifier = new UrlModifier('/pbx-admin/:valueId',
+                                           {valueId: 'server'}, '/pbx-admin/pbx');
             assert.strictEqual(modifier.modify(), '/pbx-admin/server/');
+            modifier = new UrlModifier('tab/:tab', {tab: 'employee-stats'},
+                                       '/OnlineSbisRu/money/expense-reports/tab/expense-reports/');
+            assert.strictEqual(modifier.modify(), '/OnlineSbisRu/money/expense-reports/tab/employee-stats/');
+
+            modifier = new UrlModifier('tab/:tab', {tab: 'newtab'}, '/path/tab/oldtab/tab/');
+            assert.strictEqual(modifier.modify(), '/path/tab/newtab/tab/');
          });
          it('add value and change value', function () {
             const modifier = new UrlModifier('param/:valueId/second/:sId', {valueId: 'newvalue', sId: 'svalue'},
@@ -38,6 +50,10 @@ function(UrlModifierMod) {
             modifier = new UrlModifier('param/:valueId', {}, '/path/param/value/second/svalue/');
             assert.strictEqual(modifier.modify(), '/path/second/svalue/');
          });
+         it('remove complicated value', function () {
+            let modifier = new UrlModifier('update/:page', {}, '/update/');
+            assert.strictEqual(modifier.modify(), '/');
+         });
          it('replace url', function () {
             let modifier = new UrlModifier('/', {}, '/path/param/value');
             assert.strictEqual(modifier.modify(), '/');
@@ -45,6 +61,8 @@ function(UrlModifierMod) {
             assert.strictEqual(modifier.modify(), '/newpath/value/');
             modifier = new UrlModifier('/:location', {location: 'website'}, '/path/param/value?test=value');
             assert.strictEqual(modifier.modify(), '/website/');
+            modifier = new UrlModifier('/update/:page', {page: 'updates'}, '/update/');
+            assert.strictEqual(modifier.modify(), '/update/updates/');
          });
       });
 
