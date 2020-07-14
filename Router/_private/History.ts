@@ -19,7 +19,7 @@ import * as Data from './Data';
  * Возвращает предыдущее состояние истории (если такое есть).
  * @function
  * @name Router/_private/History#getPrevState
- * @returns {Data.IHistoryState}
+ * @returns {Data/IHistoryState}
  */
 export function getPrevState(): Data.IHistoryState {
     return Data.getHistory()[Data.getHistoryPosition() - 1];
@@ -27,13 +27,13 @@ export function getPrevState(): Data.IHistoryState {
 /*
  * @function Router/_private/History#getCurrentState
  * Get the current history state
- * @returns {Data.IHistoryState}
+ * @returns {Data/IHistoryState}
  */
 /**
  * Возвращает текущее состояние истории.
  * @function
  * @name Router/_private/History#getCurrentState
- * @returns {Data.IHistoryState}
+ * @returns {Data/IHistoryState}
  */
 export function getCurrentState(): Data.IHistoryState {
     return Data.getHistory()[Data.getHistoryPosition()];
@@ -41,13 +41,13 @@ export function getCurrentState(): Data.IHistoryState {
 /*
  * @function Router/_private/History#getNextState
  * Get the next history state (if it exists)
- * @returns {Data.IHistoryState}
+ * @returns {Data/IHistoryState}
  */
 /**
  * Возвращает следующее состояние истории (если такое есть).
  * @function
  * @name Router/_private/History#getNextState
- * @returns {Data.IHistoryState}
+ * @returns {Data/IHistoryState}
  */
 export function getNextState(): Data.IHistoryState {
     return Data.getHistory()[Data.getHistoryPosition() + 1];
@@ -132,7 +132,7 @@ export function forward(): void {
  * @function Router/_private/History#push
  * Moves the Router into a specified new state, pushes the changes
  * to the window.history
- * @param {Data.IHistoryState} newState new state to push
+ * @param {Data/IHistoryState} newState new state to push
  * @remark
  * This function does not force the router components (like Route
  * and Reference) to update, it only pushes the state into window
@@ -143,7 +143,7 @@ export function forward(): void {
 /**
  * @function Router/_private/History#push
  * Переводит роутинг в новое состояние, записывая его в window.history
- * @param {Data.IHistoryState} newState состояние для добавления
+ * @param {Data/IHistoryState} newState состояние для добавления
  * @remark
  * Вызов этого метода не провоцирует обновление компонентов роутинга
  * (таких как Route и Reference), он только производит запись состояния
@@ -174,7 +174,7 @@ export function push(newState: Data.IHistoryState): void {
  * @function Router/_private/History#replaceState
  * Replaces the current state in Router's history with the
  * specified state
- * @param {Data.IHistoryState} newState replacement state
+ * @param {Data/IHistoryState} newState replacement state
  * This function does not start the Route and Reference update,
  * it only replaces the state in window and Router history.
  * To change the state while updating Routes and References,
@@ -184,7 +184,7 @@ export function push(newState: Data.IHistoryState): void {
 /**
  * @function Router/_private/History#replaceState
  * Заменяет текущее состоянии истории на переданное
- * @param {Data.IHistoryState} newState состояние для замены
+ * @param {Data/IHistoryState} newState состояние для замены
  * Вызов этого метода не провоцирует обновление компонентов роутинга
  * (таких как Route и Reference), он только производит запись состояния
  * в историю окна и историю роутинга.
