@@ -54,11 +54,19 @@ export class UrlModifier {
 
 /**
  * Обработка (замена, добавление, удаление параметров по маске) url адреса вида /path/param/value или /path#param/value
+ * Основная идея:
+ * 1) получить массив значений (что и на что заменять, что добавлять, что удалять) (вызов метода calculateParams)
+ * 2) получить каркас нового url (вызов метода _calculateNewUrlPart)
+ * 3) разбить каркас нового url на элементы через слеш и в зависимости от состояния (заменить, удалить, добавить)
+ *    выполнить необходимое действие
  */
 class PathModifier {
     static modify(mask: string, cfg: Record<string, unknown>, urlPart: string): string {
         const params: IParam[] = PathParams.calculateParams(mask, urlPart);
-        let newPath: string = PathModifier._calculateNewUrlPart(urlPart, mask, params);
+        const newPath: string = PathModifier._calculateNewUrlPart(urlPart, mask, params);
+        // url, разбитый через слеш, этот массив и будем модифицировать
+        const newPathArray: string[] = newPath.replace(/^[#\/]+/, '').replace(/[#\/]+$/, '').split('/');
+
         for (let i = 0; i < params.length; i++) {
             const param: IParam = params[i];
             const newValue: unknown = cfg[param.maskId];
@@ -69,32 +77,31 @@ class PathModifier {
             // если новое значение не задано, тогда удаляем параметр из url
             if (newValue === undefined) {
                 if (param.urlId) {
-                    newPath = newPath.replace(new RegExp('[#\/]' + param.urlId + '\/' + param.urlValue), '');
+                    newPathArray.splice(PathModifier._getUrlIdIndex(newPathArray, param.urlId, param.urlValue), 2);
                     continue;
                 }
-                newPath = newPath.replace(new RegExp('[#\/]' + param.urlValue), '');
+                newPathArray.splice(newPathArray.indexOf(param.urlValue), 1);
                 continue;
             }
-            let value: string = encodeParam(newValue);
+            const value: string = encodeParam(newValue);
             // если нет текущего значения из url, значит нужно добавить его
             if (param.urlValue === undefined) {
                 if (param.urlId) {
-                    value = [param.urlId, '/', value].join('');
+                    newPathArray.push(param.urlId);
                 }
-                newPath = [newPath, (newPath.slice(-1) === '/' ? '' : '/'), value].join('');
+                newPathArray.push(value);
                 continue;
             }
             // заменяем значение параметра в url новым значением
+            let replaceIndex: number;
             if (param.urlId) {
-                newPath = newPath.replace(new RegExp('([#\/]' + param.urlId + '\/)' + param.urlValue),
-                    (fullMatch, matchUrlId) => {
-                        return matchUrlId + value;
-                    });
-                continue;
+                replaceIndex = PathModifier._getUrlIdIndex(newPathArray, param.urlId, param.urlValue) + 1;
+            } else {
+                replaceIndex = newPathArray.indexOf(param.urlValue);
             }
-            newPath = newPath.replace(new RegExp('\/' + param.urlValue), '/' + value);
+            newPathArray[replaceIndex] = value;
         }
-        return newPath;
+        return newPathArray.join('/');
     }
 
     /**
@@ -155,6 +162,28 @@ class PathModifier {
             }
         });
         return newUrlPart;
+    }
+
+    /**
+     * Получить индекс параметра из массива частей нового url
+     * @param urlPartsArray     массив частей url типа ['path', 'param', 'value']
+     * @param urlId             идентификатор параметра в url, напр. 'param'
+     * @param urlValue          значение параметра из url, напр. 'value'
+     * @private
+     */
+    private static _getUrlIdIndex(urlPartsArray: string[], urlId: string, urlValue: string): number {
+        let prevIndex: number = -1;
+        while (true) {
+            const index: number = urlPartsArray.indexOf(urlId, prevIndex + 1);
+            if (index < 0) {
+                break;
+            }
+            if (urlPartsArray[index + 1] && urlPartsArray[index + 1] === urlValue) {
+                return index;
+            }
+            prevIndex = index;
+        }
+        return prevIndex;
     }
 }
 
