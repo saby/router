@@ -12,6 +12,12 @@ import StoreManager, { ICoreInstance } from './StoreManager';
 import * as UrlRewriter from './UrlRewriter';
 import { ILocation } from 'Application/Interface';
 
+/**
+ * @typedef {Object} IHistoryState Интерфейс каждого состояния истории роутера.
+ * @property {Number} [id] Числовой идентификатор состояния истории.
+ * @property {String} [state] Адрес состояния истории.
+ * @property {String} [href] "Красивый" адрес состояния истории.
+ */
 export interface IHistoryState {
     id?: number;
     state: string;
