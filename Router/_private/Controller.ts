@@ -170,14 +170,14 @@ function _initializeController(): void {
                event.state,
                event.state || prevState ? Data.getRelativeUrl() : Data.getVisibleRelativeUrl()
             );
-            navigate(navigateToState, () => History.back());
+            navigate(navigateToState, () => History.back(navigateToState));
          } else {
             // going forward
             const nextState: Data.IHistoryState = History.getNextState();
             const navigateToState: Data.IHistoryState = _getNavigationState(nextState, event.state, Data.getRelativeUrl());
             navigate(
                navigateToState,
-               () => History.forward(),
+               () => History.forward(navigateToState),
                () => {
                   // unable to navigate to specified state, going back in history
                   skipNextChange = true;
@@ -203,6 +203,8 @@ function _getNavigationState(
             href: currentUrl
          };
       }
+   } else if (windowState && windowState.state && windowState.href) {
+      return windowState;
    }
    return localState;
 }
