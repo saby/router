@@ -72,7 +72,7 @@ export function getNextState(): Data.IHistoryState {
  * так и состояния истории и адресной строки браузера, используйте
  * нативный метод window.history.back
  */
-export function back(): void {
+export function back(newState: Data.IHistoryState): void {
     const history: Data.IHistoryState[] = Data.getHistory();
     const historyPosition: number = Data.getHistoryPosition();
 
@@ -86,6 +86,15 @@ export function back(): void {
             state: currentState || UrlRewriter.get(currentHref),
             href: currentHref
         });
+    } else if (newState && newState.state) {
+        let newPosition: number = historyPosition - 1;
+        for (let i = 0; i < history.length; i++) {
+            if (history[i].state === newState.state) {
+                newPosition = i;
+                break;
+            }
+        }
+        Data.setHistoryPosition(newPosition);
     } else {
         Data.setHistoryPosition(historyPosition - 1);
     }
@@ -111,9 +120,18 @@ export function back(): void {
  * так и состояния истории и адресной строки браузера, используйте
  * нативный метод window.history.forward
  */
-export function forward(): void {
+export function forward(newState: Data.IHistoryState): void {
     const history: Data.IHistoryState[] = Data.getHistory();
-    const newHistoryPosition: number = Data.getHistoryPosition() + 1;
+    let newHistoryPosition: number = Data.getHistoryPosition() + 1;
+
+    if (newState && newState.state && newHistoryPosition < history.length) {
+        for (let i = newHistoryPosition; i < history.length; i++) {
+            if (history[i].state === newState.state) {
+                newHistoryPosition = i;
+                break;
+            }
+        }
+    }
 
     Data.setHistoryPosition(newHistoryPosition);
     if (newHistoryPosition === history.length) {

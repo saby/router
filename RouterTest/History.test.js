@@ -66,6 +66,20 @@ function (Router, AppInit, EnvNode) {
             assert.strictEqual(hstate.id, 0);
             assert.strictEqual(Data.getRelativeUrl(), hstate.state);
          });
+         it('goes to the pre previous state when possible', function() {
+            // переход на 2 позиции назад (в браузере зажать кнопку назад и выбрать состояние раньше предыдущего)
+            const history = Data.getHistory();
+            assert(history.length >= 3, 'expected history.length >= 3');
+            Data.setHistoryPosition(2);
+            Data.setRelativeUrl(history[2].state);
+
+            // переход на 2 позиции назад
+            History.back(history[0]);
+
+            var hstate = History.getCurrentState();
+            assert.strictEqual(hstate.id, 0);
+            assert.strictEqual(Data.getRelativeUrl(), hstate.state);
+         });
          it('creates a new starting state if called in first position', function() {
             Data.setHistoryPosition(0);
             var startingState = History.getCurrentState();
@@ -88,6 +102,20 @@ function (Router, AppInit, EnvNode) {
       describe('#forward', function() {
          it('goes to the next state when possible', function() {
             History.forward();
+            var hstate = History.getCurrentState();
+            assert.strictEqual(hstate.id, 2);
+            assert.strictEqual(Data.getRelativeUrl(), hstate.state);
+         });
+         it('goes to the next next state when possible', function() {
+            // переход на 2 позиции вперед (в браузере зажать кнопку вперед и выбрать состояние далее следующего)
+            const history = Data.getHistory();
+            assert(history.length >= 3, 'expected history.length >= 3');
+            Data.setHistoryPosition(0);
+            Data.setRelativeUrl(history[0].state);
+
+            // переход на 2 позиции вперед по истории
+            History.forward(history[2]);
+
             var hstate = History.getCurrentState();
             assert.strictEqual(hstate.id, 2);
             assert.strictEqual(Data.getRelativeUrl(), hstate.state);
