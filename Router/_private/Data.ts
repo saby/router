@@ -13,14 +13,16 @@ import * as UrlRewriter from './UrlRewriter';
 import { ILocation } from 'Application/Interface';
 
 /**
- * @typedef {Object} IHistoryState Интерфейс каждого состояния истории роутера.
- * @property {Number} [id] Числовой идентификатор состояния истории.
- * @property {String} [state] Адрес состояния истории.
- * @property {String} [href] "Красивый" адрес состояния истории.
+ * Интерфейс каждого состояния истории роутера.
+ * @interface Router/_private/Data#IHistoryState
+ * @public
  */
 export interface IHistoryState {
+    /** Числовой идентификатор состояния истории */
     id?: number;
+    /** Адрес состояния истории */
     state: string;
+    /** "Красивый" адрес состояния истории */
     href?: string;
 }
 
@@ -62,7 +64,6 @@ export interface ISyntheticClickEvent {
  * @returns {IHistoryState[]} list of history states
  */
 /**
- *
  * Возвращает список состояний истории роутера.
  * @function
  * @name Router/_private/Data#getHistory
@@ -73,7 +74,6 @@ export function getHistory(): IHistoryState[] {
 }
 
 /*
- *
  * Replaces the list of stored history states.
  * @function
  * @name Router/_private/Data#setHistory
@@ -81,7 +81,6 @@ export function getHistory(): IHistoryState[] {
  * @private
  */
 /**
- *
  * Заменяет список состояний истории роутера
  * @function
  * @name Router/_private/Data#setHistory
@@ -93,7 +92,6 @@ export function setHistory(value: IHistoryState[]): void {
 }
 
 /*
- *
  * Get the index of the history state that is currently active
  * @function
  * @name Router/_private/Data#getHistoryPosition
@@ -191,8 +189,9 @@ export function getRegisteredRoutes(): Record<string, IRegisteredRoute> {
 }
 
 /*
- * @function Router/_private/Data#getRegisteredReferences
  * Get the Record of all References currently registered by Router
+ * @function
+ * @name Router/_private/Data#getRegisteredReferences
  * @returns {Object}
  * @private
  */
@@ -208,8 +207,9 @@ export function getRegisteredReferences(): Record<string, IRegisteredReference> 
 }
 
 /*
- * @function Router/_private/Data#getCoreInstance
  * Get the instance of Application/Core if it exists on the page
+ * @function
+ * @name Router/_private/Data#getCoreInstance
  * @returns {Controls/Application/Core}
  * @private
  */
