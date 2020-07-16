@@ -14,11 +14,13 @@ import * as Data from './Data';
  * Get the previous history state (if it exists)
  * @function
  * @name Router/_private/History#getPrevState
+ * @returns {Router/_private/Data/IHistoryState}
  */
 /**
  * Возвращает предыдущее состояние истории (если такое есть).
  * @function
  * @name Router/_private/History#getPrevState
+ * @returns {Router/_private/Data/IHistoryState}
  */
 export function getPrevState(): Data.IHistoryState {
     return Data.getHistory()[Data.getHistoryPosition() - 1];
@@ -27,11 +29,13 @@ export function getPrevState(): Data.IHistoryState {
  * Get the current history state
  * @function
  * @name Router/_private/History#getCurrentState
+ * @returns {Router/_private/Data/IHistoryState}
  */
 /**
  * Возвращает текущее состояние истории.
  * @function
  * @name Router/_private/History#getCurrentState
+ * @returns {Router/_private/Data/IHistoryState}
  */
 export function getCurrentState(): Data.IHistoryState {
     return Data.getHistory()[Data.getHistoryPosition()];
@@ -40,11 +44,13 @@ export function getCurrentState(): Data.IHistoryState {
  * Get the next history state (if it exists)
  * @function
  * @name Router/_private/History#getNextState
+ * @returns {Router/_private/Data/IHistoryState}
  */
 /**
  * Возвращает следующее состояние истории (если такое есть).
  * @function
  * @name Router/_private/History#getNextState
+ * @returns {Router/_private/Data/IHistoryState}
  */
 export function getNextState(): Data.IHistoryState {
     return Data.getHistory()[Data.getHistoryPosition() + 1];
