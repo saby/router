@@ -18,9 +18,41 @@ export enum MaskType {
 }
 
 /**
- * Определяет тип маски
+ * Интерфейс, который описывает тип части маски.
+ * Маска может быть сложной (param/:value?query=:val) - поэтому каждая часть рассматривается как отдельная маска.
  */
-export function calculateMaskType(mask: string, urlParts: UrlParts): MaskType {
+export interface IMaskType {
+    mask: string;
+    maskType: MaskType;
+}
+
+/**
+ * Определяет тип маски.
+ * Маска может быть сложной (param/:value?query=:val) - поэтому каждая часть рассматривается как отдельная маска.
+ */
+export function calculateMaskType(mask: string, urlParts: UrlParts): IMaskType[] {
+    // тут главное разбить на "условные" составные части: path, query, fragment
+    const maskParts: UrlParts = new UrlParts(mask);
+
+    const result: IMaskType[] = [];
+
+    [maskParts.getPath(), maskParts.getQuery(), maskParts.getFragment()].forEach((maskPart) => {
+        if (!maskPart) {
+            return;
+        }
+        result.push({
+            mask: maskPart,
+            maskType: _calcMaskType(maskPart, urlParts)
+        });
+    });
+
+    return result;
+}
+
+/**
+ * Вычисление типа маски по указанной части маски
+ */
+function _calcMaskType(mask: string, urlParts: UrlParts): MaskType {
     // par1/:val1 - это либо path либо fragment
     if (mask.indexOf('/') > -1) {
         return _isPathFragment(mask, urlParts) ? MaskType.PathFragment : MaskType.Path;
