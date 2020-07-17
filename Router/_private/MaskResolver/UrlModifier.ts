@@ -2,7 +2,7 @@
  * Классы для перезаписи url адреса по заданной маске
  */
 
-import {MaskType, calculateMaskType} from './MaskType';
+import {MaskType, IMaskType, calculateMaskType} from './MaskType';
 import {encodeParam} from './Helpers';
 import {IParam, PathParams, QueryParams} from './UrlParamsGetter';
 import {IUrlParts, UrlParts} from './UrlParts';
@@ -14,12 +14,12 @@ export class UrlModifier {
     private readonly mask: string;
     private readonly cfg: Record<string, unknown>;
     private readonly urlParts: UrlParts;
-    private readonly maskType: MaskType;
+    private readonly maskTypes: IMaskType[];
     constructor(mask: string, cfg: Record<string, unknown>, url: string) {
         this.mask = mask;
         this.urlParts = new UrlParts(url);
         // определим тип маски
-        this.maskType = calculateMaskType(mask, this.urlParts);
+        this.maskTypes = calculateMaskType(mask, this.urlParts);
 
         this.cfg = cfg.clear ? {} : cfg;
         // когда нужно заменить url переданной маской
@@ -30,23 +30,32 @@ export class UrlModifier {
 
     modify(): string {
         const newUrlParts: IUrlParts = {};
-        switch (this.maskType) {
-            case MaskType.Path:
-                newUrlParts.path = PathModifier.modify(this.mask, this.cfg, this.urlParts.getPath());
-                if (this.mask.startsWith('/')) {
-                    newUrlParts.query = '';
-                    newUrlParts.fragment = '';
+        const isReplaceMask: boolean = this.mask.startsWith('/'); // признак того, что маска переписывает url
+        this.maskTypes.forEach((maskType) => {
+            switch (maskType.maskType) {
+                case MaskType.Path:
+                    newUrlParts.path = PathModifier.modify(maskType.mask, this.cfg, this.urlParts.getPath());
+                    break;
+                case MaskType.Query:
+                    newUrlParts.query =  QueryModifier.modify(maskType.mask, this.cfg,
+                                                              isReplaceMask ? '' : this.urlParts.getQuery());
+                    break;
+                case MaskType.PathFragment:
+                    newUrlParts.fragment = PathModifier.modify(maskType.mask, this.cfg,
+                                                               isReplaceMask ? '' : this.urlParts.getFragment());
+                    break;
+                case MaskType.QueryFragment:
+                    newUrlParts.fragment = QueryModifier.modify(maskType.mask, this.cfg,
+                                                                isReplaceMask ? '' : this.urlParts.getFragment());
+                    break;
+            }
+        });
+        if (isReplaceMask) {
+            ['path', 'query', 'fragment'].forEach((field) => {
+                if (newUrlParts[field] === undefined) {
+                    newUrlParts[field] = '';
                 }
-                break;
-            case MaskType.Query:
-                newUrlParts.query =  QueryModifier.modify(this.mask, this.cfg, this.urlParts.getQuery());
-                break;
-            case MaskType.PathFragment:
-                newUrlParts.fragment = PathModifier.modify(this.mask, this.cfg, this.urlParts.getFragment());
-                break;
-            case MaskType.QueryFragment:
-                newUrlParts.fragment = QueryModifier.modify(this.mask, this.cfg, this.urlParts.getFragment());
-                break;
+            });
         }
         return this.urlParts.join(newUrlParts);
     }

@@ -47,6 +47,9 @@ export function getParamsFromQueryString(input: string): Record<string, string> 
         if (!urlFields[i]) {
             continue;
         }
+        if (urlFields[i].indexOf('=') === -1) {
+            continue;
+        }
         const field: string[] = urlFields[i].split('=');
         params[field[0]] = field[1].indexOf(':') > -1 ? field[1].slice(1) : field[1];
     }
