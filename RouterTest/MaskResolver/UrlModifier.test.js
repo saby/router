@@ -211,5 +211,113 @@ function(UrlModifierMod) {
             assert.strictEqual(modifier.modify(), '/#newpath=value');
          });
       });
+
+      describe('complicated mask', function() {
+         describe('path + query', function() {
+            it('add value', function () {
+               let modifier = new UrlModifier('second/:svalue?query=:qvalue',
+                                              {svalue: 'newvalue', qvalue: 'newquery'}, '/path/param/pvalue');
+               assert.strictEqual(modifier.modify(), '/path/param/pvalue/second/newvalue/?query=newquery');
+               modifier = new UrlModifier('second/:svalue?query=:qvalue',
+                                          {svalue: 'newvalue', qvalue: 'newquery'}, '/path?oldQuery=value');
+               assert.strictEqual(modifier.modify(), '/path/second/newvalue/?oldQuery=value&query=newquery');
+            });
+            it('change value', function () {
+               const modifier = new UrlModifier('shop/:guid/tab/:tab?mode=:mode',
+                                                {guid: 'pamagiti', tab: 'about', mode: 'edit'},
+                                                '/shop/pamagiti/tab/about?mode=edit');
+               assert.strictEqual(modifier.modify(), '/shop/pamagiti/tab/about/?mode=edit');
+            });
+            it('add value and change value', function () {
+               const modifier = new UrlModifier('second/:svalue?query=:qvalue&oldQuery=:oldQvalue',
+                                                {svalue: 'newvalue', qvalue: 'value', oldQvalue: 'newQvalue'},
+                                                '/path?oldQuery=value');
+               assert.strictEqual(modifier.modify(), '/path/second/newvalue/?oldQuery=newQvalue&query=value');
+            });
+            it('remove value | remove & change value', function () {
+               let modifier = new UrlModifier('param/:pvalue?query=:qvalue', {}, '/path/param/value?query=value');
+               assert.strictEqual(modifier.modify(), '/path/');
+               modifier = new UrlModifier('param/:pvalue?query=:qvalue', {pvalue: 'value'},
+                                          '/path/param/value?query=qvalue');
+               assert.strictEqual(modifier.modify(), '/path/param/value/');
+            });
+            it('replace url', function () {
+               let modifier = new UrlModifier('/param/:pvalue/second/:svalue?query=:qvalue',
+                                              {pvalue: 'value', svalue: 'newvalue', qvalue: 'qvalue'},
+                                              '/path/first/fvalue#fragment=value');
+               assert.strictEqual(modifier.modify(), '/param/value/second/newvalue/?query=qvalue');
+            });
+         });
+         describe('path + query fragment', function() {
+            it('add value', function () {
+               let modifier = new UrlModifier('second/:svalue#fragment=:fvalue',
+                                              {svalue: 'newvalue', fvalue: 'newfragment'}, '/path/param/pvalue');
+               assert.strictEqual(modifier.modify(), '/path/param/pvalue/second/newvalue/#fragment=newfragment');
+               modifier = new UrlModifier('second/:svalue#fragment=:fvalue',
+                                          {svalue: 'newvalue', fvalue: 'newfragment'}, '/path#oldFragment=value');
+               assert.strictEqual(modifier.modify(), '/path/second/newvalue/#oldFragment=value&fragment=newfragment');
+            });
+            it('change value', function () {
+               const modifier = new UrlModifier('param/:pvalue/tab/:tab#mode=:mode',
+                                                {pvalue: 'pvalue', tab: 'about', mode: 'edit'},
+                                                '/param/pvalue/tab/about#mode=delete');
+               assert.strictEqual(modifier.modify(), '/param/pvalue/tab/about/#mode=edit');
+            });
+            it('add value and change value', function () {
+               const modifier = new UrlModifier('second/:svalue#fragment=:fvalue&oldFragment=:oldFvalue',
+                                                {svalue: 'newvalue', fvalue: 'value', oldFvalue: 'newFvalue'},
+                                                '/path#oldFragment=value');
+               assert.strictEqual(modifier.modify(), '/path/second/newvalue/#oldFragment=newFvalue&fragment=value');
+            });
+            it('remove value | remove & change value', function () {
+               let modifier = new UrlModifier('param/:pvalue#fragment=:fvalue', {}, '/path/param/value#fragment=value');
+               assert.strictEqual(modifier.modify(), '/path/');
+               modifier = new UrlModifier('param/:pvalue#fragment=:fvalue', {fvalue: 'value'},
+                                          '/path/param/value#fragment=fvalue');
+               assert.strictEqual(modifier.modify(), '/path/#fragment=value');
+            });
+            it('replace url', function () {
+               let modifier = new UrlModifier('/param/:pvalue/second/:svalue#fragment=:fvalue',
+                                              {pvalue: 'value', svalue: 'newvalue', fvalue: 'fvalue'},
+                                              '/path/first/fvalue#fragment=value');
+               assert.strictEqual(modifier.modify(), '/param/value/second/newvalue/#fragment=fvalue');
+            });
+         });
+         describe('query + path fragment', function() {
+            it('add value', function () {
+               let modifier = new UrlModifier('query=:qvalue#fragment/:fvalue',
+                                              {qvalue: 'newvalue', fvalue: 'newfragment'}, '/path/');
+               assert.strictEqual(modifier.modify(), '/path/?query=newvalue#fragment/newfragment');
+               modifier = new UrlModifier('query=:qvalue#fragment/:fvalue',
+                                          {qvalue: 'newvalue', fvalue: 'newfragment'}, '/path#oldFragment/value');
+               assert.strictEqual(modifier.modify(), '/path/?query=newvalue#oldFragment/value/fragment/newfragment');
+            });
+            it('change value', function () {
+               const modifier = new UrlModifier('query=:qvalue&tab=:tab#mode/:mode',
+                                                {qvalue: 'qvalue', tab: 'about', mode: 'edit'},
+                                                '/?query=qvalue&tab=about#mode/delete');
+               assert.strictEqual(modifier.modify(), '/?query=qvalue&tab=about#mode/edit');
+            });
+            it('add value and change value', function () {
+               const modifier = new UrlModifier('query=:qvalue#fragment/:fvalue/oldFragment/:oldFvalue',
+                                                {qvalue: 'newvalue', fvalue: 'value', oldFvalue: 'newFvalue'},
+                                                '/path#oldFragment/value');
+               assert.strictEqual(modifier.modify(), '/path/?query=newvalue#oldFragment/newFvalue/fragment/value');
+            });
+            it('remove value | remove & change value', function () {
+               let modifier = new UrlModifier('query=:qvalue#fragment/:fvalue', {}, '/path/?query=value#fragment/value');
+               assert.strictEqual(modifier.modify(), '/path/');
+               modifier = new UrlModifier('query=:qvalue#fragment/:fvalue', {qvalue: 'value'},
+                                          '/path/?query=value#fragment/fvalue');
+               assert.strictEqual(modifier.modify(), '/path/?query=value');
+            });
+            it('replace url', function () {
+               let modifier = new UrlModifier('/?query=:qvalue&second=:svalue#fragment/:fvalue',
+                                              {qvalue: 'value', svalue: 'newvalue', fvalue: 'fvalue'},
+                                              '/path/?first=fvalue#fragment/value');
+               assert.strictEqual(modifier.modify(), '/?query=value&second=newvalue#fragment/fvalue');
+            });
+         });
+      });
    });
 });

@@ -2,7 +2,7 @@
  * Классы для получения параметров из url в зависимости от типа маски
  */
 
-import {MaskType, calculateMaskType} from './MaskType';
+import {MaskType, IMaskType, calculateMaskType} from './MaskType';
 import {decodeParam, getParamsFromQueryString} from './Helpers';
 import {UrlParts} from './UrlParts';
 
@@ -19,33 +19,31 @@ export interface IParam {
  * Класс для получения параметров из url адреса, в зависимости от типа маски и url адреса
  */
 export class UrlParamsGetter {
-    private readonly mask: string;
     private readonly urlParts: UrlParts;
-    private readonly maskType: MaskType;
+    private readonly maskTypes: IMaskType[];
     constructor(mask: string, url: string) {
-        this.mask = mask;
         this.urlParts = new UrlParts(url);
-        this.maskType = calculateMaskType(mask, this.urlParts);
+        this.maskTypes = calculateMaskType(mask, this.urlParts);
     }
 
     get(): Record<string, string> {
-        let params: IParam[];
-        switch (this.maskType) {
-            case MaskType.Path:
-                params = PathParams.calculateParams(this.mask, this.urlParts.getPath());
-                break;
-            case MaskType.Query:
-                params = QueryParams.calculateParams(this.mask, this.urlParts.getQuery());
-                break;
-            case MaskType.PathFragment:
-                params = PathParams.calculateParams(this.mask, this.urlParts.getFragment());
-                break;
-            case MaskType.QueryFragment:
-                params = QueryParams.calculateParams(this.mask, this.urlParts.getFragment());
-                break;
-            case MaskType.Undefined:
-                return {};
-        }
+        let params: IParam[] = [];
+        this.maskTypes.forEach((maskType) => {
+            switch (maskType.maskType) {
+                case MaskType.Path:
+                    params = [...params, ...PathParams.calculateParams(maskType.mask, this.urlParts.getPath())];
+                    break;
+                case MaskType.Query:
+                    params = [...params, ...QueryParams.calculateParams(maskType.mask, this.urlParts.getQuery())];
+                    break;
+                case MaskType.PathFragment:
+                    params = [...params, ...PathParams.calculateParams(maskType.mask, this.urlParts.getFragment())];
+                    break;
+                case MaskType.QueryFragment:
+                    params = [...params, ...QueryParams.calculateParams(maskType.mask, this.urlParts.getFragment())];
+                    break;
+            }
+        });
         const urlParams: Record<string, string> = {};
         params.forEach((param) => {
             if (param.maskId) {
