@@ -57,9 +57,11 @@ export function getNextState(): Data.IHistoryState {
 }
 
 /*
- * Moves the Router one step back in history
+ * Moves the Router one step back in history (previous or given)
  * @function
  * @name Router/_private/History#back
+ * @param {Router/_private/Data/IHistoryState} newState new state - when there is a transition back not to the previous
+ * state, but the state earlier than the previous one
  * @remark
  * This does not affect the window.history and the address bar location,
  * only the Router's history position.
@@ -67,9 +69,11 @@ export function getNextState(): Data.IHistoryState {
  * changing the address bar location
  */
 /**
- * Производит переход в истории на одно состояние назад
+ * Производит переход в истории на одно состояние (предыдущее или заданное) назад
  * @function
  * @name Router/_private/History#back
+ * @param {Router/_private/Data/IHistoryState} newState новое состояние - когда происходит переход назад не на
+ * предыдущее состояние, а состояние ранее предыдущего
  * @remark
  * Этот метод не влияет на window.history и адресную строку браузера,
  * только внутреннее состояние роутинга.
@@ -107,9 +111,11 @@ export function back(newState: Data.IHistoryState): void {
     _updateRelativeUrl();
 }
 /*
- * Moves the Router one step forward in history
+ * Moves the Router one step forward (next or given) in history
  * @function
  * @name Router/_private/History#forward
+ * @param {Router/_private/Data/IHistoryState} newState new state - when the transition occurs not to the next state,
+ * but the state through the next forward
  * @remark
  * This does not affect the window.history and the address bar location,
  * only the Router's history position.
@@ -117,9 +123,11 @@ export function back(newState: Data.IHistoryState): void {
  * changing the address bar location
  */
 /**
- * Производит переход в истории на одно состояние вперед
+ * Производит переход в истории на одно (следующее или заданное) состояние вперед
  * @function
  * @name Router/_private/History#forward
+ * @param {Router/_private/Data/IHistoryState} newState новое состояние - когда происходит переход не на следующее
+ * состояние, а состояние через следующее вперед
  * @remark
  * Этот метод не влияет на window.history и адресную строку браузера,
  * только внутреннее состояние роутинга.
@@ -158,7 +166,7 @@ export function forward(newState: Data.IHistoryState): void {
  * to the window.history
  * @function
  * @name Router/_private/History#push
- * @param {Data/IHistoryState} newState new state to push
+ * @param {Router/_private/Data/IHistoryState} newState new state to push
  * @remark
  * This function does not force the router components (like Route
  * and Reference) to update, it only pushes the state into window
@@ -170,7 +178,7 @@ export function forward(newState: Data.IHistoryState): void {
  * Переводит роутинг в новое состояние, записывая его в window.history
  * @function
  * @name Router/_private/History#push
- * @param {Data/IHistoryState} newState состояние для добавления
+ * @param {Router/_private/Data/IHistoryState} newState состояние для добавления
  * @remark
  * Вызов этого метода не провоцирует обновление компонентов роутинга
  * (таких как Route и Reference), он только производит запись состояния
@@ -202,7 +210,7 @@ export function push(newState: Data.IHistoryState): void {
  * specified state
  * @function
  * @name Router/_private/History#replaceState
- * @param {Data/IHistoryState} newState replacement state
+ * @param {Router/_private/Data/IHistoryState} newState replacement state
  * This function does not start the Route and Reference update,
  * it only replaces the state in window and Router history.
  * To change the state while updating Routes and References,
@@ -213,7 +221,7 @@ export function push(newState: Data.IHistoryState): void {
  * Заменяет текущее состоянии истории на переданное
  * @function
  * @name Router/_private/History#replaceState
- * @param {Data/IHistoryState} newState состояние для замены
+ * @param {Router/_private/Data/IHistoryState} newState состояние для замены
  * Вызов этого метода не провоцирует обновление компонентов роутинга
  * (таких как Route и Reference), он только производит запись состояния
  * в историю окна и историю роутинга.
