@@ -13,16 +13,16 @@ import * as UrlRewriter from './UrlRewriter';
 import { ILocation } from 'Application/Interface';
 
 /**
- * Одно состояние истории роутера.
+ * Одно состояние в истории браузера.
  * @interface Router/_private/Data/IHistoryState
  * @public
  */
 export interface IHistoryState {
-    /** Числовой идентификатор состояния истории */
+    /** Числовой идентификатор текущего состояния */
     id?: number;
-    /** Адрес состояния истории */
+    /** Действительный адрес, с которым работает роутинг */
     state: string;
-    /** "Красивый" адрес состояния истории */
+    /** "Красивый" адрес, который отображается пользователю */
     href?: string;
 }
 
