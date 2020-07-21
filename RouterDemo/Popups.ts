@@ -16,7 +16,6 @@ import { Controller, Data } from 'Router/router';
  * с использованием событий {@link Router.router:Route#enter} и {@link Router.router:Route#leave}
  */
 
-
 class Popups extends Control {
    _template: Function = template;
 
@@ -32,7 +31,7 @@ class Popups extends Control {
          // When the root popup closes, make sure that all the nested popups get closed by resetting the URL
          setTimeout(() => {
             Controller.navigate({ state: '/RouterDemo/page/Popups' });
-         }, 0);
+         }, 10);
       }
    }
 }
