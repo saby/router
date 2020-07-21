@@ -13,10 +13,11 @@
    </p>
 
    <!-- These Link and Route are used to open the first popup, so the depth 0 is hardcoded -->
-   <Router.router:Reference state="panel/0/:panelData" panelData="Hello" attr:class="BigButton">
+   <Router.router:Reference state="panel/:panelId/:panelData" panelId="0" panelData="Hello" attr:class="BigButton">
       <a href="{{ content.href }}">Open the popup</a>
    </Router.router:Reference>
-   <Router.router:Route mask="panel/0/:panelData"
+   <Router.router:Route mask="panel/:panelId/:panelData"
+      panelId="0"
       on:enter="_displayPopup()"
       on:leave="_hidePopup()" />
 
