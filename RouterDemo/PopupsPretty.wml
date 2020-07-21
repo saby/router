@@ -15,10 +15,12 @@
 
    <!-- These Link and Route are used to open the first popup, so the depth 0 is hardcoded -->
    <!-- The difference is that the href option is specified to hide the real growing URL -->
-   <Router.router:Reference state="panel/0/:panelData" href="/RouterDemo/page/PopupsPretty/inPanel" panelData="Hello" attr:class="BigButton">
+   <Router.router:Reference state="panel/:panelId/:panelData" href="/RouterDemo/page/PopupsPretty/inPanel"
+         panelId="0" panelData="Hello" attr:class="BigButton">
       <a href="{{ content.href }}">Open the popup</a>
    </Router.router:Reference>
-   <Router.router:Route mask="panel/0/:panelData"
+   <Router.router:Route mask="panel/:panelId/:panelData"
+      panelId="0"
       on:enter="_displayPopup()"
       on:leave="_hidePopup()" />
 

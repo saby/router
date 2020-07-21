@@ -30,7 +30,7 @@ class PopupsPretty extends Control {
          // When the root popup closes, make sure that all the nested popups get closed by resetting the URL
          setTimeout(() => {
             Controller.navigate({ state: '/RouterDemo/page/PopupsPretty' });
-         }, 0);
+         }, 10);
       }
    }
 }
