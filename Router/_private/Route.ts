@@ -168,6 +168,7 @@ class Route extends Control implements IRegisterableComponent{
 
     private _urlOptions: Record<string, unknown> = null;
     private _isResolved: boolean = false;
+    private _urlOptionsFields: string[] = [];
 
     _beforeMount(cfg: IRouteOptions): void {
         this._urlOptions = {};
@@ -208,7 +209,7 @@ class Route extends Control implements IRegisterableComponent{
         let result: boolean;
 
         const oldUrlOptions: Record<string, unknown> = this._urlOptions;
-        this._urlOptions = MaskResolver.calculateUrlParams((<{mask}>this._options).mask, newLoc.state);
+        this._setUrlOptions(MaskResolver.calculateUrlParams((<{mask}>this._options).mask, newLoc.state));
         const wasResolvedParam: boolean = this._hasResolvedParams(this._urlOptions);
         this._fillUrlOptionsFromCfg(this._options);
 
@@ -230,7 +231,7 @@ class Route extends Control implements IRegisterableComponent{
     }
 
     private _applyNewUrl(mask: string, cfg: IRouteOptions): boolean {
-        this._urlOptions = MaskResolver.calculateUrlParams(mask);
+        this._setUrlOptions(MaskResolver.calculateUrlParams(mask));
         const notUndefVal: boolean = this._hasResolvedParams(this._urlOptions);
         this._fillUrlOptionsFromCfg(cfg);
         return notUndefVal;
@@ -258,14 +259,17 @@ class Route extends Control implements IRegisterableComponent{
     }
 
     private _checkUrlResolved(): void {
-        const urlOptions: Record<string, unknown> = MaskResolver.calculateUrlParams((<{mask}>this._options).mask, Data.getRelativeUrl());
+        const urlOptions: Record<string, unknown> =
+            MaskResolver.calculateUrlParams((<{mask}>this._options).mask, Data.getRelativeUrl());
         const notUndefVal: boolean = this._hasResolvedParams(urlOptions);
         this._fillUrlOptionsFromCfg(this._options);
 
         const currentState: Data.IHistoryState = History.getCurrentState();
         let prevState: Data.IHistoryState = History.getPrevState();
         if (notUndefVal) {
-            this._urlOptions = urlOptions;
+            if (this._didOptionsChange(urlOptions, this._urlOptions)) {
+                this._setUrlOptions(urlOptions);
+            }
             this._isResolved = true;
             if (!prevState) {
                 prevState = {
@@ -275,6 +279,11 @@ class Route extends Control implements IRegisterableComponent{
             this._notify('enter', [currentState, prevState]);
             this._notify('change', [this._urlOptions, {}]);
         }
+    }
+
+    private _setUrlOptions(newUrlOptions: Record<string, unknown>): void {
+        this._urlOptions = newUrlOptions;
+        this._urlOptionsFields = Object.keys(newUrlOptions);
     }
 
     private _isFilteredOptionName(optionName: string): boolean {
@@ -292,7 +301,11 @@ class Route extends Control implements IRegisterableComponent{
             }
         }
         for (i in oldOptions) {
-            if (oldOptions.hasOwnProperty(i) && !newOptions.hasOwnProperty(i)) {
+            if (oldOptions.hasOwnProperty(i) &&
+                    // проверка только полей опции, т.к. в старом _urlOptions есть поля типа vdomCORE, _$createdFromCode
+                    // а в новом _urlOptions этих полей нет и быть не может
+                    (this._urlOptionsFields.length === 0 || this._urlOptionsFields.indexOf(i) >= 0)
+                    && !newOptions.hasOwnProperty(i)) {
                 return true;
             }
         }
