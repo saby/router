@@ -66,7 +66,7 @@ function(Router, CM) {
          createdReference = createReference({ state: 'test/:tvalue', tvalue: 'true' });
          createdReference.mounting
             .then(function() {
-               assert.strictEqual(createdReference._state, '/name/value/test/true/');
+               assert.strictEqual(createdReference._state, '/name/value/test/true');
             })
             .then(done, done);
       });
@@ -81,7 +81,7 @@ function(Router, CM) {
                createdReference._beforeUpdate(options);
             })
             .then(function() {
-               assert.strictEqual(createdReference._state, '/my/test/true/abc/');
+               assert.strictEqual(createdReference._state, '/my/test/true/abc');
             })
             .then(done, done);
       });
@@ -92,7 +92,7 @@ function(Router, CM) {
          createdReference = createReference({ state: 'url/:location', href: '/:location', location: 'website' });
          createdReference.mounting
             .then(function() {
-               assert.strictEqual(createdReference._href, '/website/');
+               assert.strictEqual(createdReference._href, '/website');
             })
             .then(done, done);
       });
@@ -104,7 +104,7 @@ function(Router, CM) {
             .then(function() {
                var newOptions = Object.assign({}, createdReference._options, { location: 'book' });
                createdReference._beforeUpdate(newOptions);
-               assert.strictEqual(createdReference._href, '/book/');
+               assert.strictEqual(createdReference._href, '/book');
             })
             .then(done, done);
       });
