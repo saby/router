@@ -238,7 +238,7 @@ function (Router, AppInit, EnvNode) {
                });
                it('can add a new value', function() {
                   var newUrl = MaskResolver.calculateHref('first/:value', { value: 'fvalue' });
-                  assert.strictEqual(newUrl, '/first/fvalue/');
+                  assert.strictEqual(newUrl, '/first/fvalue');
                });
             });
             describe('starting with simple params', function() {
@@ -273,7 +273,7 @@ function (Router, AppInit, EnvNode) {
                });
                it('can add a new value', function() {
                   var newUrl = MaskResolver.calculateHref('newval/:value', { value: 'supernew' });
-                  assert.strictEqual(newUrl, '/newval/supernew/?qfrst=fvalue&qscnd=svalue');
+                  assert.strictEqual(newUrl, '/newval/supernew?qfrst=fvalue&qscnd=svalue');
                });
             });
             describe('starting with simple params and query', function() {
@@ -306,7 +306,7 @@ function (Router, AppInit, EnvNode) {
                });
                it('can add a new value', function() {
                   var newUrl = MaskResolver.calculateHref('newname/:first/:second', { first: 'a', second: 'b' });
-                  assert.strictEqual(newUrl, '/newname/a/b/');
+                  assert.strictEqual(newUrl, '/newname/a/b');
                });
             });
             describe('starting with simple params', function() {
@@ -332,7 +332,7 @@ function (Router, AppInit, EnvNode) {
                });
                it('can add a new value', function() {
                   var newUrl = MaskResolver.calculateHref('newname/:first/:second', { first: 'a', second: 'b' });
-                  assert.strictEqual(newUrl, '/newname/a/b/?qfrst=fvalue&qscnd=svalue');
+                  assert.strictEqual(newUrl, '/newname/a/b?qfrst=fvalue&qscnd=svalue');
                });
             });
             describe('starting with simple params and query', function() {
@@ -376,7 +376,7 @@ function (Router, AppInit, EnvNode) {
                   it('can add a new value with forward slash', function() {
                      Data.setRelativeUrl('/first/fvalue/second/svalue');
                      var newUrl = MaskResolver.calculateHref('qfrst=:value', { value: 'abc' });
-                     assert.strictEqual(newUrl, '/first/fvalue/second/svalue/?qfrst=abc');
+                     assert.strictEqual(newUrl, '/first/fvalue/second/svalue?qfrst=abc');
                   });
                });
                describe('starting with query', function() {
@@ -435,23 +435,23 @@ function (Router, AppInit, EnvNode) {
 
                   it('can add encoded value', function() {
                      var newUrl = MaskResolver.calculateHref('test/:value', { value: 'has spaces' });
-                     assert.strictEqual(newUrl, '/first/special%20param/second/svalue/test/has%20spaces/');
+                     assert.strictEqual(newUrl, '/first/special%20param/second/svalue/test/has%20spaces');
                   });
                   it('can change encoded value to encoded value', function() {
                      var newUrl = MaskResolver.calculateHref('first/:value', { value: 'has spaces' });
-                     assert.strictEqual(newUrl, '/first/has%20spaces/second/svalue/');
+                     assert.strictEqual(newUrl, '/first/has%20spaces/second/svalue');
                   });
                   it('can change encoded value to unencoded value', function() {
                      var newUrl = MaskResolver.calculateHref('first/:value', { value: 'simple' });
-                     assert.strictEqual(newUrl, '/first/simple/second/svalue/');
+                     assert.strictEqual(newUrl, '/first/simple/second/svalue');
                   });
                   it('can change unencoded value to encoded value', function() {
                      var newUrl = MaskResolver.calculateHref('second/:value', { value: 'with/slash' });
-                     assert.strictEqual(newUrl, '/first/special%20param/second/with%2Fslash/');
+                     assert.strictEqual(newUrl, '/first/special%20param/second/with%2Fslash');
                   });
                   it('can remove encoded value', function() {
                      var newUrl = MaskResolver.calculateHref('first/:value', { clear: true });
-                     assert.strictEqual(newUrl, '/second/svalue/');
+                     assert.strictEqual(newUrl, '/second/svalue');
                   });
                });
 
@@ -491,7 +491,7 @@ function (Router, AppInit, EnvNode) {
                   'page/:pageName/:pageParam',
                   { pageName: 'login', pageParam: 'now' }
                );
-               assert.strictEqual(newUrl, '/root/page/login/now/');
+               assert.strictEqual(newUrl, '/root/page/login/now');
             });
             it('can append to end of main part of url if it has query params', function() {
                Data.setRelativeUrl('/root/page/signup?query=true');
@@ -499,7 +499,7 @@ function (Router, AppInit, EnvNode) {
                   'page/:pageName/:pageParam',
                   { pageName: 'login', pageParam: 'now' }
                );
-               assert.strictEqual(newUrl, '/root/page/login/now/?query=true');
+               assert.strictEqual(newUrl, '/root/page/login/now?query=true');
             });
             it('can append to end of main part of url if it has query params after slash', function() {
                Data.setRelativeUrl('/root/page/signup/?query=true');
@@ -516,7 +516,7 @@ function (Router, AppInit, EnvNode) {
                   'page/:pageName/:pageParam',
                   { pageName: 'login', pageParam: 'now' }
                );
-               assert.strictEqual(newUrl, '/root/page/login/now/#hashparam');
+               assert.strictEqual(newUrl, '/root/page/login/now#hashparam');
             });
             it('can append to end of main part of url if it has hash after slash', function() {
                Data.setRelativeUrl('/root/page/signup/#hashparam');
