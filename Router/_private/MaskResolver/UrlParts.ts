@@ -20,6 +20,7 @@ export interface IUrlParts {
  */
 export class UrlParts {
     private urlParts: IUrlParts;
+    private hasTrailingSlash: boolean = false;
     constructor(url: string) {
         this.urlParts = this.parseUrl(url);
     }
@@ -34,31 +35,29 @@ export class UrlParts {
         if (hashPos >= 0 && queryPos > hashPos) {
             queryPos = -1;
         }
+
+        let path: string = url;
+        let query: string = '';
+        let fragment: string = '';
         if (queryPos >= 0 && hashPos >= 0) {
-            return {
-                path: url.substring(0, queryPos).replace(/\/$/, ''),
-                query: url.substring(queryPos, hashPos),
-                fragment: url.substring(hashPos, url.length)
-            };
+            path = url.substring(0, queryPos);
+            query = url.substring(queryPos, hashPos);
+            fragment = url.substring(hashPos, url.length);
+        } else if (queryPos >= 0) {
+            path = url.substring(0, queryPos);
+            query = url.substring(queryPos, url.length);
+        } else if (hashPos >= 0) {
+            path = url.substring(0, hashPos);
+            fragment = url.substring(hashPos, url.length);
         }
-        if (queryPos >= 0) {
-            return {
-                path: url.substring(0, queryPos).replace(/\/$/, ''),
-                query: url.substring(queryPos, url.length),
-                fragment: ''
-            };
-        }
-        if (hashPos >= 0) {
-            return {
-                path: url.substring(0, hashPos).replace(/\/$/, ''),
-                query: '',
-                fragment: url.substring(hashPos, url.length)
-            };
-        }
+
+        // выясним, есть ли в конце path слеш
+        this.hasTrailingSlash = path && path !== '/' ? !!(path.match(/\/$/)) : false;
+
         return {
-            path: url.replace(/\/$/, ''),
-            query: '',
-            fragment: ''
+            path: path.replace(/\/$/, ''),
+            query,
+            fragment
         };
     }
 
@@ -83,7 +82,7 @@ export class UrlParts {
             path = newUrlParts.path;
         }
         path = path.replace(/^[#/?&=]+/, '').replace(/[#/?&=]+$/, '');
-        path = path.length ? '/' + path + '/' : '/';
+        path = path.length ? ['/', path, this._getTrailingSlash(path)].join('') : '/';
 
         let query: string = this.urlParts.query;
         if (newUrlParts.hasOwnProperty('query')) {
@@ -103,5 +102,12 @@ export class UrlParts {
             fragment = '#' + fragment;
         }
         return [path, query, fragment].join('');
+    }
+
+    private _getTrailingSlash(path: string): string {
+        if (/\.[^.]+$/.exec(path)) {
+            return '';
+        }
+        return this.hasTrailingSlash ? '/' : '';
     }
 }
