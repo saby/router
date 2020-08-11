@@ -203,18 +203,18 @@ function(UrlModifierMod) {
             assert.strictEqual(modifier.modify(), '/path/#param=newvalue');
          });
          it('change value', function () {
-            const modifier = new UrlModifier('param=:valueId', {valueId: 'newvalue'}, '/#param=value');
+            const modifier = new UrlModifier('#param=:valueId', {valueId: 'newvalue'}, '/#param=value');
             assert.strictEqual(modifier.modify(), '/#param=newvalue');
          });
          it('add value and change value', function () {
-            const modifier = new UrlModifier('param=:valueId&second=:sId', {valueId: 'newvalue', sId: 'svalue'},
+            const modifier = new UrlModifier('#param=:valueId&second=:sId', {valueId: 'newvalue', sId: 'svalue'},
                                              '/path/#param=value');
             assert.strictEqual(modifier.modify(), '/path/#param=newvalue&second=svalue');
          });
          it('remove value', function () {
-            let modifier = new UrlModifier('param=:valueId', {}, '/path/#param=value');
+            let modifier = new UrlModifier('#param=:valueId', {}, '/path/#param=value');
             assert.strictEqual(modifier.modify(), '/path/');
-            modifier = new UrlModifier('param=:valueId', {}, '/path/#param=value&second=svalue');
+            modifier = new UrlModifier('#param=:valueId', {}, '/path/#param=value&second=svalue');
             assert.strictEqual(modifier.modify(), '/path/#second=svalue');
          });
          it('replace url', function () {

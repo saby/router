@@ -562,7 +562,7 @@ function (Router, AppInit, EnvNode) {
                Data.setRelativeUrl('/path/#first=fvalue&second=svalue');
             });
             it('can change an existing value', function() {
-               var newUrl = MaskResolver.calculateHref('second=:value', { value: 'abc' });
+               var newUrl = MaskResolver.calculateHref('#second=:value', { value: 'abc' });
                assert.strictEqual(newUrl, '/path/#first=fvalue&second=abc');
             });
          });

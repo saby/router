@@ -24,7 +24,7 @@ function(UrlPartsMod, UrlParamsGetterMod) {
             assert.strictEqual(params.valueId, 'value');
          });
          it('query fragment url', function () {
-            const params = new UrlParamsGetter('param=:valueId', '/path/#param=value').get();
+            const params = new UrlParamsGetter('#param=:valueId', '/path/#param=value').get();
             assert.strictEqual(params.valueId, 'value');
          });
       });
@@ -47,14 +47,14 @@ function(UrlPartsMod, UrlParamsGetterMod) {
       describe('QueryParams', function() {
          it('simple url', function () {
             const urlParts = new UrlParts('/path/?param=value');
-            const params = QueryParams.calculateParams('param=:valueId', urlParts.getQuery());
+            const params = QueryParams.createQueryObject().calculateParams('param=:valueId', urlParts.getQuery());
             assert.strictEqual(params[0].maskId, 'valueId');
             assert.strictEqual(params[0].urlValue, 'value');
             assert.strictEqual(params[0].urlId, 'param');
          });
          it('fragment url', function () {
             const urlParts = new UrlParts('/path/#param=value');
-            const params = QueryParams.calculateParams('param=:valueId', urlParts.getFragment());
+            const params = QueryParams.createFragmentObject().calculateParams('param=:valueId', urlParts.getFragment());
             assert.strictEqual(params[0].maskId, 'valueId');
             assert.strictEqual(params[0].urlValue, 'value');
             assert.strictEqual(params[0].urlId, 'param');
