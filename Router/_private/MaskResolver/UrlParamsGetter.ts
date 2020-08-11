@@ -3,7 +3,7 @@
  */
 
 import {MaskType, IMaskType, calculateMaskType} from './MaskType';
-import {decodeParam, getParamsFromQueryString} from './Helpers';
+import {decodeParam} from './Helpers';
 import {UrlParts} from './UrlParts';
 
 /**
@@ -34,13 +34,15 @@ export class UrlParamsGetter {
                     params = [...params, ...PathParams.calculateParams(maskType.mask, this.urlParts.getPath())];
                     break;
                 case MaskType.Query:
-                    params = [...params, ...QueryParams.calculateParams(maskType.mask, this.urlParts.getQuery())];
+                    params = [...params, ...QueryParams.createQueryObject()
+                                            .calculateParams(maskType.mask, this.urlParts.getQuery())];
                     break;
                 case MaskType.PathFragment:
                     params = [...params, ...PathParams.calculateParams(maskType.mask, this.urlParts.getFragment())];
                     break;
                 case MaskType.QueryFragment:
-                    params = [...params, ...QueryParams.calculateParams(maskType.mask, this.urlParts.getFragment())];
+                    params = [...params, ...QueryParams.createFragmentObject()
+                                            .calculateParams(maskType.mask, this.urlParts.getFragment())];
                     break;
             }
         });
@@ -132,16 +134,36 @@ export class PathParams {
  * Класс для получения параметров из url адреса типа /path/?param=value или /path#param=value
  */
 export class QueryParams {
+
+    /**
+     * Создает instance класса для работы с query частью url-адреса
+     */
+    static createQueryObject(): QueryParams {
+        return new QueryParams(QueryStringParams.createQueryObject());
+    }
+
+    /**
+     * Создает instance класса для работы с query-fragment частью url-адреса
+     */
+    static createFragmentObject(): QueryParams {
+        return new QueryParams(QueryStringParams.createFragmentObject());
+    }
+
+    private readonly queryStringParams: QueryStringParams;
+    constructor(queryStringParams: QueryStringParams) {
+        this.queryStringParams = queryStringParams;
+    }
+
     /**
      * Вычислить параметры из url по переданной маске
      * @param mask  маска, по которой разбирается url
      * @param urlPart   часть url адреса, ?param=value, из которой достаются значения
      */
-    static calculateParams(mask: string, urlPart: string): IParam[] {
+    calculateParams(mask: string, urlPart: string): IParam[] {
         // маска вида query1=:qId1&query3=:qId3 разбивается в объект {query1: 'qId1', query3: 'qId3'}
-        const maskParams: Record<string, string> = getParamsFromQueryString(mask, true);
+        const maskParams: Record<string, string> = this.queryStringParams.getParamsFromQueryMaskString(mask);
         // url вида ?query1=value1&query2=value2 разбивается в объект {query1: 'value1', query2: 'value2'}
-        const urlParams: Record<string, string> = getParamsFromQueryString(urlPart);
+        const urlParams: Record<string, string> = this.queryStringParams.getParamsFromQueryString(urlPart);
         const params: IParam[] = [];
         const calculatedFields: string[] = [];
 
@@ -160,4 +182,78 @@ export class QueryParams {
         });
         return params;
     }
+}
+
+/**
+ * Из query или query-fragment части url'а вида query=value достает все параметры и возвращает в виде объекта
+ * @param input
+ */
+class QueryStringParams {
+    private static readonly QUERY_REGEXP: RegExp = /[?&]/;
+    private static readonly FRAGMENT_REGEXP: RegExp = /[#&]/;
+
+    /**
+     * Создает instance класса для работы с query частью url-адреса
+     */
+    static createQueryObject(): QueryStringParams {
+        return new QueryStringParams(QueryStringParams.QUERY_REGEXP);
+    }
+
+    /**
+     * Создает instance класса для работы с query-fragment частью url-адреса
+     */
+    static createFragmentObject(): QueryStringParams {
+        return new QueryStringParams(QueryStringParams.FRAGMENT_REGEXP);
+    }
+
+    private readonly splitRegexp: RegExp;
+
+    constructor(splitRegexp: RegExp) {
+        this.splitRegexp = splitRegexp;
+    }
+
+    /**
+     * Строка вида ?query1=value1&query2=value2 разбивается в объект {query1: 'value1', query2: 'value2'}
+     * Строка вида #query1=value1&query2=value2 разбивается в объект {query1: 'value1', query2: 'value2'}
+     * @param input
+     */
+    getParamsFromQueryString(input: string): Record<string, string> {
+        return this._getQueryParams(input, (value) => {
+            return value;
+        });
+    }
+
+    /**
+     * Строка вида ?query1=:qId1&query3=:qId3 разбивается в объект {query1: 'qId1', query3: 'qId3'}
+     * Строка вида #query1=:qId1&query3=:qId3 разбивается в объект {query1: 'qId1', query3: 'qId3'}
+     * @param input
+     */
+    getParamsFromQueryMaskString(input: string): Record<string, string> {
+        return this._getQueryParams(input, (value) => {
+            return value.indexOf(':') === 0 ? value.slice(1) : value;
+        });
+    }
+
+    /**
+     * Разбивка строки на объект
+     * @param input
+     * @param getValue
+     * @private
+     */
+    private _getQueryParams(input: string, getValue: (value) => string): Record<string, string> {
+        const params: Record<string, string> = {};  // параметры из входной строки
+        const urlFields: string[] = input.split(this.splitRegexp);
+        for (let i = 0; i < urlFields.length; i++) {
+            if (!urlFields[i]) {
+                continue;
+            }
+            if (urlFields[i].indexOf('=') === -1) {
+                continue;
+            }
+            const field: string[] = urlFields[i].split('=');
+            params[field[0]] = getValue(field[1]);
+        }
+        return params;
+    }
+
 }

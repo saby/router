@@ -33,26 +33,3 @@ export function decodeParam(param: string): string {
     }
     return result;
 }
-
-/**
- * Из строки вида param=value или param=:value достает все параметры и возвращает в виде объекта
- * Строка вида query1=:qId1&query3=:qId3 разбивается в объект {query1: 'qId1', query3: 'qId3'}
- * Строка вида ?query1=value1&query2=value2 разбивается в объект {query1: 'value1', query2: 'value2'}
- * @param input
- * @param isMask признак того, что разбираем маску - значение параметра может быть с двоеточием вначале
- */
-export function getParamsFromQueryString(input: string, isMask: boolean = false): Record<string, string> {
-    const params: Record<string, string> = {};  // параметры из входной строки
-    const urlFields: string[] = input.split(/[?#&]/);
-    for (let i = 0; i < urlFields.length; i++) {
-        if (!urlFields[i]) {
-            continue;
-        }
-        if (urlFields[i].indexOf('=') === -1) {
-            continue;
-        }
-        const field: string[] = urlFields[i].split('=');
-        params[field[0]] = isMask && field[1].indexOf(':') === 0 ? field[1].slice(1) : field[1];
-    }
-    return params;
-}
