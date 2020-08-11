@@ -10,7 +10,7 @@ function(HelpersMod) {
    describe('Router/_private/MaskResolver/Helpers', function() {
       describe('#getParamsFromQueryString', function() {
          it('mask string', function () {
-            const params = getParamsFromQueryString('param=:value');
+            const params = getParamsFromQueryString('param=:value', true);
             assert.strictEqual(params.param, 'value');
          });
          it('url query string', function () {

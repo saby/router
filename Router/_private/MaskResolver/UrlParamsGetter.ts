@@ -139,7 +139,7 @@ export class QueryParams {
      */
     static calculateParams(mask: string, urlPart: string): IParam[] {
         // маска вида query1=:qId1&query3=:qId3 разбивается в объект {query1: 'qId1', query3: 'qId3'}
-        const maskParams: Record<string, string> = getParamsFromQueryString(mask);
+        const maskParams: Record<string, string> = getParamsFromQueryString(mask, true);
         // url вида ?query1=value1&query2=value2 разбивается в объект {query1: 'value1', query2: 'value2'}
         const urlParams: Record<string, string> = getParamsFromQueryString(urlPart);
         const params: IParam[] = [];
