@@ -51,9 +51,9 @@ function(MaskTypeMod, UrlPartsMod) {
          assert.strictEqual(maskType[0].maskType, MaskType.PathFragment);
       });
       it('query fragment mask', function () {
-         const maskType = calculateMaskType('param=:value', new UrlParts('/?query=qvalue#param=pvalue'));
+         const maskType = calculateMaskType('#param=:value', new UrlParts('/?query=qvalue#param=pvalue'));
          assert.strictEqual(maskType.length, 1);
-         assert.strictEqual(maskType[0].mask, 'param=:value');
+         assert.strictEqual(maskType[0].mask, '#param=:value');
          assert.strictEqual(maskType[0].maskType, MaskType.QueryFragment);
       });
 

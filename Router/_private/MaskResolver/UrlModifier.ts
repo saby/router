@@ -37,16 +37,17 @@ export class UrlModifier {
                     newUrlParts.path = PathModifier.modify(maskType.mask, this.cfg, this.urlParts.getPath());
                     break;
                 case MaskType.Query:
-                    newUrlParts.query =  QueryModifier.modify(maskType.mask, this.cfg,
-                                                              isReplaceMask ? '' : this.urlParts.getQuery());
+                    newUrlParts.query = QueryModifier.createQueryObject()
+                                        .modify(maskType.mask, this.cfg, isReplaceMask ? '' : this.urlParts.getQuery());
                     break;
                 case MaskType.PathFragment:
                     newUrlParts.fragment = PathModifier.modify(maskType.mask, this.cfg,
                                                                isReplaceMask ? '' : this.urlParts.getFragment());
                     break;
                 case MaskType.QueryFragment:
-                    newUrlParts.fragment = QueryModifier.modify(maskType.mask, this.cfg,
-                                                                isReplaceMask ? '' : this.urlParts.getFragment());
+                    newUrlParts.fragment = QueryModifier.createFragmentObject()
+                                           .modify(maskType.mask, this.cfg,
+                                                   isReplaceMask ? '' : this.urlParts.getFragment());
                     break;
             }
         });
@@ -200,8 +201,29 @@ class PathModifier {
  * Обработка (замена, добавление, удаление параметров по маске) url адреса вида /path/?param=value или /path#param=value
  */
 class QueryModifier {
-    static modify(mask: string, cfg: Record<string, unknown>, urlPart: string): string {
-        const params: IParam[] = QueryParams.calculateParams(mask, urlPart);
+
+    /**
+     * Создает instance класса для работы с query частью url-адреса
+     */
+    static createQueryObject(): QueryModifier {
+        return new QueryModifier(QueryParams.createQueryObject())
+    }
+
+    /**
+     * Создает instance класса для работы с query-fragment частью url-адреса
+     */
+    static createFragmentObject(): QueryModifier {
+        return new QueryModifier(QueryParams.createFragmentObject())
+    }
+
+    private readonly queryParams: QueryParams;
+
+    constructor(queryParams: QueryParams) {
+        this.queryParams = queryParams;
+    }
+
+    modify(mask: string, cfg: Record<string, unknown>, urlPart: string): string {
+        const params: IParam[] = this.queryParams.calculateParams(mask, urlPart);
         const newQueryParams: Record<string, string> = {};
         for (let i = 0; i < params.length; i++) {
             const param: IParam = params[i];
