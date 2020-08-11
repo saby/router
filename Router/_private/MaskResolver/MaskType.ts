@@ -104,7 +104,7 @@ function _isQueryFragment(mask: string, urlParts: UrlParts): boolean {
     if (!fragment) {
         return false;
     }
-    const maskParams: Record<string, string> = getParamsFromQueryString(mask);
+    const maskParams: Record<string, string> = getParamsFromQueryString(mask, true);
     const urlParams: Record<string, string> = getParamsFromQueryString(fragment);
     for (const urlId in maskParams) {
         if (maskParams.hasOwnProperty(urlId) && urlParams.hasOwnProperty(urlId)) {
