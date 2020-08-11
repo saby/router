@@ -121,11 +121,14 @@ function(UrlModifierMod) {
                                              '/path/?param=value');
             assert.strictEqual(modifier.modify(), '/path/?param=newvalue&second=svalue');
          });
-         it('remove value', function () {
+         it('remove an existing value', function () {
             let modifier = new UrlModifier('param=:valueId', {}, '/path/?param=value');
             assert.strictEqual(modifier.modify(), '/path/');
             modifier = new UrlModifier('param=:valueId', {}, '/path/?param=value&second=svalue');
             assert.strictEqual(modifier.modify(), '/path/?second=svalue');
+            // проверка удаления несуществующего параметра, но в текущем url есть параметр с двоеточием в значении
+            modifier = new UrlModifier('tab=:tab', {clear: true}, '/auth/?rel=http://pre-test-online.sbis.ru/events');
+            assert.strictEqual(modifier.modify(), '/auth/?rel=http://pre-test-online.sbis.ru/events');
          });
          it('replace url', function () {
             let modifier = new UrlModifier('newpath=:valueId', {valueId: 'value', replace: true}, '/path/?param=value');
