@@ -23,9 +23,14 @@ function(Router, CM) {
       var createdReference;
 
       before(function() {
+         this.compat = require('Env/Env').constants.compat;
+         require('Env/Env').constants.compat = false;
          if (typeof window === 'undefined') {
             this.skip();
          }
+      });
+      after(function() {
+         require('Env/Env').constants.compat = this.compat;
       });
 
       afterEach(function() {
