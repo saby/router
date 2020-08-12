@@ -224,41 +224,17 @@ async function _tryApplyNewState(newState: Data.IHistoryState): Promise<boolean>
       // не удаляла HEAD и HTML
       window.location.href = newState.href;
       return false;
-      return new Promise<boolean>((resolve, reject) => {
-         require([newApp], (appComponent) => {
-            if (!appComponent) {
-               _handleAppRequireError(
-                  `requirejs did not report an error, but '${newApp}' component was not loaded. ` +
-                  'This could have happened because of circular dependencies or because ' +
-                  'of the browser behavior. Starting default redirect',
-                  newState.href
-               );
-               reject(new Error('App component is not defined'));
-            } else {
-               const changedApp = _tryChangeApplication(newApp);
-               if (!changedApp) {
-                  _checkRoutesAcceptNewState(newState).then((ret) => {
-                     resolve(ret);
-                  });
-               }
-               resolve(true);
-            }
-         }, (err) => {
-            // If the folder doesn't have /Index component, it does not
-            // use new routing. Load the page manually
-            _handleAppRequireError(
-               `Unable to load module '${newApp}', starting default redirect`,
-               newState.href
-            );
-            reject(err);
-         });
-      });
    }
 }
 
 async function _checkRoutesAcceptNewState(newState: Data.IHistoryState): Promise<boolean> {
    const currentState: Data.IHistoryState = History.getCurrentState();
    const registeredRoutes: Record<string, Data.IRegisteredRoute> = Data.getRegisteredRoutes();
+
+   // Если нет обработчиков для route'ов, то не меняем текущий url
+   if (!Object.keys(registeredRoutes).length) {
+      return false;
+   }
 
    const promises: Array<Promise<boolean>> = [];
    for (const routeId in registeredRoutes) {

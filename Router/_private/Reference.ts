@@ -237,13 +237,9 @@ class Reference extends Control implements IRegisterableComponent {
             // navigate event can be handled by the user to prevent the
             // standard single page navigation
             if (this._notify('navigate', [navigateTo, e]) !== false) {
-                this._changeUrlState(navigateTo);
+                Controller.navigate(navigateTo);
             }
         }
-    }
-
-    private _changeUrlState(newState: IHistoryState): void {
-        Controller.navigate(newState);
     }
 
     // TODO Костыль для https://online.sbis.ru/opendoc.html?guid=fc34605f-3642-4a94-acdf-d2804df07069
