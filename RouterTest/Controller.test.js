@@ -294,7 +294,7 @@ function (Router, fakeAppManager) {
       });
 
       describe('onpopstate handler', function() {
-         var historyBackStub, historyForwardStub;
+         var historyBackStub, historyForwardStub, fakeRoute;
 
          before(function() {
             if (typeof window === 'undefined') {
@@ -319,11 +319,15 @@ function (Router, fakeAppManager) {
             Data.setRelativeUrl('/ctestapp/page/second');
             historyBackStub = stubSandbox.stub(History, 'back');
             historyForwardStub = stubSandbox.stub(History, 'forward');
+
+            fakeRoute = getFakeForRegistration();
+            Controller.addRoute(fakeRoute.control, fakeRoute.beforeApplyUrl, fakeRoute.afterApplyUrl);
          });
 
          afterEach(function() {
             historyBackStub.restore();
             historyForwardStub.restore();
+            Controller.removeRoute(fakeRoute.control);
          });
 
          it('can go back in history', function(done) {
