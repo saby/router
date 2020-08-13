@@ -173,10 +173,12 @@ class Route extends Control implements IRegisterableComponent{
     _beforeMount(cfg: IRouteOptions): void {
         this._urlOptions = {};
         this._applyNewUrl(cfg.mask, cfg);
+        if (this._isClient()) {
+            this._register();
+        }
     }
 
     _afterMount(): void {
-        this._register();
         this._checkUrlResolved();
     }
 
@@ -311,6 +313,10 @@ class Route extends Control implements IRegisterableComponent{
         }
 
         return false;
+    }
+
+    _isClient(): boolean {
+        return typeof window !== 'undefined';
     }
 }
 
