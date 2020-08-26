@@ -26,6 +26,7 @@ define('RouterTest/resources/controlManager', ['Core/Control'], function(CoreCon
             });
          }
          var element = document.createElement('div');
+         console.error(window.location.href);
          element.className = 'router-tests-control';
 
          var control = CoreControl.createControl(ControlClass, Object.assign({}, options), element);
