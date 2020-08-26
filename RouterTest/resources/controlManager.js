@@ -37,9 +37,8 @@ define('RouterTest/resources/controlManager', ['Core/Control'], function(CoreCon
          return control;
       },
       destroyControl: function(control) {
-         control.destroy();
          control._$testElement.remove();
-         delete control._$testElement;
+         control.destroy();
       },
    };
 });
