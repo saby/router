@@ -1,6 +1,7 @@
 define([], function() {
    return {
       '/': 'OnlineSbisRu',
+      '/regex:^([0-9]{5})$': 'OnlineSbisRu/$1',
       '/contacts_vdom.html': 'MessageExt',
       '/a/b': 'ab',
       '/a/b/c/d': 'abcd'

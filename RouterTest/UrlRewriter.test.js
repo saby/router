@@ -11,6 +11,10 @@ function(Router, json) {
             result: '/OnlineSbisRu'
          },
          {
+            url: '/12345',
+            result: '/OnlineSbisRu/12345'
+         },
+         {
             url: '/a',
             result: '/a'
          },
@@ -35,6 +39,10 @@ function(Router, json) {
          {
             url: '/OnlineSbisRu',
             result: '/'
+         },
+         {
+            url: '/OnlineSbisRu/12345',
+            result: '/12345'
          },
          {
             url: '/a',

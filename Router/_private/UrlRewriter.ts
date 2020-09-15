@@ -84,20 +84,22 @@ function getBestMatchFromRouteTree(url: string, rootNode: IRouteTree): string {
         let curTreeNode: Record<string, IRouteTreeNode> = rootNode.tree;
         let bestMatching: string | null = null;
         let bestMatchingIndex: number = -1;
+        const setBestMatching = (value, index) => {
+            if (value) {
+                bestMatching = value;
+                bestMatchingIndex = index;
+            }
+        };
 
         for (let i = 0; i < urlParts.length; i++) {
             const urlPart: string = urlParts[i];
 
             if (!curTreeNode[urlPart]) {
+                setBestMatching(_getRegExpUrlPart(urlPart, curTreeNode), i);
                 break;
             }
 
-            const nodeValue: string = curTreeNode[urlPart].value;
-            if (nodeValue) {
-                bestMatching = nodeValue;
-                bestMatchingIndex = i;
-            }
-
+            setBestMatching(curTreeNode[urlPart].value, i);
             curTreeNode = curTreeNode[urlPart].tree;
         }
 
@@ -108,6 +110,46 @@ function getBestMatchFromRouteTree(url: string, rootNode: IRouteTree): string {
         }
     }
     return path + misc;
+}
+
+/**
+ * Обработка ключа в router.json вида "/regex:<validRegex>"
+ * Т.е. если у текущей ноды дерева router.json есть ключ с регуляркой, то если текущий кусок url-адреса
+ * подходит под эту регулярку, то возвращаем значение этой ноды
+ *
+ * Напр. есть router.json вида:
+ * {
+ *    "/": "Module",
+ *    "/regex:^([0-9]{5})$": "Module/$1"
+ * }
+ * Тогда url вида "/12345" будет заменен на "Module/12345". Это означает, что оба случая из этого router.json
+ * будут обработаны модулем Module/Index
+ *
+ * Соотв. в Router.router:Route можно использовать маску вида "Module/:id", как
+ * <Router.router:Route mask="Module/:id">
+ *     <div>{{ content.id }}</div>
+ * </Router.router:Route>
+ *
+ * @param urlPart
+ * @param curTreeNode
+ */
+function _getRegExpUrlPart(urlPart: string, curTreeNode: Record<string, IRouteTreeNode>): string {
+    let result: string = null;
+    Object.keys(curTreeNode).forEach((key) => {
+        if (key.indexOf('regex:') !== 0) {
+            return;
+        }
+        const regexp = new RegExp(key.replace('regex:', ''));
+        if (!regexp.test(urlPart)) {
+            return;
+        }
+        const value = curTreeNode[key].value;
+        if (!value) {
+            return;
+        }
+        result = urlPart.replace(regexp, value);
+    });
+    return result;
 }
 
 function _splitQueryAndHash(url: string): ISplitPath {
