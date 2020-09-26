@@ -12,11 +12,7 @@ function (Router, fakeAppManager, AppInit, EnvNode) {
       stubSandbox = sinon.createSandbox(),
       navigationDelay = 80;
 
-   var env;
-   if (typeof window === 'undefined') {
-      env = EnvNode.default;
-   }
-   AppInit.default({}, env);
+   AppInit.default();
 
    function getFakeControl(id) {
       var randomId = Math.random();
