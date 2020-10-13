@@ -15,6 +15,9 @@ function (Router, AppInit, EnvNode) {
    }
    AppInit.default({}, env);
 
+   // переопределим router.js в тестах, т.к. он подтянется из корня, а там из RouterDemo
+   Router.UrlRewriter._prepareRoutes({});
+
    describe('Router/MaskResolver', function() {
       describe('#getAppNameByUrl', function() {
          it('returns index component name', function() {
