@@ -2,44 +2,54 @@
    <nav class="TopMenu__container">
       <ul class="TopMenu">
          <li class="TopMenu__Item">
-            <Router.router:Reference state="/RouterDemo/page/:pageId" pageId="Intro" attr:class="TopMenu__Link">
+            <Router.router:Reference state="/page/:pageId" pageId="Intro" attr:class="TopMenu__Link">
                <a href="{{ content.href }}">Intro</a>
             </Router.router:Reference>
          </li>
          <li class="TopMenu__Item">
-            <Router.router:Reference state="/RouterDemo/page/:pageId" pageId="SPRouting" attr:class="TopMenu__Link">
+            <Router.router:Reference state="/page/:pageId" pageId="SPRouting" attr:class="TopMenu__Link">
                <a href="{{ content.href }}">SPA Routing</a>
             </Router.router:Reference>
          </li>
          <li class="TopMenu__Item">
-            <Router.router:Reference state="/RouterDemo/page/:pageId" pageId="PopupRouter" attr:class="TopMenu__Link">
+            <Router.router:Reference state="/page/:pageId" pageId="PopupRouter" attr:class="TopMenu__Link">
                <a href="{{ content.href }}">Popup Routing</a>
             </Router.router:Reference>
          </li>
          <li class="TopMenu__Item">
-            <Router.router:Reference state="/RouterDemo/page/:pageId" pageId="ListRouter" attr:class="TopMenu__Link">
+            <Router.router:Reference state="/page/:pageId" pageId="ListRouter" attr:class="TopMenu__Link">
                <a href="{{ content.href }}">List Routing</a>
             </Router.router:Reference>
          </li>
-      </ul>
-      <ul class="TopMenu TopMenu__deprecated">
          <li class="TopMenu__Item">
-            <Router.router:Reference state="/RouterDemo/page/:pageId" pageId="Popups" attr:class="TopMenu__Link">
-               <a href="{{ content.href }}">Popups <sup attr:class="TopMenu__Link--deprecated">(dep.)</sup></a>
-            </Router.router:Reference>
-         </li>
-         <li class="TopMenu__Item">
-            <Router.router:Reference state="/RouterDemo/page/:pageId" pageId="PopupsPretty" attr:class="TopMenu__Link">
-               <a href="{{ content.href }}">Popups with Pretty URLs <sup attr:class="TopMenu__Link--deprecated">(dep.)</sup></a>
+            <Router.router:Reference state="/:docId" docId="123456" attr:class="TopMenu__Link">
+               <a href="{{ content.href }}">RegExp In Root</a>
             </Router.router:Reference>
          </li>
       </ul>
    </nav>
    <main class="ContentContainer">
       <RouterDemo.resources.PopupManager>
-         <Router.router:Route mask="page/:pageId">
-            <RouterDemo.resources.PageLoader />
+         <Router.router:Route mask="/page/:pageId">
+            <div>
+               <ws:if data="{{ content.pageId }}">
+                  <RouterDemo.resources.PageLoader />
+               </ws:if>
+            </div>
          </Router.router:Route>
       </RouterDemo.resources.PopupManager>
+
+      <Router.router:Route mask="/doc/:docId">
+         <div>
+            <ws:if data="{{ content.docId }}">
+               <h1>Демонстрация регулярного выражения в router.json</h1>
+               <p>
+                  ...<br/>
+                  "/regex:^([0-9]{6})$": "RouterDemo/$1"<br/>
+                  ...
+               </p>
+            </ws:if>
+         </div>
+      </Router.router:Route>
    </main>
 </div>
