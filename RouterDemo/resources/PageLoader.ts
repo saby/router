@@ -24,12 +24,6 @@ class PageLoader extends Control {
       });
    }
 
-   static getDefaultOptions(): any {
-      return {
-         pageId: 'Intro'
-      };
-   }
-
    async _beforeMount(cfg: any): Promise<void> {
       return this.changePage(cfg.pageId);
    }
