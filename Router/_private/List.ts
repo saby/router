@@ -6,7 +6,7 @@ import * as template from 'wml!Router/_private/List';
 
 import { calculateHref } from './MaskResolver';
 import { navigate } from './Controller';
-import { IHistoryState, ISyntheticClickEvent } from './Data';
+import { IHistoryState, ISyntheticMouseEvent } from './Data';
 
 import { Record } from 'Types/entity';
 
@@ -194,7 +194,7 @@ export default class ListRouter extends Control {
     public _options: IListRouterOptions;
     protected _template: TemplateFunction = template;
 
-    protected _itemClickHandler(event: Event, record: Record, clickEvent?: ISyntheticClickEvent): void {
+    protected _itemClickHandler(event: Event, record: Record, clickEvent?: ISyntheticMouseEvent): void {
         // If Reference already handled the event, do not process
         // it here
         if (clickEvent && clickEvent.routerReferenceNavigation) {
