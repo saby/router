@@ -51,7 +51,7 @@ export interface IRouterData {
     relativeUrl: string;
 }
 
-export interface ISyntheticClickEvent {
+export interface ISyntheticMouseEvent {
     preventDefault: () => void;
     nativeEvent: MouseEvent;
     routerReferenceNavigation?: boolean;
