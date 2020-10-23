@@ -7,7 +7,7 @@ import template = require('wml!Router/_private/Reference');
 import * as Controller from './Controller';
 import * as MaskResolver from './MaskResolver';
 import { getReverse } from './UrlRewriter';
-import { IHistoryState, ISyntheticClickEvent } from './Data';
+import { IHistoryState, ISyntheticMouseEvent } from './Data';
 import { IRegisterableComponent, getVisibleRelativeUrl } from 'Router/_private/Data';
 
 interface IReferenceOptions extends Record<string, unknown> {
@@ -219,7 +219,7 @@ class Reference extends Control implements IRegisterableComponent {
         }
     }
 
-    protected _clickHandler(e: ISyntheticClickEvent): void {
+    protected _mousedownHandler(e: ISyntheticMouseEvent): void {
         // Only respond to the 'main' button click (usually the left mouse
         // button) and ignore the rest
         if (e.nativeEvent.button === 0) {
@@ -227,7 +227,6 @@ class Reference extends Control implements IRegisterableComponent {
                 state: this._state,
                 href: this._href
             };
-
             e.preventDefault();
 
             // Tag the event as handled by Router.router:Reference, useful
@@ -243,7 +242,7 @@ class Reference extends Control implements IRegisterableComponent {
     }
 
     // TODO Костыль для https://online.sbis.ru/opendoc.html?guid=fc34605f-3642-4a94-acdf-d2804df07069
-    protected _mouseoverHandler(e: ISyntheticClickEvent): void {
+    protected _mouseoverHandler(e: ISyntheticMouseEvent): void {
         if (this._recalcUrlBeforeNavigate) {
             this._mousoverRecalcCalled = true;
             this._recalcHref(this._options, getVisibleRelativeUrl());
