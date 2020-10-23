@@ -121,7 +121,7 @@ function(Router, CM) {
          createdReference = createReference();
          createdReference.mounting
             .then(function() {
-               createdReference._clickHandler(eventObject);
+               createdReference._mousedownHandler(eventObject);
                return createReference.getUpdating();
             })
             .then(function() {
