@@ -250,4 +250,4 @@ class Reference extends Control implements IRegisterableComponent {
     }
 }
 
-export = Reference;
+export default Reference;

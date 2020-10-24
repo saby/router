@@ -10,8 +10,6 @@
  * @includes UrlRewriter Router/_private/UrlRewriter
  * @includes Reference Router/_private/Reference
  * @includes Route Router/_private/Route
- * @includes Popup Router/_private/Popup
- * @includes List Router/_private/List
  * @public
  * @author Санников К.А.
  */
@@ -25,8 +23,6 @@
  * @includes UrlRewriter Router/_private/UrlRewriter
  * @includes Reference Router/_private/Reference
  * @includes Route Router/_private/Route
- * @includes Popup Router/_private/Popup
- * @includes List Router/_private/List
  * @public
  * @author Санников К.А.
  */
@@ -37,13 +33,7 @@ import * as History from './_private/History';
 import * as MaskResolver from './_private/MaskResolver';
 import * as UrlRewriter from './_private/UrlRewriter';
 
-// @ts-ignore
-import * as Reference from './_private/Reference';
-// @ts-ignore
-import * as Route from './_private/Route';
-// @ts-ignore
-import * as Popup from './_private/Popup';
+import { default as Reference } from './_private/Reference';
+import { default as Route } from './_private/Route';
 
-import List from './_private/List';
-
-export { Controller, Data, History, MaskResolver, UrlRewriter, Reference, Route, Popup, List };
+export { Controller, Data, History, MaskResolver, UrlRewriter, Reference, Route };
