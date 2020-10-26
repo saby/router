@@ -241,6 +241,16 @@ class Reference extends Control implements IRegisterableComponent {
         }
     }
 
+    /**
+     * Обработка клика по ссылке
+     * просто отменим событие клика, т.к. переход на новый url происходит по mousedown
+     * @param e
+     * @protected
+     */
+    protected _clickHandler(e: ISyntheticMouseEvent): void {
+        e.preventDefault();
+    }
+
     // TODO Костыль для https://online.sbis.ru/opendoc.html?guid=fc34605f-3642-4a94-acdf-d2804df07069
     protected _mouseoverHandler(e: ISyntheticMouseEvent): void {
         if (this._recalcUrlBeforeNavigate) {
@@ -250,4 +260,4 @@ class Reference extends Control implements IRegisterableComponent {
     }
 }
 
-export = Reference;
+export default Reference;

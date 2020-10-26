@@ -320,4 +320,4 @@ class Route extends Control implements IRegisterableComponent{
     }
 }
 
-export = Route;
+export default Route;
