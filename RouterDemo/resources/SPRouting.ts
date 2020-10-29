@@ -1,12 +1,12 @@
-/// <amd-module name="RouterDemo/SPRouting" />
+/// <amd-module name="RouterDemo/resources/SPRouting" />
 /**
- * @author Санников К.А.
+ * @author Мустафин Л.И.
  */
 
 // @ts-ignore
 import * as Control from 'Core/Control';
 // @ts-ignore
-import template = require('wml!RouterDemo/SPRouting');
+import template = require('wml!RouterDemo/resources/SPRouting');
 
 /**
  * Пример SPA-перехода для переключения между вкладками {@link RouterDemo/resources/TabsBlock}

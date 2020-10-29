@@ -17,7 +17,7 @@ class PageLoader extends Control {
    private async changePage(newPage: String): Promise<void> {
       return new Promise((resolve, reject) => {
          // @ts-ignore
-         require(['RouterDemo/' + newPage], (newPageClass: Function) => {
+         require(['RouterDemo/resources/' + newPage], (newPageClass: Function) => {
             this.pageClassLoaded = newPageClass;
             resolve();
          });
