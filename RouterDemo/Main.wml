@@ -8,7 +8,17 @@
          </li>
          <li class="TopMenu__Item">
             <Router.router:Reference state="/page/:pageId" pageId="SPRouting" attr:class="TopMenu__Link">
-               <a href="{{ content.href }}">SPA Routing</a>
+               <a href="{{ content.href }}">SP Routing</a>
+            </Router.router:Reference>
+         </li>
+         <li class="TopMenu__Item">
+            <Router.router:Reference state="/page/:pageId?query=:queryId" pageId="Masks" queryId="query" attr:class="TopMenu__Link">
+               <a href="{{ content.href }}">Query Masks</a>
+            </Router.router:Reference>
+         </li>
+         <li class="TopMenu__Item">
+            <Router.router:Reference state="/page/:pageId#fragment=:fragmentId" pageId="Masks" fragmentId="fragment" attr:class="TopMenu__Link">
+               <a href="{{ content.href }}">Fragment Masks</a>
             </Router.router:Reference>
          </li>
          <li class="TopMenu__Item">
@@ -30,12 +40,7 @@
       <Router.router:Route mask="/doc/:docId">
          <div>
             <ws:if data="{{ content.docId }}">
-               <h1>Демонстрация регулярного выражения в router.json</h1>
-               <p>
-                  ...<br/>
-                  "/regex:^([0-9]{6})$": "RouterDemo/$1"<br/>
-                  ...
-               </p>
+               <RouterDemo.resources.RootRegExp />
             </ws:if>
          </div>
       </Router.router:Route>
