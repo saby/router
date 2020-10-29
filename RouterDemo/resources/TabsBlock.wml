@@ -1,7 +1,6 @@
 <div class="TabsBlock">
    <div class="TabsBlock__Tabs">
       <ul>
-         <!-- Display 3 Router.Reference components with different selectedTab value -->
          <li class="TabsBlock__Tabs--Item {{ _selectedTabId == 0 ? 'TabsBlock__Tabs--ItemActive' }}">
             <Router.router:Reference state="selectedTab/:selectedTab" selectedTab="0" attr:class="TabsBlock__Tabs--Link">
                <a href="{{ content.href }}">Tab 0</a>
@@ -20,15 +19,14 @@
       </ul>
    </div>
    <div class="TabsBlock__Content">
-      <!-- Based on the value of the _selectedTabId field, display different content -->
       <ws:if data="{{ _selectedTabId == 0 }}">
-         <p>This is a tab 0 that opens by default and whenever the URL has an incorrect <span class="CodeSpan">selectedTab</span> specified.</p>
+         <p>Эта вкладка будет открыта по умолчанию или если будет задано некорректное значение в параметре <span class="CodeSpan">selectedTab</span></p>
       </ws:if>
       <ws:else data="{{ _selectedTabId == 1}}">
-         <p>This is a tab 1.</p>
+         <p>Это содержимое вкладки "Tab 1".</p>
       </ws:else>
       <ws:else data="{{ _selectedTabId == 2}}">
-         <p>This is the last tab. Try clicking your browser's back and forward buttons to see single page routing in action.</p>
+         <p>Это последняя вкладка. Попробуйте нажать кнопки "Назад" и "Вперед" в браузере, чтобы увидеть маршрутизацию одной страницы в действии.</p>
       </ws:else>
    </div>
 </div>

@@ -1,19 +1,19 @@
-/// <amd-module name="RouterDemo/Intro" />
+/// <amd-module name="RouterDemo/resources/Intro" />
 /**
  * @author Мустафин Л.И.
  */
 
 // @ts-ignore
 import * as Control from 'Core/Control';
-import { Controller } from 'Router/router';
+import { Controller, Data } from 'Router/router';
 // @ts-ignore
-import template = require('wml!RouterDemo/Intro');
+import template = require('wml!RouterDemo/resources/Intro');
 
 /**
  * Заглавная страница демонстрации
  */
 
-class Intro extends Control {
+class Intro extends Control implements Data.IRegisterableComponent {
    _template: Function = template;
    protected _preventNavigateMessage: string = '';
    protected _preventNavigate: boolean = false;
@@ -37,6 +37,10 @@ class Intro extends Control {
       } else {
          this._preventNavigateMessage = 'SPA переходы заблокированы.';
       }
+   }
+
+   getInstanceId(): string {
+      return 'page/Intro';
    }
 }
 

@@ -8,7 +8,7 @@
          </li>
          <li class="TopMenu__Item">
             <Router.router:Reference state="/page/:pageId" pageId="SPRouting" attr:class="TopMenu__Link">
-               <a href="{{ content.href }}">SPA Routing</a>
+               <a href="{{ content.href }}">SP Routing</a>
             </Router.router:Reference>
          </li>
          <li class="TopMenu__Item">
