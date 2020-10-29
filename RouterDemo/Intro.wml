@@ -1,7 +1,23 @@
 <div>
-   <h1>saby-router Demos</h1>
-   <p>
-      Links in the top menu change the pageId parameter in the URL, which causes <span class="CodeSpan">Router.Route</span> to update and update the nested
-      <span class="CodeSpan">RouterDemo.PageLoader</span>, that changes the currently loaded page.
-   </p>
+   <div>
+      <h1>Демо-приложение saby/router</h1>
+      <p>
+         Ссылки в верхнем меню изменяют параметр <span class="CodeSpan">pageId</span> в URL-адресе.
+         В результате чего <span class="CodeSpan">Router.Route</span> обновляет вложенный <span class="CodeSpan">RouterDemo.PageLoader</span>,
+         который изменяет текущую загруженную страницу
+      </p>
+   </div>
+   <div>
+      <p>
+         <input type="checkbox"
+                name="preventNavigate"
+                id="preventNavigate"
+                checked="{{ _preventNavigate ? 'checked' }}"
+                on:change="_setPreventNavigate()"/>
+         <label for="preventNavigate">Запретить смену URL-адреса</label>
+      </p>
+      <p>
+         {{ _preventNavigateMessage }}
+      </p>
+   </div>
 </div>
