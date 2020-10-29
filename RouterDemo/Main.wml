@@ -30,12 +30,7 @@
       <Router.router:Route mask="/doc/:docId">
          <div>
             <ws:if data="{{ content.docId }}">
-               <h1>Демонстрация регулярного выражения в router.json</h1>
-               <p>
-                  ...<br/>
-                  "/regex:^([0-9]{6})$": "RouterDemo/$1"<br/>
-                  ...
-               </p>
+               <RouterDemo.resources.RootRegExp />
             </ws:if>
          </div>
       </Router.router:Route>
