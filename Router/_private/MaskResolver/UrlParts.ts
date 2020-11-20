@@ -69,6 +69,10 @@ export class UrlParts {
         return this.urlParts.query;
     }
 
+    clearQuery(): void {
+        this.urlParts.query = '';
+    }
+
     getFragment(): string {
         return this.urlParts.fragment;
     }

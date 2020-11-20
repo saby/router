@@ -2,15 +2,15 @@
 
 /**
  * Набор методов обеспечивающих работу с масками и параметрами URL
- * @module
- * @name Router/_private/MaskResolver
+ * @module Router/_private/MaskResolver
  * @author Мустафин Л.И.
+ * @public
  */
 
 import * as Data from './Data';
 import * as UrlRewriter from './UrlRewriter';
 import {UrlParamsGetter} from './MaskResolver/UrlParamsGetter';
-import {UrlModifier} from './MaskResolver/UrlModifier';
+import {UrlQueryModifier, UrlModifier} from './MaskResolver/UrlModifier';
 
 // TODO Remove this? используется в Route.Controller
 export function getAppNameByUrl(url: string): string {
@@ -44,11 +44,11 @@ export function getAppNameByUrl(url: string): string {
  */
 /**
  * Извлекает значения из текущего адреса по заданной маске.
- * @function
- * @name Router/_private/MaskResolver#calculateUrlParams
+ * @function Router/_private/MaskResolver#calculateUrlParams
  * @param {String} mask Параметризованная маска.
  * @param {String} [url] Адрес, из которого будут извлекаться значения. По умолчанию используется текущий URL.
  * @returns {Record<string, string>} Объект, в котором ключи - названия параметров, а значения - значения параметров.
+ * @public
  */
 export function calculateUrlParams(mask: string, url?: string): Record<string, string> {
     const getter: UrlParamsGetter = new UrlParamsGetter(mask, url || UrlRewriter.get(Data.getRelativeUrl()));
@@ -65,13 +65,28 @@ export function calculateUrlParams(mask: string, url?: string): Record<string, s
  */
 /**
  * Вычисляет новый URL-адрес, применяя к текущему маску и значения параметров для ее заполнения.
- * @function
- * @name Router/_private/MaskResolver#calculateHref
+ * @function Router/_private/MaskResolver#calculateHref
  * @param {String} mask Параметризованная маска.
  * @param {Record<string, string>} cfg Объект со значениями параметров, используемых в маске.
+ * @param currentUrl Url адрес, с которым будет работать метод. Необязательный параметр.
  * @returns {String} Вычисленный адрес.
+ * @public
  */
 export function calculateHref(mask: string, cfg: Record<string, unknown>, currentUrl?: string): string {
     const modifier: UrlModifier = new UrlModifier(mask, cfg, currentUrl || UrlRewriter.get(Data.getRelativeUrl()));
+    return modifier.modify();
+}
+
+/**
+ * Вычисляет новый URL-адрес, применяя к текущему/переданному url адресу значения из входного объекта.
+ * Модифицируется только query-часть url адреса.
+ * @function Router/_private/MaskResolver#calculateQueryHref
+ * @param {Record<string, string>} cfg Объект со значениями query параметров, которые необходимо добавить в url адрес.
+ * @param currentUrl Url адрес, с которым будет работать метод. Необязательный параметр.
+ * @returns {String} Вычисленный адрес.
+ * @public
+ */
+export function calculateQueryHref(cfg: Record<string, unknown>, currentUrl?: string): string {
+    const modifier: UrlQueryModifier = new UrlQueryModifier(cfg, currentUrl || UrlRewriter.get(Data.getRelativeUrl()));
     return modifier.modify();
 }

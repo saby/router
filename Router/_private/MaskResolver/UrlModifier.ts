@@ -2,7 +2,7 @@
  * Классы для перезаписи url адреса по заданной маске
  */
 
-import {MaskType, IMaskType, calculateMaskType} from './MaskType';
+import {calculateMaskType, IMaskType, MaskType} from './MaskType';
 import {encodeParam} from './Helpers';
 import {IParam, PathParams, QueryParams} from './UrlParamsGetter';
 import {IUrlParts, UrlParts} from './UrlParts';
@@ -58,6 +58,38 @@ export class UrlModifier {
                 }
             });
         }
+        return this.urlParts.join(newUrlParts);
+    }
+}
+
+/**
+ * Класс для работы с query-параметрами url адреса
+ * Используется в случаях, когда маска неизвестна и имеется объект с данными,
+ * который нужно добавить в url адрес как query параметры
+ */
+export class UrlQueryModifier {
+    private readonly mask: string;
+    private readonly cfg: Record<string, unknown>;
+    private readonly urlParts: UrlParts;
+    constructor(cfg: Record<string, unknown>, url: string) {
+        this.urlParts = new UrlParts(url);
+
+        // cfg.replace - значит нужно очистить текущие query-параметры и вставить, которые пришли на вход
+        if (cfg.replace) {
+            this.urlParts.clearQuery();
+            delete cfg.replace;
+        }
+        this.cfg = cfg;
+
+        this.mask = '?' + Object.keys(this.cfg)
+            .map((key) => `${key}=:${key}`)
+            .join('&');
+    }
+
+    modify(): string {
+        const newUrlParts: IUrlParts = {};
+        newUrlParts.query = QueryModifier.createQueryObject()
+            .modify(this.mask, this.cfg, this.urlParts.getQuery());
         return this.urlParts.join(newUrlParts);
     }
 }
@@ -206,14 +238,14 @@ class QueryModifier {
      * Создает instance класса для работы с query частью url-адреса
      */
     static createQueryObject(): QueryModifier {
-        return new QueryModifier(QueryParams.createQueryObject())
+        return new QueryModifier(QueryParams.createQueryObject());
     }
 
     /**
      * Создает instance класса для работы с query-fragment частью url-адреса
      */
     static createFragmentObject(): QueryModifier {
-        return new QueryModifier(QueryParams.createFragmentObject())
+        return new QueryModifier(QueryParams.createFragmentObject());
     }
 
     private readonly queryParams: QueryParams;

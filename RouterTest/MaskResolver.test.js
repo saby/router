@@ -570,6 +570,26 @@ function (Router, AppInit, EnvNode) {
             });
          });
       });
+
+      describe('#calculateQueryHref', function() {
+         it('add param', function () {
+            var newUrl = MaskResolver.calculateQueryHref({param: 'value'}, '/path');
+            assert.strictEqual(newUrl, '/path?param=value');
+         });
+         it('replace params', function () {
+            var newUrl = MaskResolver.calculateQueryHref({param: 'newvalue'}, '/path?param=value');
+            assert.strictEqual(newUrl, '/path?param=newvalue');
+         });
+         it('clear params', function () {
+            var newUrl = MaskResolver.calculateQueryHref({replace: true}, '/path?query=value&param=value1');
+            assert.strictEqual(newUrl, '/path');
+         });
+         it('clear and add params', function () {
+            var newUrl = MaskResolver.calculateQueryHref({param: 'newvalue', replace: true},
+                                                         '/path?query=value&param=value1');
+            assert.strictEqual(newUrl, '/path?param=newvalue');
+         });
+      });
    });
 });
 /* eslint-enable max-nested-callbacks */
