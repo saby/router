@@ -99,5 +99,12 @@ function(UrlPartsMod, UrlParamsGetterMod) {
             assert.strictEqual(url, '/path?param=value#fragment=value');
          });
       });
+      it('UrlParts.clearQuery', function() {
+         let urlParts = new UrlParts('/path?query=value#fragment');
+         urlParts.clearQuery();
+         assert.strictEqual(urlParts.getPath(), '/path');
+         assert.strictEqual(urlParts.getQuery(), '');
+         assert.strictEqual(urlParts.getFragment(), '#fragment');
+      });
    });
 });

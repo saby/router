@@ -2,9 +2,9 @@
 
 /**
  * Набор общих функций для управления в системе роутинга.
- * @module
- * @name Router/_private/Controller
+ * @module Router/_private/Controller
  * @author Санников К.А.
+ * @public
  */
 
 import { IoC } from 'Env/Env';
