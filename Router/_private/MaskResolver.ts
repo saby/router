@@ -2,7 +2,7 @@
 
 /**
  * Набор методов обеспечивающих работу с масками и параметрами URL
- * @module Router/_private/MaskResolver
+ * @module
  * @author Мустафин Л.И.
  * @public
  */
@@ -36,15 +36,16 @@ export function getAppNameByUrl(url: string): string {
 }
 
 /*
- * @function Router/_private/MaskResolver#calculateUrlParams
+ * @function
  * Extract values from the current URL based on the specified mask
  * @param {String} mask mask with parameter placeholders
  * @param {String} [url] URL to extract values from (current URL will be used by default)
  * @returns {Record<string, string>} the key-value store of extracted parameters
+ * @public
  */
 /**
  * Извлекает значения из текущего адреса по заданной маске.
- * @function Router/_private/MaskResolver#calculateUrlParams
+ * @function
  * @param {String} mask Параметризованная маска.
  * @param {String} [url] Адрес, из которого будут извлекаться значения. По умолчанию используется текущий URL.
  * @returns {Record<string, string>} Объект, в котором ключи - названия параметров, а значения - значения параметров.
@@ -56,16 +57,17 @@ export function calculateUrlParams(mask: string, url?: string): Record<string, s
 }
 
 /*
- * @function Router/_private/MaskResolver#calculateHref
+ * @function
  * Calculates a new URL based on the current URL, specified mask
  * and the hash map of parameters to fill the mask
  * @param {String} mask mask with parameter placeholders
  * @param {Record<string, string>} cfg key-value store with specified parameters
  * @returns {String} the new calculated URL
+ * @public
  */
 /**
  * Вычисляет новый URL-адрес, применяя к текущему маску и значения параметров для ее заполнения.
- * @function Router/_private/MaskResolver#calculateHref
+ * @function
  * @param {String} mask Параметризованная маска.
  * @param {Record<string, string>} cfg Объект со значениями параметров, используемых в маске.
  * @param currentUrl Url адрес, с которым будет работать метод. Необязательный параметр.
@@ -80,7 +82,7 @@ export function calculateHref(mask: string, cfg: Record<string, unknown>, curren
 /**
  * Вычисляет новый URL-адрес, применяя к текущему/переданному url адресу значения из входного объекта.
  * Модифицируется только query-часть url адреса.
- * @function Router/_private/MaskResolver#calculateQueryHref
+ * @function
  * @param {Record<string, string>} cfg Объект со значениями query параметров, которые необходимо добавить в url адрес.
  * @param currentUrl Url адрес, с которым будет работать метод. Необязательный параметр.
  * @returns {String} Вычисленный адрес.

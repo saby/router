@@ -15,13 +15,14 @@ interface IRouteOptions extends Record<string, unknown> {
     mask?: string;
 }
 
-const FILTERED_OPTIONS_NAMES: string[] = ['content', 'mask', 'theme', '_isSeparatedOptions', '_logicParent', 'readOnly'];
+const FILTERED_OPTIONS_NAMES: string[] =
+    ['content', 'mask', 'theme', '_isSeparatedOptions', '_logicParent', 'readOnly'];
 
 /*
  * A control that resolves the specified mask with the current URL
  * and passes the parameters to its content.
  *
- * @class Router/_private/Route
+ * @class
  * @extends Core/Control
  * @control
  * @public
@@ -39,13 +40,13 @@ const FILTERED_OPTIONS_NAMES: string[] = ['content', 'mask', 'theme', '_isSepara
  * </Router.router:Route>
  * </pre>
  *
- * @class Router/_private/Route
+ * @class
  * @extends Core/Control
  * @control
  * @public
  * @author Санников К.А.
  */
-class Route extends Control implements IRegisterableComponent{
+class Route extends Control implements IRegisterableComponent {
     /*
      * @typedef {Object} IHistoryState
      * @property {Number} id Numeric identifier of the current state.
@@ -192,7 +193,7 @@ class Route extends Control implements IRegisterableComponent{
 
     private _register(): void {
         Controller.addRoute(
-            <IRegisterableComponent>this,
+            this as IRegisterableComponent,
             async (newLoc, oldLoc) => {
                 return this._beforeApplyNewUrl(newLoc, oldLoc);
             },
@@ -211,15 +212,15 @@ class Route extends Control implements IRegisterableComponent{
         let result: boolean;
 
         const oldUrlOptions: Record<string, unknown> = this._urlOptions;
-        this._setUrlOptions(MaskResolver.calculateUrlParams((<{mask}>this._options).mask, newLoc.state));
+        this._setUrlOptions(MaskResolver.calculateUrlParams((this._options as IRouteOptions).mask, newLoc.state));
         const wasResolvedParam: boolean = this._hasResolvedParams(this._urlOptions);
         this._fillUrlOptionsFromCfg(this._options);
 
         if (wasResolvedParam && !this._isResolved) {
-            result = <boolean>this._notify('enter', [newLoc, oldLoc]);
+            result = (this._notify('enter', [newLoc, oldLoc]) as boolean);
             this._isResolved = true;
         } else if (!wasResolvedParam && this._isResolved) {
-            result = <boolean>this._notify('leave', [newLoc, oldLoc]);
+            result = (this._notify('leave', [newLoc, oldLoc]) as boolean);
             this._isResolved = false;
         } else {
             result = true;
@@ -262,7 +263,7 @@ class Route extends Control implements IRegisterableComponent{
 
     private _checkUrlResolved(): void {
         const urlOptions: Record<string, unknown> =
-            MaskResolver.calculateUrlParams((<{mask}>this._options).mask, Data.getRelativeUrl());
+            MaskResolver.calculateUrlParams((this._options as IRouteOptions).mask, Data.getRelativeUrl());
         const notUndefVal: boolean = this._hasResolvedParams(urlOptions);
         this._fillUrlOptionsFromCfg(this._options);
 
@@ -275,7 +276,7 @@ class Route extends Control implements IRegisterableComponent{
             this._isResolved = true;
             if (!prevState) {
                 prevState = {
-                    state: MaskResolver.calculateHref((<{mask}>this._options).mask, { clear: true })
+                    state: MaskResolver.calculateHref((this._options as IRouteOptions).mask, { clear: true })
                 };
             }
             this._notify('enter', [currentState, prevState]);

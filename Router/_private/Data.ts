@@ -3,8 +3,8 @@
 /**
  * Набор методов для хранения состояний истории роутера
  * @module
- * @name Router/_private/Data
  * @author Санников К.А.
+ * @public
  */
 
 import StoreManager, { ICoreInstance } from './StoreManager';
@@ -60,13 +60,11 @@ export interface ISyntheticMouseEvent {
 /*
  * Get the list of stored history states
  * @function
- * @name Router/_private/Data#getHistory
  * @returns {IHistoryState[]} list of history states
  */
 /**
  * Возвращает список состояний истории роутера.
  * @function
- * @name Router/_private/Data#getHistory
  * @returns {IHistoryState[]} Список состояний истории.
  */
 export function getHistory(): IHistoryState[] {
@@ -75,17 +73,13 @@ export function getHistory(): IHistoryState[] {
 
 /*
  * Replaces the list of stored history states.
- * @function
- * @name Router/_private/Data#setHistory
  * @param {IHistoryState[]} Value new list of history states.
- * @private
+ * @hidden
  */
 /**
  * Заменяет список состояний истории роутера
- * @function
- * @name Router/_private/Data#setHistory
  * @param {IHistoryState[]} value Новый список состояний истории.
- * @private
+ * @hidden
  */
 export function setHistory(value: IHistoryState[]): void {
     _setField('history', value);
@@ -94,13 +88,11 @@ export function setHistory(value: IHistoryState[]): void {
 /*
  * Get the index of the history state that is currently active
  * @function
- * @name Router/_private/Data#getHistoryPosition
  * @returns {Number} index of the active history state
  */
 /**
  * Возвращает индекс активного в данный момент состояния истории
  * @function
- * @name Router/_private/Data#getHistoryPosition
  * @returns {Number} индекс активного состояния истории
  */
 export function getHistoryPosition(): number {
@@ -108,17 +100,14 @@ export function getHistoryPosition(): number {
 }
 
 /*
- * @function Router/_private/Data#setHistoryPosition
  * Activates the history state with the specified index
  * @param {Number} value index of the state to activate
- * @private
+ * @hidden
  */
 /**
  * Активирует состояние истории с заданным индексом
- * @function
- * @name Router/_private/Data#setHistoryPosition
  * @param {Number} value индекс состояния, которое должно быть активировано
- * @private
+ * @hidden
  */
 export function setHistoryPosition(value: number): void {
     _setField('historyPosition', value);
@@ -130,9 +119,8 @@ export function setHistoryPosition(value: number): void {
  * @returns {String} "actual" URL
  */
 /**
-* Возвращает текущее значение действительного URL, с которым работает роутинг.
+ * Возвращает текущее значение действительного URL, с которым работает роутинг.
  * @function
- * @name Router/_private/Data#getRelativeUrl
  * @returns {String} действительный URL
  */
 export function getRelativeUrl(): string {
@@ -140,31 +128,27 @@ export function getRelativeUrl(): string {
 }
 
 /*
- * @function Router/_private/Data#setRelativeUrl
  * Sets the value of "actual" URL
  * @param {String} value url to set
- * @private
+ * @hidden
  */
 /**
  * Устанавливает значение текущего действительного URL.
- * @function
- * @name Router/_private/Data#setRelativeUrl
  * @param {String} value значение для установки
- * @private
+ * @hidden
  */
 export function setRelativeUrl(value: string): void {
     _setField('relativeUrl', value);
 }
 
 /*
- * @function Router/_private/Data#getVisibleRelativeUrl
+ * @function
  * Get the current value of "pretty" URL that is displayed to the user
  * @returns {String} pretty url
  */
 /**
  * Получить текущее значение "красивого" URL, отображаемого пользователю.
  * @function
- * @name Router/_private/Data#getVisibleRelativeUrl
  * @returns {String} Значение красивого URL.
  */
 export function getVisibleRelativeUrl(): string {
@@ -172,17 +156,14 @@ export function getVisibleRelativeUrl(): string {
 }
 
 /*
- * @function Router/_private/Data#getRegisteredRoutes
  * Get the Record of all Routes currently registered by Router
  * @returns {Object}
- * @private
+ * @hidden
  */
 /**
  * Возвращает Record всех Route'ов зарегистрированных в системе роутинга на данный момент.
- * @function
- * @name Router/_private/Data#getRegisteredRoutes
  * @returns {Object}
- * @private
+ * @hidden
  */
 export function getRegisteredRoutes(): Record<string, IRegisteredRoute> {
     return _getField('registeredRoutes');
@@ -190,17 +171,13 @@ export function getRegisteredRoutes(): Record<string, IRegisteredRoute> {
 
 /*
  * Get the Record of all References currently registered by Router
- * @function
- * @name Router/_private/Data#getRegisteredReferences
  * @returns {Object}
- * @private
+ * @hidden
  */
 /**
  * Возвращает Record всех Reference'ов зарегистрированных в системе роутинга на данный момент.
- * @function
- * @name Router/_private/Data#getRegisteredReferences
  * @returns {Object}
- * @private
+ * @hidden
  */
 export function getRegisteredReferences(): Record<string, IRegisteredReference> {
     return _getField('registeredReferences');
@@ -208,17 +185,13 @@ export function getRegisteredReferences(): Record<string, IRegisteredReference> 
 
 /*
  * Get the instance of Application/Core if it exists on the page
- * @function
- * @name Router/_private/Data#getCoreInstance
  * @returns {Controls/Application/Core}
- * @private
+ * @hidden
  */
 /**
  * Возвращает экземпляр Application/Core, если он существует на странице.
- * @function
- * @name Router/_private/Data#getCoreInstance
  * @returns {Controls/Application/Core}
- * @private
+ * @hidden
  */
 export function getCoreInstance(): ICoreInstance {
     return StoreManager.getCoreInstance();

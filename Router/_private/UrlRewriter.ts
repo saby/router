@@ -4,7 +4,6 @@
  * Набор методов для работы с router.json, в котором можно задать соответствие
  * между текущим путем и его короткой записью - "красивым" URL
  * @module
- * @name Router/_private/MaskResolver
  * @author Санников К.А.
  */
 
@@ -36,32 +35,32 @@ import replacementRoutes = require('router');
 _prepareRoutes(replacementRoutes as unknown as Record<string, string> || {});
 
 /*
- * @function Router/_private/UrlRewriter#get
+ * @function
  * Rewrites the given URL by replacing its prefix based on the configuration
  * in the router.json configuration file
  * @param {String} originalUrl URL to rewrite
- * @returns {Strng} rewritten URL
+ * @returns {String} rewritten URL
  */
 /**
- * @function Router/_private/UrlRewriter#get
+ * @function
  * Модифицирует переданный URL, заменяя его префикс на основе конфигурации, указанной
  * в файле router.json
  * @param {String} originalUrl URL для модификации
- * @returns {Strng} модифицированный URL
+ * @returns {String} модифицированный URL
  */
 export function get(originalUrl: string): string {
     return getBestMatchFromRouteTree(originalUrl, routeTree);
 }
 
 /*
- * @function Router/_private/UrlRewriter#getReverse
+ * @function
  * De-rewrites the given URL by turning the replaced prefix back into its
  * original form, based on the router.json configuration
  * @param {String} rewrittenUrl url to de-rewrite
  * @returns {String} original url
  */
 /**
- * @function Router/_private/UrlRewriter#getReverse
+ * @function
  * Отменяет модификацию URL-адреса, возвращая его в исходный вид,
  * заменяя префикс на исходный, на основе конфигурации в файле
  * router.json
@@ -183,18 +182,16 @@ function _getPath(url: string): string {
 }
 
 /*
- * @function Router/_private/UrlRewriter#_prepareRoutes
  * Turns the router.json config file into the routing tree. Exported
  * for tests
  * @param {Object} json rewriter config file
- * @private
+ * @hidden
  */
 /**
- * @function Router/_private/UrlRewriter#_prepareRoutes
  * Превращает конфигурационный файл router.json в дерево роутинга.
  * Экспортируется для тестов
  * @param {Object} json объект с конфигурацией замен адресов
- * @private
+ * @hidden
  */
 export function _prepareRoutes(json: Record<string, string>): void {
     const entries: RouteEntriesArray = getEntries(json);
