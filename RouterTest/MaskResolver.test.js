@@ -13,7 +13,9 @@ function (Router, AppInit, EnvNode) {
    if (typeof window === 'undefined') {
       env = EnvNode.default;
    }
-   AppInit.default({}, env);
+   if(!AppInit.isInit()) {
+      AppInit.default({}, env);
+   }
 
    // переопределим router.js в тестах, т.к. он подтянется из корня, а там из RouterDemo
    Router.UrlRewriter._prepareRoutes({});
