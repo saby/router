@@ -21,7 +21,7 @@ interface IReferenceOptions extends Record<string, unknown> {
  * A control that changes the URL on user click without reloading
  * the page, performs single page navigation.
  *
- * @class Router/_private/Reference
+ * @class
  * @extends Core/Control
  * @control
  * @public
@@ -49,7 +49,7 @@ interface IReferenceOptions extends Record<string, unknown> {
  * Текущий адрес: "/book/destination/0/day/Tue?price=mid" -> После перехода: "/book/destination/Italy/day/Tue?price=mid"
  * Текущий адрес: "/book/all" -> После перехода: "/book/all/destination/Italy"
  *
- * @class Router/_private/Reference
+ * @class
  * @extends Core/Control
  * @control
  * @public
