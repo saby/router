@@ -1,7 +1,7 @@
 /// <amd-module name="RouterDemo/resources/PageLoader" />
 
 // @ts-ignore
-import * as Control from 'Core/Control';
+import {Control} from 'UI/Base';
 // @ts-ignore
 import template = require('wml!RouterDemo/resources/PageLoader');
 

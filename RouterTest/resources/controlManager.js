@@ -1,4 +1,4 @@
-define('RouterTest/resources/controlManager', ['Core/Control'], function(CoreControl) {
+define('RouterTest/resources/controlManager', ['UI/Base'], function(Base) {
    return {
       createControl: function(ControlClass, options) {
          function overlayLiveCycle(control, functionName){
@@ -28,7 +28,7 @@ define('RouterTest/resources/controlManager', ['Core/Control'], function(CoreCon
          var element = document.createElement('div');
          element.className = 'router-tests-control';
 
-         var control = CoreControl.createControl(ControlClass, Object.assign({}, options), element);
+         var control = Base.Control.createControl(ControlClass, Object.assign({}, options), element);
          control._$testElement = element;
          control.mounting = overlayLiveCycle(control,'_afterMount');
          control.getUpdating = (function(){

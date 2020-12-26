@@ -22,7 +22,7 @@ interface IReferenceOptions extends Record<string, unknown> {
  * the page, performs single page navigation.
  *
  * @class
- * @extends Core/Control
+ * @extends UI/Base:Control
  * @control
  * @public
  */
@@ -50,7 +50,7 @@ interface IReferenceOptions extends Record<string, unknown> {
  * Текущий адрес: "/book/all" -> После перехода: "/book/all/destination/Italy"
  *
  * @class
- * @extends Core/Control
+ * @extends UI/Base:Control
  * @control
  * @public
  * @author Санников К.А.

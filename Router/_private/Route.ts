@@ -23,7 +23,7 @@ const FILTERED_OPTIONS_NAMES: string[] =
  * and passes the parameters to its content.
  *
  * @class
- * @extends Core/Control
+ * @extends UI/Base:Control
  * @control
  * @public
  */
@@ -41,7 +41,7 @@ const FILTERED_OPTIONS_NAMES: string[] =
  * </pre>
  *
  * @class
- * @extends Core/Control
+ * @extends UI/Base:Control
  * @control
  * @public
  * @author Санников К.А.

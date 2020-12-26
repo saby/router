@@ -4,7 +4,7 @@
  */
 
 // @ts-ignore
-import * as Control from 'Core/Control';
+import {Control} from 'UI/Base';
 import { Controller, Data } from 'Router/router';
 // @ts-ignore
 import template = require('wml!RouterDemo/resources/Intro');
