@@ -4,7 +4,7 @@
  */
 
 // @ts-ignore
-import * as Control from 'Core/Control';
+import {Control, TemplateFunction} from 'UI/Base';
 // @ts-ignore
 import template = require('wml!RouterDemo/resources/SPRouting');
 
@@ -13,7 +13,7 @@ import template = require('wml!RouterDemo/resources/SPRouting');
  * с использованием {@link Router.Route} и {@link Router.Reference}
  */
 class SPRouting extends Control {
-   _template: Function = template;
+   protected _template: TemplateFunction = template;
 }
 
 export = SPRouting;

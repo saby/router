@@ -4,7 +4,7 @@
  */
 
 // @ts-ignore
-import * as Control from 'Core/Control';
+import {Control, TemplateFunction} from 'UI/Base';
 import { Controller, Data } from 'Router/router';
 // @ts-ignore
 import template = require('wml!RouterDemo/resources/Intro');
@@ -14,7 +14,7 @@ import template = require('wml!RouterDemo/resources/Intro');
  */
 
 class Intro extends Control implements Data.IRegisterableComponent {
-   _template: Function = template;
+   protected _template: TemplateFunction = template;
    protected _preventNavigateMessage: string = '';
    protected _preventNavigate: boolean = false;
 
