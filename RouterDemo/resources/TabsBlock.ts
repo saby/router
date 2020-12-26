@@ -1,7 +1,7 @@
 /// <amd-module name="RouterDemo/resources/TabsBlock" />
 
 // @ts-ignore
-import {Control} from 'UI/Base';
+import {Control, TemplateFunction} from 'UI/Base';
 // @ts-ignore
 import template = require('wml!RouterDemo/resources/TabsBlock');
 
@@ -16,7 +16,7 @@ interface ITabsBlockOptions {
 }
 
 class TabsBlock extends Control {
-   _template: Function = template;
+   protected _template: TemplateFunction = template;
 
    private _tabCount: number = 3;
    protected _selectedTabId: number = 0;

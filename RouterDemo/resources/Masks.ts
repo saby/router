@@ -4,7 +4,7 @@
  */
 
 // @ts-ignore
-import {Control} from 'UI/Base';
+import {Control, TemplateFunction} from 'UI/Base';
 // @ts-ignore
 import template = require('wml!RouterDemo/resources/Masks');
 
@@ -13,7 +13,7 @@ import template = require('wml!RouterDemo/resources/Masks');
  */
 
 class Masks extends Control {
-   _template: Function = template;
+   protected _template: TemplateFunction = template;
 }
 
 export = Masks;
