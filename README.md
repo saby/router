@@ -194,3 +194,4 @@ If you are using `Reference` to change the history state, it calculates a new UR
 To calculate a new URL based on the mask and parameters (like the `Reference` does), use `calculateHref(mask, { ...parameters })` function. It supports the same [the same mask types](#mask-types) like `Route` and `Reference` do. The `parameters` object should contain the values for the parameter placeholders used in the mask. The function returns a calculated new URL that can be then passed to [`Controller.navigate` method](#using-controller-to-change-urls-in-tsjs) to change the current state.
 
 To get values of the parameters from the current URL based on the mask (like the `Route` does), use the `calculateUrlParams(mask)` function. It returns a hash with the values of the parameter values extracted from the current state URL based on the mask specified.
+
