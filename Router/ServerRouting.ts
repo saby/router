@@ -94,8 +94,11 @@ function renderPageSource(options: IRenderOptions, request: IServerRoutingReques
         });
     }
 
-    return Promise.resolve({
-        status: PageSourceStatus.OK,
-        html: BaseRoute(Object.assign({application: moduleName}, options))
-    });
+    return Promise.resolve(BaseRoute(Object.assign({application: moduleName}, options)))
+        .then((html) => {
+            return({
+                status: PageSourceStatus.OK,
+                html
+            });
+        });
 }
