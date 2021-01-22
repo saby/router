@@ -1,33 +1,63 @@
 /* global assert */
-define(['RouterTest/resources/serverRoutingVerifier', 'Router/ServerRouting'], /**
- * @param { import('./resources/serverRoutingVerifier') } srVerifier
+define(['Router/ServerRouting'], /**
  * @param { import('../Router/ServerRouting') } ServerRouting
  */
-function(srVerifier, ServerRouting) {
+function(ServerRouting) {
+   function createFakeRequest(path) {
+      return {
+         path: path,
+         originalUrl: 'https://my-site.ru' + path
+      };
+   }
+
    describe('Router/ServerRouting', function() {
-      beforeEach(function() {
-         ServerRouting.setBaseTemplate('wml!Controls/Application/Route');
+      before(function() {
+         if (typeof window !== 'undefined') {
+            this.skip();
+         }
       });
-
       it('resolves application name by url correctly', function() {
-         var resolvedApp = srVerifier.getResolvedApp('/register/?from=landing');
-
-         assert.strictEqual(resolvedApp, 'register/Index');
+         var fakeRequest = createFakeRequest('/register/?from=landing');
+         assert.strictEqual(ServerRouting.getAppName(fakeRequest), 'register/Index');
       });
 
-      it('calls response.render to render the application provided', function() {
-         var rendered = srVerifier.getRenderedTemplateAndApp('register/Index');
-
-         assert.strictEqual(rendered.template, 'wml!Controls/Application/Route');
-         assert.strictEqual(rendered.app, 'register/Index');
+      it('rendering the provided application -> not existent module/template', function(done) {
+         var fakeRequest = createFakeRequest('/register/?from=landing');
+         var successHandlerCalled = false;
+         var notFoundHandlerCalled = false;
+         var onSuccessHandler = function(html) {
+            successHandlerCalled = true;
+         };
+         var onNotFoundHandler = function(err) {
+            notFoundHandlerCalled = true;
+         };
+         ServerRouting.getPageSource({}, fakeRequest, onSuccessHandler, onNotFoundHandler)
+            .then(function(pageSource) {
+               assert.isFalse(successHandlerCalled, 'Шаблон страницы не должен был построиться, ' +
+                   'т.к. модуль register/Index не существует');
+               assert.isTrue(notFoundHandlerCalled);
+               assert.hasAllKeys(pageSource, ['status', 'error']);
+            })
+            .then(done, done);
       });
 
-      it('calls ServerRouting.setBaseTemplate to change application entry point', function() {
-         ServerRouting.setBaseTemplate('wml!MyWml');
-         var rendered = srVerifier.getRenderedTemplateAndApp('register/Index');
-
-         assert.strictEqual(rendered.template, 'wml!MyWml');
-         assert.strictEqual(rendered.app, 'register/Index');
+      it('rendering the provided application -> successfully generate page', function(done) {
+         var fakeRequest = createFakeRequest('/RouterTest/?from=landing');
+         var successHandlerCalled = false;
+         var notFoundHandlerCalled = false;
+         var onSuccessHandler = function(html) {
+            successHandlerCalled = true;
+         };
+         var onNotFoundHandler = function(err) {
+            notFoundHandlerCalled = true;
+         };
+         ServerRouting.getPageSource({}, fakeRequest, onSuccessHandler, onNotFoundHandler)
+            .then(function(pageSource) {
+               assert.isTrue(successHandlerCalled, 'Шаблон страницы должен был построиться');
+               assert.isFalse(notFoundHandlerCalled);
+               assert.hasAllKeys(pageSource, ['status', 'html']);
+            })
+            .then(done, done);
       });
    });
 });
