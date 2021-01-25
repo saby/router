@@ -22,6 +22,10 @@
       "prepare": "npm run update-cli-store && npm run build:typescript",
       "update-cli-store": "wasaby-cli --tasks=initStore"
    },
+   "wasaby-cli": {
+      "port": 777,
+      "rootModule": "RouterDemo"
+   },
    "dependencies": {},
    "devDependencies": {
       "@tensor-corp/eslint-config": "^2.0.3",

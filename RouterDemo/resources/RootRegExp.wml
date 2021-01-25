@@ -13,12 +13,12 @@
    </p>
    <ul>
       <li>
-         <Router.router:Reference state="/:docId" docId="987654">
+         <Router.router:Reference state="/RouterDemo/:docId" docId="987654">
             <a href="{{ content.href }}">docId=987654</a>
          </Router.router:Reference>
       </li>
       <li>
-         <Router.router:Reference state="/:docId" docId="654321">
+         <Router.router:Reference state="/RouterDemo/:docId" docId="654321">
             <a href="{{ content.href }}">docId=654321</a>
          </Router.router:Reference>
       </li>
