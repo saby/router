@@ -44,4 +44,4 @@ class Intro extends Control implements Data.IRegisterableComponent {
    }
 }
 
-export = Intro;
+export default Intro;

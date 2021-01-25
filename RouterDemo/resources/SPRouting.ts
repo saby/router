@@ -16,4 +16,4 @@ class SPRouting extends Control {
    protected _template: TemplateFunction = template;
 }
 
-export = SPRouting;
+export default SPRouting;

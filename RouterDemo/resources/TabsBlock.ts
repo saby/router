@@ -43,4 +43,4 @@ class TabsBlock extends Control {
    }
 }
 
-export = TabsBlock;
+export default TabsBlock;

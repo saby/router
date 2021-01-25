@@ -22,4 +22,4 @@ class RootRegExp extends Control {
 
 }
 
-export = RootRegExp;
+export default RootRegExp;
