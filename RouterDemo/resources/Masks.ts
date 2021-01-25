@@ -16,4 +16,4 @@ class Masks extends Control {
    protected _template: TemplateFunction = template;
 }
 
-export = Masks;
+export default Masks;
