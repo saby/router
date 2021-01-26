@@ -7,6 +7,7 @@
 import { ModulesManager } from 'RequireJsLoader/conduct';
 import { MaskResolver } from 'Router/router';
 import { BaseRoute } from 'UI/Base';
+import { Body as AppBody } from 'Application/Page';
 
 interface IServerRoutingRequest {
     path: string;
@@ -108,9 +109,11 @@ function renderPageSource(options: IRenderOptions, request: IServerRoutingReques
 
     return Promise.resolve(BaseRoute(Object.assign({application: moduleName}, options)))
         .then((html) => {
+            //FIXME: Костылямбрий, который будет жить, пока не закончится переход на построение от шаблона #bootsrap
+            const classes = AppBody.getInstance().getClassString() || '';
             return({
                 status: PageSourceStatus.OK,
-                html
+                html: html.replace('__htmlBodyClasses', classes).replace('__htmlBodyClasses', classes)
             });
         });
 }
