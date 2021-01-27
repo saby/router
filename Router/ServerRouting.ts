@@ -50,18 +50,6 @@ export function getAppName(request: IServerRoutingRequest): string {
     return MaskResolver.getAppNameByUrl(request.path);
 }
 
-interface IServerRoutingResponse {
-    render: (template: string, appOptions: Record<string, unknown>) => void;
-}
-
-const _baseTemplate: string = 'wml!Controls/Application/Route';
-
-export function renderApp(request: IServerRoutingRequest, response: IServerRoutingResponse, appName: string): void {
-    request.compatible = false;
-    response.render(_baseTemplate, {
-        application: appName
-    });
-}
 /**
  * Получение html-кода страницы с вызовом обработчиков
  * @param options
