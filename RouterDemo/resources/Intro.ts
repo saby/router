@@ -25,7 +25,7 @@ class Intro extends Control implements Data.IRegisterableComponent {
                reject();
                return;
             }
-            resolve();
+            resolve(true);
          });
       });
    }

@@ -5,8 +5,8 @@
 *.log
 /node_modules
 /application
-/builder-ui
-/builderCfg.json
+/build-ui
+/builderConfig.json
 /package-lock.json
 /tsconfig.json
 /tslib.js
