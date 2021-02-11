@@ -7,6 +7,7 @@
  * @public
  */
 
+import { getConfig } from 'Application/Env';
 import StoreManager, { ICoreInstance } from './StoreManager';
 
 import * as UrlRewriter from './UrlRewriter';
@@ -111,6 +112,25 @@ export function getHistoryPosition(): number {
  */
 export function setHistoryPosition(value: number): void {
     _setField('historyPosition', value);
+}
+
+/**
+ * Добавляет в начало переданного/текущего url-адреса префикс сервиса
+ * @param url
+ */
+export function getRelativeUrlWithService(url?: string): string {
+    let href: string = url || UrlRewriter.get(getRelativeUrl());
+    let appRoot: string = getConfig('appRoot');
+    if (appRoot && appRoot !== '/') {
+        if (href.startsWith('/')) {
+            href = href.substr(1);
+        }
+        if (!appRoot.endsWith('/')) {
+            appRoot += '/';
+        }
+        return appRoot + href;
+    }
+    return href;
 }
 
 /*
