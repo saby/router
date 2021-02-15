@@ -213,7 +213,7 @@ class Reference extends Control implements IRegisterableComponent {
     private _recalcHref(cfg: IReferenceOptions, url?: string): void {
         this._state = MaskResolver.calculateHref(cfg.state, cfg, url);
         if (cfg.href) {
-            this._href = MaskResolver.calculateHref(cfg.href, cfg, url);
+            this._href = cfg.href;
         } else {
             this._href = getReverse(this._state);
         }
