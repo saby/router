@@ -1,0 +1,5 @@
+<RouterDemoNew.PageController
+    scope="{{_options}}"
+    wsRoot="{{ _options.wsRoot }}"
+    resourceRoot="{{ _options.resourceRoot }}"
+    buildnumber="{{ _options.buildnumber }}"/>
