@@ -1,0 +1,29 @@
+<SbisEnvUI.Bootstrap
+    scope="{{_options}}">
+    <ws:content>
+        <nav>
+            <ul class="TopMenu">
+                <li class="TopMenu__Item">
+                    <Router.router:Reference state="/page/:pageId" pageId="UserModule1">
+                        <a href="{{ content.href }}">UserModule1</a>
+                    </Router.router:Reference>
+                </li>
+                <li class="TopMenu__Item">
+                    <Router.router:Reference state="/page/:pageId" pageId="UserModule2">
+                        <a href="{{ content.href }}">UserModule2</a>
+                    </Router.router:Reference>
+                </li>
+            </ul>
+        </nav>
+        <br/>
+        <Router.router:Route mask="/page/:pageId" on:change="onUrlChange()">
+            <Controls.Container.Async templateName="{{templateName}}">
+                <ws:partial
+                        template="{{content.resolvedTemplate}}"
+                        scope="{{templateOptions}}"
+                />
+            </Controls.Container.Async>
+        </Router.router:Route>
+    </ws:content>
+</SbisEnvUI.Bootstrap>
+

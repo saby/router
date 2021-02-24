@@ -1,0 +1,8 @@
+<div>
+    <p>
+        UserModule2
+    </p>
+    <p>
+        data: {{ _options.data }}
+    </p>
+</div>
