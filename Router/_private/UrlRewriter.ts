@@ -7,8 +7,6 @@
  * @author Санников К.А.
  */
 
-import { getConfig } from 'Application/Env';
-
 const httpRE: RegExp = /^http[s]?:\/\//;
 const multiSlash: RegExp = /\/{2,}/g;
 const startSlash: RegExp = /^\//;
@@ -51,12 +49,7 @@ _prepareRoutes(replacementRoutes as unknown as Record<string, string> || {});
  * @returns {String} модифицированный URL
  */
 export function get(originalUrl: string): string {
-    const appRoot: string = getConfig('appRoot') || '/';
-    let url: string = originalUrl;
-    if (appRoot && appRoot !== '/' && originalUrl.indexOf(appRoot) === 0) {
-        url = originalUrl.replace(appRoot, '');
-    }
-    return getBestMatchFromRouteTree(url, routeTree);
+    return getBestMatchFromRouteTree(originalUrl, routeTree);
 }
 
 /*
