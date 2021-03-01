@@ -27,6 +27,11 @@ interface IPageSource {
     error?: Error;
 }
 
+interface IPageData {
+    templateName?: string;
+    templateOptions?: any;
+}
+
 interface IRenderOptions {
     appRoot: string;
     wsRoot: string;
@@ -39,6 +44,11 @@ interface IRenderOptions {
     product?: string;
     pageName?: string;
     RUMEnabled?: boolean;
+    _options?: IPageData;
+}
+
+interface IModuleToRender {
+    getDataToRender: Function;
 }
 
 /**
@@ -84,9 +94,10 @@ function renderPageSource(options: IRenderOptions, request: IServerRoutingReques
 
     const modulesManager = new ModulesManager();
     const moduleName = getAppName(request);
+    let module;
 
     try {
-        modulesManager.loadSync(moduleName);
+        module = modulesManager.loadSync(moduleName);
     } catch (error) {
         modulesManager.unloadSync(moduleName);
         return Promise.resolve({
@@ -95,7 +106,18 @@ function renderPageSource(options: IRenderOptions, request: IServerRoutingReques
         });
     }
 
-    return Promise.resolve(BaseRoute(Object.assign({application: moduleName}, options)))
+    return Promise.resolve(getDataToRender(module, request))
+        .then((pageConfig: IPageData) => {
+            if (pageConfig) {
+                if (options._options) {
+                    options._options.templateName = pageConfig.templateName;
+                    options._options.templateOptions = pageConfig.templateOptions;
+                } else {
+                    options._options = pageConfig;
+                }
+            }
+            return BaseRoute(Object.assign({application: moduleName}, options));
+        })
         .then((html) => {
             //FIXME: Костылямбрий, который будет жить, пока не закончится переход на построение от шаблона #bootsrap
             const classes = AppBody.getInstance().getClassString() || '';
@@ -104,4 +126,16 @@ function renderPageSource(options: IRenderOptions, request: IServerRoutingReques
                 html: html.replace('__htmlBodyClasses', classes).replace('__htmlBodyClasses', classes)
             });
         });
+}
+
+/**
+ * предзагрузка данных для страницы
+ * @param module
+ * @param request
+ */
+function getDataToRender(module: IModuleToRender, request: IServerRoutingRequest): Promise<IPageData> {
+    if (typeof module.getDataToRender === 'function') {
+        return module.getDataToRender(request.path);
+    }
+    return Promise.resolve({});
 }
