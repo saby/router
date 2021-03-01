@@ -1,11 +1,6 @@
 import {Control, TemplateFunction} from 'UI/Base';
+import {getPageConfigSPA, IOptions} from './DataGetter';
 import * as template from 'wml!RouterDemoNew/PageController';
-import {MaskResolver} from 'Router/router';
-
-interface IOptions {
-   templateName: string;
-   templateOptions: object;
-}
 
 export default class PageController extends Control {
    protected _template: TemplateFunction = template;
@@ -29,19 +24,4 @@ export default class PageController extends Control {
       this.templateName = cfg.templateName;
       this.templateOptions = cfg.templateOptions;
    }
-}
-
-function getPageConfigSPA(pageId: string): IOptions {
-   switch (pageId) {
-      case 'UserModule2':
-         return {templateName: 'RouterDemoNew/UserModules/UserModule2', templateOptions: {data: 'UserModule2 data'}};
-      case 'UserModule1':
-      default:
-         return {templateName: 'RouterDemoNew/UserModules/UserModule1', templateOptions: {data: 'UserModule1 data'}};
-   }
-}
-
-export async function getPageConfig(url: string): Promise<IOptions> {
-   const data = MaskResolver.calculateUrlParams('/page/:pageId', url);
-   return getPageConfigSPA(data.pageId);
 }
