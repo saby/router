@@ -109,12 +109,13 @@ function renderPageSource(options: IRenderOptions, request: IServerRoutingReques
     return Promise.resolve(getDataToRender(module, request))
         .then((pageConfig: IPageData) => {
             if (pageConfig) {
-                if (options._options) {
-                    options._options.templateName = pageConfig.templateName;
-                    options._options.templateOptions = pageConfig.templateOptions;
-                } else {
-                    options._options = pageConfig;
-                }
+                // if (options._options) {
+                //     options._options.templateName = pageConfig.templateName;
+                //     options._options.templateOptions = pageConfig.templateOptions;
+                // } else {
+                //     options._options = pageConfig;
+                // }
+                options._options = Object.assign({}, options._options || {}, pageConfig);
             }
             return BaseRoute(Object.assign({application: moduleName}, options));
         })
