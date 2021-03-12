@@ -27,15 +27,6 @@ interface IPageSource {
     error?: Error;
 }
 
-/**
- * Формат объекта, который должен вернуть метод предварительной загрузки данных для приложения
- * @interface
- */
-export interface IPageData {
-    templateName?: string;
-    templateOptions?: any;
-}
-
 interface IRenderOptions {
     appRoot: string;
     wsRoot: string;
@@ -48,11 +39,12 @@ interface IRenderOptions {
     product?: string;
     pageName?: string;
     RUMEnabled?: boolean;
-    _options?: IPageData;
+    _options?: object;
+    application?: string;
 }
 
 interface IModuleToRender {
-    getDataToRender: Function | false;
+    getDataToRender: (url: string) => Promise<object | false>;
 }
 
 /**
@@ -110,30 +102,21 @@ function renderPageSource(options: IRenderOptions, request: IServerRoutingReques
         });
     }
 
-    const getDataPromise: Promise<IPageData> | false = getDataToRender(module, request);
-    if (getDataPromise) {
-        // генерация HTML методом трёхэтпного построения верстки
-        return getDataPromise
-            .then((pageConfig: IPageData) => {
-                if (pageConfig && typeof pageConfig === 'object') {
-                    options._options = Object.assign({}, options._options || {}, pageConfig);
-                }
-                return renderHtml(moduleName, options);
-            })
-            .then((html) => {
-                return({ status: PageSourceStatus.OK, html });
-            });
-    }
+    return getDataToRender(module, request)
+        .then((pageConfig: object | false) => {
+            // условно-старый способ генерации HTML
+            if (pageConfig === false) {
+                return renderOldHtml({application: moduleName, ...options});
+            }
 
-    // условно-старый способ генерации HTML
-    return Promise.resolve(BaseRoute(Object.assign({application: moduleName}, options)))
+            // генерация HTML методом трёхэтпного построения верстки
+            if (pageConfig && typeof pageConfig === 'object') {
+                options._options = {...(options._options || {}), ...pageConfig};
+            }
+            return renderHtml(moduleName, options);
+        })
         .then((html) => {
-            //FIXME: Костылямбрий, который будет жить, пока не закончится переход на построение от шаблона #bootsrap
-            const classes = AppBody.getInstance().getClassString() || '';
-            return({
-                status: PageSourceStatus.OK,
-                html: html.replace('__htmlBodyClasses', classes).replace('__htmlBodyClasses', classes)
-            });
+            return({ status: PageSourceStatus.OK, html });
         });
 }
 
@@ -141,12 +124,29 @@ function renderPageSource(options: IRenderOptions, request: IServerRoutingReques
  * предзагрузка данных для страницы
  * @param module
  * @param request
+ * @return false если нет метода для предзагрузки данных или сам метод предзагрузки данных может вернуть false, для
+ *               страниц, которые нужно строить по старому (от html)
+ *         object тогда это новый способ построения страницы (от div)
  */
-function getDataToRender(module: IModuleToRender, request: IServerRoutingRequest): Promise<IPageData> | false {
+function getDataToRender(module: IModuleToRender, request: IServerRoutingRequest): Promise<object | false> {
+    let data: object | false = false;
     if (typeof module.getDataToRender === 'function') {
-        return module.getDataToRender(request.path);
+        data = module.getDataToRender(request.path);
     }
-    return false;
+    return Promise.resolve(data);
+}
+
+/**
+ * условно-старый способ генерации HTML
+ * @param options
+ */
+function renderOldHtml(options: IRenderOptions): Promise<string> {
+    return Promise.resolve(BaseRoute(options))
+        .then((html) => {
+            //FIXME: Костылямбрий, который будет жить, пока не закончится переход на построение от шаблона #bootsrap
+            const classes = AppBody.getInstance().getClassString() || '';
+            return html.replace('__htmlBodyClasses', classes).replace('__htmlBodyClasses', classes);
+        });
 }
 
 /**
@@ -155,5 +155,6 @@ function getDataToRender(module: IModuleToRender, request: IServerRoutingRequest
  * @param options
  */
 function renderHtml(moduleName: string, options: object): Promise<string> {
+    // TODO реализация этого метода будет дополнена позже
     return Promise.resolve(BaseRoute(Object.assign({application: moduleName}, options)));
 }
