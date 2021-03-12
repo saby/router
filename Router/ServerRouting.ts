@@ -8,6 +8,7 @@ import { ModulesManager } from 'RequireJsLoader/conduct';
 import { MaskResolver } from 'Router/router';
 import { BaseRoute } from 'UI/Base';
 import { Body as AppBody } from 'Application/Page';
+import { logger } from 'Application/Env';
 
 interface IServerRoutingRequest {
     path: string;
@@ -20,6 +21,9 @@ enum PageSourceStatus {
     OK,  // все хорошо
     NOT_FOUND  // искомый модуль не найден
 }
+
+// таймаут ожиданию предзагрузки данных для страницы
+const GET_DATA_TO_RENDER_TIMEOUT = 30000;
 
 interface IPageSource {
     status: PageSourceStatus;
@@ -102,11 +106,11 @@ function renderPageSource(options: IRenderOptions, request: IServerRoutingReques
         });
     }
 
-    return getDataToRender(module, request)
+    return getDataToRender(module, request.path, moduleName)
         .then((pageConfig: object | false) => {
             // условно-старый способ генерации HTML
             if (pageConfig === false) {
-                return renderOldHtml({application: moduleName, ...options});
+                return renderOldHtml(moduleName, options);
             }
 
             // генерация HTML методом трёхэтпного построения верстки
@@ -123,25 +127,44 @@ function renderPageSource(options: IRenderOptions, request: IServerRoutingReques
 /**
  * предзагрузка данных для страницы
  * @param module
- * @param request
+ * @param url
+ * @param moduleName
  * @return false если нет метода для предзагрузки данных или сам метод предзагрузки данных может вернуть false, для
  *               страниц, которые нужно строить по старому (от html)
  *         object тогда это новый способ построения страницы (от div)
  */
-function getDataToRender(module: IModuleToRender, request: IServerRoutingRequest): Promise<object | false> {
-    let data: object | false = false;
-    if (typeof module.getDataToRender === 'function') {
-        data = module.getDataToRender(request.path);
+function getDataToRender(module: IModuleToRender, url: string, moduleName: string): Promise<object | false> {
+    if (typeof module.getDataToRender !== 'function') {
+        return Promise.resolve(false);
     }
-    return Promise.resolve(data);
+
+    // Promise для ограничения по времени вызов метода предзагрузки данных
+    const timeoutPromise = new Promise((resolve, reject) => {
+        setTimeout(reject, GET_DATA_TO_RENDER_TIMEOUT);
+    });
+
+    return Promise.race([module.getDataToRender(url), timeoutPromise])
+        .then((pageConfig: object | false) => {
+            return pageConfig;
+        })
+        .catch((err) => {
+            if (err) {
+                logger.error('Router/ServerRouting',
+                    `Error when loading data for module ${moduleName}: ` + err.message, err);
+            } else {
+                logger.warn('Router/ServerRouting', `Timeout error while loading data for module ${moduleName}`);
+            }
+            return false;
+        });
 }
 
 /**
  * условно-старый способ генерации HTML
+ * @param moduleName
  * @param options
  */
-function renderOldHtml(options: IRenderOptions): Promise<string> {
-    return Promise.resolve(BaseRoute(options))
+function renderOldHtml(moduleName: string, options: IRenderOptions): Promise<string> {
+    return Promise.resolve(BaseRoute({application: moduleName, ...options}))
         .then((html) => {
             //FIXME: Костылямбрий, который будет жить, пока не закончится переход на построение от шаблона #bootsrap
             const classes = AppBody.getInstance().getClassString() || '';
@@ -156,5 +179,5 @@ function renderOldHtml(options: IRenderOptions): Promise<string> {
  */
 function renderHtml(moduleName: string, options: object): Promise<string> {
     // TODO реализация этого метода будет дополнена позже
-    return Promise.resolve(BaseRoute(Object.assign({application: moduleName}, options)));
+    return Promise.resolve(BaseRoute({application: moduleName, ...options}));
 }
