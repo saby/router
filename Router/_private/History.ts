@@ -75,20 +75,16 @@ export function getNextState(): Data.IHistoryState {
  * так и состояния истории и адресной строки браузера, используйте
  * нативный метод window.history.back
  */
-export function back(newState: Data.IHistoryState): void {
+export function back(newState?: Data.IHistoryState): void {
     const history: Data.IHistoryState[] = Data.getHistory();
     const historyPosition: number = Data.getHistoryPosition();
 
     if (historyPosition === 0) {
-        // If window has an existing state, use it instead of calculating by ourselves
-        const windowHistoryState: { state: string } | undefined | null =
-            typeof window !== 'undefined' && window.history.state;
-        const currentState: string | undefined | null = windowHistoryState && windowHistoryState.state;
-        const currentHref: string = Data.getVisibleRelativeUrl();
+        const newHistoryState: Data.IHistoryState = _calculateNewHistoryState(newState);
         history.unshift({
             id: history[0].id - 1,
-            state: currentState || UrlRewriter.get(currentHref),
-            href: currentHref
+            state: newHistoryState.state,
+            href: newHistoryState.href
         });
     } else if (newState && newState.state) {
         // при переходе назад на несколько состояний (стрелкой в браузере)
@@ -129,7 +125,7 @@ export function back(newState: Data.IHistoryState): void {
  * Для совершения перехода вперед и изменения как состояния роутера, так и состояния истории и адресной строки браузера,
  * используйте нативный метод window.history.forward
  */
-export function forward(newState: Data.IHistoryState): void {
+export function forward(newState?: Data.IHistoryState): void {
     const history: Data.IHistoryState[] = Data.getHistory();
     let newHistoryPosition: number = Data.getHistoryPosition() + 1;
 
@@ -146,14 +142,39 @@ export function forward(newState: Data.IHistoryState): void {
 
     Data.setHistoryPosition(newHistoryPosition);
     if (newHistoryPosition === history.length) {
+        const newHistoryState: Data.IHistoryState = _calculateNewHistoryState(newState);
         history.push({
             id: history[newHistoryPosition - 1].id + 1,
-            state: UrlRewriter.get(newState.state),
-            href: newState.href || UrlRewriter.getReverse(newState.state)
+            state: newHistoryState.state,
+            href: newHistoryState.href
         });
     }
 
     _updateRelativeUrl();
+}
+
+/**
+ * Вычислим правильные state и href для нового состояния истории переходов
+ * Либо его передали при переходе (по стрелке в браузере), либо возьмем его из window.history
+ * Если в итоге не найдем, то потом оно будет вычислено из URL-адреса, которое сейчас отображается в адресной строке
+ * @param newState
+ */
+function _calculateNewHistoryState(newState: Data.IHistoryState): Data.IHistoryState {
+    if (newState && newState.state) {
+        return {
+            state: UrlRewriter.get(newState.state),
+            href: newState.href || UrlRewriter.getReverse(newState.state)
+        };
+    }
+
+    // Если в window.history уже есть state, то используем его, вместо того, чтобы вычислять
+    const windowHistoryState: { state: string } | undefined | null = window?.history?.state;
+    const currentState: string | undefined | null = windowHistoryState && windowHistoryState.state;
+    const currentHref: string = Data.getVisibleRelativeUrl();
+    return {
+        state: currentState || UrlRewriter.get(currentHref),
+        href: currentHref
+    };
 }
 
 /*
