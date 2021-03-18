@@ -6,22 +6,12 @@ import { Body as AppBody, Head as AppHead, JSLinks as AppJSLinks } from 'Applica
 import { logger } from 'Application/Env';
 import { TagMarkup, fromJML } from 'UI/Base';
 import { addPageDeps, aggregateDependencies, BASE_DEPS_NAMESPACE, headDataStore } from 'UI/Deps';
-import { createWsConfig, createDefaultTags } from "UI/Head";
-
-export enum PageSourceStatus {
-   OK,  // все хорошо
-   NOT_FOUND  // искомый модуль не найден
-}
-
-export interface IPageSource {
-   status: PageSourceStatus;
-   html?: string;
-   error?: Error;
-}
+import { createWsConfig, createDefaultTags } from 'UI/Head';
 
 /**
  * @interface IRenderOptions
  * @property {boolean} bootstrapWrapperMode - флаг, который говорит компоненту SbisEnvUI.Bootstrap строить только контент
+ * @property {object} pageConfig - поле, в котором будут лежать предзагруженные данные для построения страницы
  */
 export interface IRenderOptions {
    appRoot: string;
@@ -36,6 +26,8 @@ export interface IRenderOptions {
    pageName?: string;
    RUMEnabled?: boolean;
    bootstrapWrapperMode?: boolean;
+   application: string;
+   pageConfig: object;
 }
 
 /**
@@ -114,19 +106,16 @@ function renderHTML(moduleName: string, fullData: IFullData): string {
    return HTMLTemplate({...fullData, ...{moduleName}});
 }
 
-export function mainRender(moduleName: string, options: IRenderOptions): Promise<IPageSource> {
+export function mainRender(moduleName: string, options: IRenderOptions): Promise<string> {
    // это опция, на которую заложились в Builder'е, чтобы понимать что это новое окружение
    headDataStore.write('isNewEnvironment', true);
 
-   return new Promise<IPageSource>((pageResolve) => {
+   return new Promise((pageResolve) => {
       renderControls(moduleName, options)
          .then((controlsHTML: string = '') => {
             const fullData = aggregateFullData(moduleName, options, controlsHTML);
 
-            pageResolve({
-               status: PageSourceStatus.OK,
-               html: renderHTML(moduleName, fullData)
-            });
+            pageResolve(renderHTML(moduleName, fullData));
          });
    });
 }

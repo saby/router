@@ -6,12 +6,9 @@
 
 import { ModulesManager } from 'RequireJsLoader/conduct';
 import { MaskResolver } from 'Router/router';
-// @ts-ignore
 import { BaseRoute } from 'UI/Base';
-// @ts-ignore
 import { Body as AppBody } from 'Application/Page';
-// @ts-ignore
-import { mainRender, PageSourceStatus, IPageSource, IRenderOptions } from 'Router/_ServerRouting/Bootstrap';
+import { mainRender, IRenderOptions } from 'Router/_ServerRouting/Bootstrap';
 import { logger } from 'Application/Env';
 
 interface IServerRoutingRequest {
@@ -24,8 +21,32 @@ interface IServerRoutingRequest {
 // таймаут ожиданию предзагрузки данных для страницы
 const GET_DATA_TO_RENDER_TIMEOUT = 30000;
 
+/**
+ * В модуле, который строится на странице может быть метод getDataToRender.
+ * Этот метод вернет данные для страницы.
+ */
 interface IModuleToRender {
     getDataToRender: (url: string) => Promise<object | false>;
+}
+
+/**
+ * @enum PageSourceStatus Внутренние статусы генерации HTML кода страницы.
+ */
+enum PageSourceStatus {
+    OK,  // все хорошо
+    NOT_FOUND  // искомый модуль не найден
+}
+
+/**
+ * @interface IPageSource Интерфейс для определения успешности генерации HTML кода страницы
+ * @param status    Внутренний статус генерации HTML
+ * @param html      HTML код страницы
+ * @param error     Ошибка, которая возникла при генерации HTML
+ */
+interface IPageSource {
+    status: PageSourceStatus;
+    html?: string;
+    error?: Error;
 }
 
 /**
@@ -92,7 +113,7 @@ function renderPageSource(options: IRenderOptions, request: IServerRoutingReques
 
             // генерация HTML методом трёхэтпного построения верстки
             if (pageConfig && typeof pageConfig === 'object') {
-                options._options = {...(options._options || {}), ...pageConfig};
+                options.pageConfig = pageConfig;
             }
             return mainRender(moduleName, {application: moduleName, ...options});
         })
@@ -147,14 +168,4 @@ function renderOldHtml(moduleName: string, options: IRenderOptions): Promise<str
             const classes = AppBody.getInstance().getClassString() || '';
             return html.replace('__htmlBodyClasses', classes).replace('__htmlBodyClasses', classes);
         });
-}
-
-/**
- * Метод трёхэтпного построения верстки
- * @param moduleName
- * @param options
- */
-function renderHtml(moduleName: string, options: object): Promise<string> {
-    // TODO реализация этого метода будет дополнена позже
-    return Promise.resolve(BaseRoute({application: moduleName, ...options}));
 }
