@@ -9,7 +9,7 @@ import { MaskResolver } from 'Router/router';
 import { BaseRoute } from 'UI/Base';
 import { Body as AppBody } from 'Application/Page';
 import { mainRender, IRenderOptions } from 'Router/_ServerRouting/Bootstrap';
-import { logger } from 'Application/Env';
+import { logger, cookie } from 'Application/Env';
 
 interface IServerRoutingRequest {
     path: string;
@@ -107,7 +107,7 @@ function renderPageSource(options: IRenderOptions, request: IServerRoutingReques
     return getDataToRender(module, request.path, moduleName)
         .then((pageConfig: object | false) => {
             // условно-старый способ генерации HTML
-            if (pageConfig === false) {
+            if (pageConfig === false || cookie.get('RenderOld') === 'true') {
                 return renderOldHtml(moduleName, options);
             }
 
