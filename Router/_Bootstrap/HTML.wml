@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Данные из Head API. Заполняется из themeController, UI/_base/HTML/Head, MetaStack и т.д. -->
+    {{ __setHTMLUnsafe(HeadAPIData) }}
+</head>
+  <!-- Данные из Body API. Заполняется из Controls/Application -->
+  <body class="{{ BodyAPIClasses }}">
+    <!-- Данные из шаблона контента -->
+    <!--  <div class="wasaby-content">-->
+    <!--    ...-->
+    <!--  </div>-->
+    {{ __setHTMLUnsafe(controlsHTML) }}
+
+    <div class="wasabyBaseDeps">
+      <!-- Данные из JSLinks API (+ там же StateReciever). Заполняется в UI/_deps/DependenciesPlaceholder -->
+      {{ __setHTMLUnsafe(JSLinksAPIBaseData) }}
+    </div>
+    <div class="wasabyJSDeps">
+      <!-- Данные из JSLinks API (+ там же StateReciever). Заполняется Непонятно ГДЕ! -->
+      {{ __setHTMLUnsafe(JSLinksAPIData) }}
+    </div>
+    <div id="wasabyStartScript">
+      <!-- Стартовый скрипт для wasaby. Должен быть нацелен на <div id="wasaby-content"> -->
+      <UI.Base:BootstrapStartApplicationScript requiredModules="{{ additionalDeps }}"/>
+    </div>
+  </body>
+</html>

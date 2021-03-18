@@ -6,39 +6,18 @@
 
 import { ModulesManager } from 'RequireJsLoader/conduct';
 import { MaskResolver } from 'Router/router';
+// @ts-ignore
 import { BaseRoute } from 'UI/Base';
+// @ts-ignore
 import { Body as AppBody } from 'Application/Page';
+// @ts-ignore
+import { mainRender, PageSourceStatus, IPageSource, IRenderOptions } from 'Router/Bootstrap';
 
 interface IServerRoutingRequest {
     path: string;
     compatible: boolean;
     staticConfig: object;
     pageName: string;
-}
-
-enum PageSourceStatus {
-    OK,  // все хорошо
-    NOT_FOUND  // искомый модуль не найден
-}
-
-interface IPageSource {
-    status: PageSourceStatus;
-    html?: string;
-    error?: Error;
-}
-
-interface IRenderOptions {
-    appRoot: string;
-    wsRoot: string;
-    resourceRoot: string;
-    cdnRoot?: string;
-    staticDomains?: string;
-    logLevel?: string;
-    servicesPath?: string;
-    buildnumber?: string;
-    product?: string;
-    pageName?: string;
-    RUMEnabled?: boolean;
 }
 
 /**
@@ -95,13 +74,5 @@ function renderPageSource(options: IRenderOptions, request: IServerRoutingReques
         });
     }
 
-    return Promise.resolve(BaseRoute(Object.assign({application: moduleName}, options)))
-        .then((html) => {
-            //FIXME: Костылямбрий, который будет жить, пока не закончится переход на построение от шаблона #bootsrap
-            const classes = AppBody.getInstance().getClassString() || '';
-            return({
-                status: PageSourceStatus.OK,
-                html: html.replace('__htmlBodyClasses', classes).replace('__htmlBodyClasses', classes)
-            });
-        });
+    return Promise.resolve(mainRender(moduleName, Object.assign({application: moduleName}, options)));
 }
