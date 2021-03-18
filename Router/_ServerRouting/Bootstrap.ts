@@ -5,8 +5,7 @@ import * as ControlsHTMLTemplate from 'wml!Router/_ServerRouting/_Bootstrap/Cont
 import { Body as AppBody, Head as AppHead, JSLinks as AppJSLinks } from 'Application/Page';
 import { logger } from 'Application/Env';
 import { TagMarkup, fromJML } from 'UI/Base';
-import { addPageDeps, aggregateDependencies, BASE_DEPS_NAMESPACE } from 'UI/Deps';
-import { headDataStore } from 'UI/Base';
+import { addPageDeps, aggregateDependencies, BASE_DEPS_NAMESPACE, headDataStore } from 'UI/Deps';
 import { createWsConfig, createDefaultTags } from "UI/Head";
 
 export enum PageSourceStatus {
@@ -116,6 +115,9 @@ function renderHTML(moduleName: string, fullData: IFullData): string {
 }
 
 export function mainRender(moduleName: string, options: IRenderOptions): Promise<IPageSource> {
+   // это опция, на которую заложились в Builder'е, чтобы понимать что это новое окружение
+   headDataStore.write('isNewEnvironment', true);
+
    return new Promise<IPageSource>((pageResolve) => {
       renderControls(moduleName, options)
          .then((controlsHTML: string = '') => {
