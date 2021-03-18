@@ -11,7 +11,7 @@ import { BaseRoute } from 'UI/Base';
 // @ts-ignore
 import { Body as AppBody } from 'Application/Page';
 // @ts-ignore
-import { mainRender, PageSourceStatus, IPageSource, IRenderOptions } from 'Router/Bootstrap';
+import { mainRender, PageSourceStatus, IPageSource, IRenderOptions } from 'Router/_ServerRouting/Bootstrap';
 
 interface IServerRoutingRequest {
     path: string;

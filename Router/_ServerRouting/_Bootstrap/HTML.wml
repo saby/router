@@ -25,7 +25,7 @@
     </div>
     <div id="wasabyStartScript">
       <!-- Стартовый скрипт для wasaby. Должен быть нацелен на <div id="wasaby-content"> -->
-      <UI.Base:BootstrapStartApplicationScript requiredModules="{{ additionalDeps }}" onServer="{{ true }}"/>
+      <Router._ServerRouting._Bootstrap.StartApplicationScript requiredModules="{{ additionalDeps }}" onServer="{{ true }}"/>
     </div>
   </body>
 </html>

@@ -1,6 +1,6 @@
 
-import * as HTMLTemplate from 'wml!Router/_Bootstrap/HTML';
-import * as ControlsHTMLTemplate from 'wml!Router/_Bootstrap/ControlsHTML';
+import * as HTMLTemplate from 'wml!Router/_ServerRouting/_Bootstrap/HTML';
+import * as ControlsHTMLTemplate from 'wml!Router/_ServerRouting/_Bootstrap/ControlsHTML';
 
 import { Body as AppBody, Head as AppHead, JSLinks as AppJSLinks } from 'Application/Page';
 import { logger } from 'Application/Env';
