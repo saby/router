@@ -1,6 +1,6 @@
 
 import * as HTMLTemplate from 'wml!Router/_Bootstrap/HTML';
-import * as ControlsTemplate from 'wml!Router/_Bootstrap/Controls';
+import * as ControlsHTMLTemplate from 'wml!Router/_Bootstrap/ControlsHTML';
 
 import { Body as AppBody, Head as AppHead, JSLinks as AppJSLinks } from 'Application/Page';
 import { logger } from 'Application/Env';
@@ -66,10 +66,10 @@ interface IFullData{
 function renderControls(moduleName: string, options: IRenderOptions): Promise<string | void> {
    options.bootstrapWrapperMode = true;
 
-   const result: Promise<string> = Promise.resolve(ControlsTemplate({
+   const result: Promise<string> = Promise.resolve(ControlsHTMLTemplate({
       moduleName,
       options
-   }));
+   }, {key: 'bd_'}));
 
    return result.catch((e) => logger.error(e));
 }

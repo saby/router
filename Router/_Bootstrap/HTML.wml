@@ -11,7 +11,9 @@
     <!--    ...-->
     <!--  </div>-->
 
-    {{ __setHTMLUnsafe(controlsHTML) }}
+    <div id="wasaby-content" style="width: inherit; height: inherit;" application="{{ moduleName }}">
+      {{ __setHTMLUnsafe(controlsHTML) }}
+    </div>
 
     <div class="wasabyBaseDeps">
       <!-- Данные из JSLinks API (+ там же StateReciever). Заполняется в UI/_deps/DependenciesPlaceholder -->
