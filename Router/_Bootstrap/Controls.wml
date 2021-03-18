@@ -1,3 +1,3 @@
-<div id="wasaby-content" style="width: inherit; height: inherit;">
+<div id="wasaby-content" style="width: inherit; height: inherit;" application="{{ moduleName }}">
   <ws:partial template="{{ moduleName }}" scope="{{ options }}"/>
 </div>
