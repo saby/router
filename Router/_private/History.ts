@@ -244,14 +244,15 @@ export function push(newState: Data.IHistoryState): void {
 export function replaceState(newState: Data.IHistoryState): void {
     const history: Data.IHistoryState[] = Data.getHistory();
     const historyPosition: number = Data.getHistoryPosition();
+    const currentState: Data.IHistoryState = history[historyPosition];
 
-    newState.id = history[historyPosition].id;
+    newState.id = currentState.id;
+    newState.href = newState.href || UrlRewriter.getReverse(newState.state);
 
     history[historyPosition] = newState;
 
     _updateRelativeUrl();
-    const displayUrl: string = newState.href || newState.state;
-    window.history.replaceState(newState, displayUrl, displayUrl);
+    window.history.replaceState(newState, newState.href, newState.href);
 }
 
 function _updateRelativeUrl(): void {
