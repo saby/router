@@ -55,6 +55,9 @@ interface IFullData{
  * @param options
  */
 function renderControls(moduleName: string, options: IRenderOptions): Promise<string | void> {
+   // это опция, на которую заложились в Builder'е, чтобы понимать что это новое окружение
+   headDataStore.write('isNewEnvironment', true);
+
    options.bootstrapWrapperMode = true;
 
    const result: Promise<string> = Promise.resolve(ControlsHTMLTemplate({
@@ -107,9 +110,6 @@ function renderHTML(moduleName: string, fullData: IFullData): string {
 }
 
 export function mainRender(moduleName: string, options: IRenderOptions): Promise<string> {
-   // это опция, на которую заложились в Builder'е, чтобы понимать что это новое окружение
-   headDataStore.write('isNewEnvironment', true);
-
    return new Promise((pageResolve) => {
       renderControls(moduleName, options)
          .then((controlsHTML: string = '') => {
