@@ -198,21 +198,29 @@ function (Router, AppInit, EnvNode) {
             window.history.replaceState.restore();
          });
 
-         it('replaces the current state with the specified one', function() {
+         function testReplaceState(state, href) {
             Data.setHistoryPosition(2);
-            History.replaceState({ state: '/upage?navigation=profile', href: '/profile' });
+            History.replaceState({ state: state, href: href });
 
             var hstate = History.getCurrentState();
             assert.strictEqual(hstate.id, 2);
-            assert.strictEqual(hstate.state, '/upage?navigation=profile');
-            assert.strictEqual(hstate.href, '/profile');
+            assert.strictEqual(hstate.state, state);
+            assert.strictEqual(hstate.href, href);
 
-            assert.strictEqual(Data.getRelativeUrl(), '/upage?navigation=profile');
+            assert.strictEqual(Data.getRelativeUrl(), state);
 
             assert(replaceStateStub.calledOnce, 'expected window.history.replaceState to be called');
             var replaceStateArgs = replaceStateStub.getCall(0).args;
             assert.deepEqual(replaceStateArgs[0], hstate);
-            assert.strictEqual(replaceStateArgs[2], '/profile');
+            assert.strictEqual(replaceStateArgs[2], href);
+         }
+
+         it('replaces the current state with the specified one', function() {
+            testReplaceState('/upage?navigation=profile', '/profile');
+         });
+
+         it('replaces the current state with the specified one without href', function() {
+            testReplaceState('/upage?navigation=profile', '/upage?navigation=profile');
          });
       });
    });
