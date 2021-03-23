@@ -8,7 +8,8 @@ import { ModulesManager } from 'RequireJsLoader/conduct';
 import { MaskResolver } from 'Router/router';
 import { BaseRoute } from 'UI/Base';
 import { Body as AppBody } from 'Application/Page';
-import { logger } from 'Application/Env';
+import { mainRender, IRenderOptions } from 'Router/_ServerRouting/Bootstrap';
+import { logger, cookie } from 'Application/Env';
 
 interface IServerRoutingRequest {
     path: string;
@@ -17,38 +18,35 @@ interface IServerRoutingRequest {
     pageName: string;
 }
 
+// таймаут ожиданию предзагрузки данных для страницы
+const GET_DATA_TO_RENDER_TIMEOUT = 30000;
+
+/**
+ * В модуле, который строится на странице может быть метод getDataToRender.
+ * Этот метод вернет данные для страницы.
+ */
+interface IModuleToRender {
+    getDataToRender: (url: string) => Promise<object | false>;
+}
+
+/**
+ * @enum PageSourceStatus Внутренние статусы генерации HTML кода страницы.
+ */
 enum PageSourceStatus {
     OK,  // все хорошо
     NOT_FOUND  // искомый модуль не найден
 }
 
-// таймаут ожиданию предзагрузки данных для страницы
-const GET_DATA_TO_RENDER_TIMEOUT = 30000;
-
+/**
+ * @interface IPageSource Интерфейс для определения успешности генерации HTML кода страницы
+ * @param status    Внутренний статус генерации HTML
+ * @param html      HTML код страницы
+ * @param error     Ошибка, которая возникла при генерации HTML
+ */
 interface IPageSource {
     status: PageSourceStatus;
     html?: string;
     error?: Error;
-}
-
-interface IRenderOptions {
-    appRoot: string;
-    wsRoot: string;
-    resourceRoot: string;
-    cdnRoot?: string;
-    staticDomains?: string;
-    logLevel?: string;
-    servicesPath?: string;
-    buildnumber?: string;
-    product?: string;
-    pageName?: string;
-    RUMEnabled?: boolean;
-    _options?: object;
-    application?: string;
-}
-
-interface IModuleToRender {
-    getDataToRender: (url: string) => Promise<object | false>;
 }
 
 /**
@@ -108,16 +106,21 @@ function renderPageSource(options: IRenderOptions, request: IServerRoutingReques
 
     return getDataToRender(module, request.path, moduleName)
         .then((pageConfig: object | false) => {
+            // временная кука, чтобы принудительно переключать старый рендер или рендер от div
+            // renderType = 'old' - старый рендер
+            // renderType = 'new' - рендер от div
+            const renderType: string = cookie.get('RenderType');
+
             // условно-старый способ генерации HTML
-            if (pageConfig === false) {
+            if (renderType !== 'new' && (pageConfig === false || renderType === 'old')) {
                 return renderOldHtml(moduleName, options);
             }
 
             // генерация HTML методом трёхэтпного построения верстки
             if (pageConfig && typeof pageConfig === 'object') {
-                options._options = {...(options._options || {}), ...pageConfig};
+                options.pageConfig = pageConfig;
             }
-            return renderHtml(moduleName, options);
+            return mainRender(moduleName, {application: moduleName, ...options});
         })
         .then((html) => {
             return({ status: PageSourceStatus.OK, html });
@@ -170,14 +173,4 @@ function renderOldHtml(moduleName: string, options: IRenderOptions): Promise<str
             const classes = AppBody.getInstance().getClassString() || '';
             return html.replace('__htmlBodyClasses', classes).replace('__htmlBodyClasses', classes);
         });
-}
-
-/**
- * Метод трёхэтпного построения верстки
- * @param moduleName
- * @param options
- */
-function renderHtml(moduleName: string, options: object): Promise<string> {
-    // TODO реализация этого метода будет дополнена позже
-    return Promise.resolve(BaseRoute({application: moduleName, ...options}));
 }
