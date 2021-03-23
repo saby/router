@@ -151,13 +151,15 @@ function getDataToRender(module: IModuleToRender, url: string, moduleName: strin
             return pageConfig;
         })
         .catch((err) => {
+            let timeoutError;
             if (err) {
                 logger.error('Router/ServerRouting',
                     `Error when loading data for module ${moduleName}: ` + err.message, err);
             } else {
-                logger.warn('Router/ServerRouting', `Timeout error while loading data for module ${moduleName}`);
+                timeoutError = new Error(`Timeout error while loading data for module ${moduleName}`);
+                logger.warn('Router/ServerRouting', timeoutError.message);
             }
-            return false;
+            return {error: err || timeoutError};
         });
 }
 
