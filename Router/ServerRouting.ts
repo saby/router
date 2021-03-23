@@ -26,7 +26,7 @@ const GET_DATA_TO_RENDER_TIMEOUT = 30000;
  * Этот метод вернет данные для страницы.
  */
 interface IModuleToRender {
-    getDataToRender: (url: string) => Promise<object | false>;
+    getDataToRender: (url: string) => Promise<object | boolean>;
 }
 
 /**
@@ -105,7 +105,7 @@ function renderPageSource(options: IRenderOptions, request: IServerRoutingReques
     }
 
     return getDataToRender(module, request.path, moduleName)
-        .then((pageConfig: object | false) => {
+        .then((pageConfig: object | boolean) => {
             // временная кука, чтобы принудительно переключать старый рендер или рендер от div
             // renderType = 'old' - старый рендер
             // renderType = 'new' - рендер от div
@@ -136,7 +136,7 @@ function renderPageSource(options: IRenderOptions, request: IServerRoutingReques
  *               страниц, которые нужно строить по старому (от html)
  *         object тогда это новый способ построения страницы (от div)
  */
-function getDataToRender(module: IModuleToRender, url: string, moduleName: string): Promise<object | false> {
+function getDataToRender(module: IModuleToRender, url: string, moduleName: string): Promise<object | boolean> {
     if (typeof module.getDataToRender !== 'function') {
         return Promise.resolve(false);
     }
@@ -147,17 +147,19 @@ function getDataToRender(module: IModuleToRender, url: string, moduleName: strin
     });
 
     return Promise.race([module.getDataToRender(url), timeoutPromise])
-        .then((pageConfig: object | false) => {
+        .then((pageConfig: object | boolean) => {
             return pageConfig;
         })
-        .catch((err) => {
-            if (err) {
+        .catch((error) => {
+            let timeoutError;
+            if (error) {
                 logger.error('Router/ServerRouting',
-                    `Error when loading data for module ${moduleName}: ` + err.message, err);
+                    `Error when loading data for module ${moduleName}: ` + error.message, error);
             } else {
-                logger.warn('Router/ServerRouting', `Timeout error while loading data for module ${moduleName}`);
+                timeoutError = new Error(`Timeout error while loading data for module ${moduleName}`);
+                logger.warn('Router/ServerRouting', timeoutError.message);
             }
-            return false;
+            return {error: error || timeoutError};
         });
 }
 
