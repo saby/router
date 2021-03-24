@@ -9,7 +9,7 @@
                callback: function (Env, AppInit, AppEnv, EnvUIWasaby, UIBase, UIState, AppState) {
                   window.startContextData = {AppData: new UIBase.AppData({})};
                   Object.assign(Env.constants, window.wsConfig);
-                  require( {{ __setHTMLUnsafe(getDeps()) }}, function () {
+                  require( {{ __setHTMLUnsafe(requiredModules) }}, function () {
                      var sr = new AppState.StateReceiver(UIState.Serializer);
                      AppInit.default(window.wsConfig, void 0, sr);
                      UIBase.BootstrapStart({}, document.getElementById('wasaby-content'));

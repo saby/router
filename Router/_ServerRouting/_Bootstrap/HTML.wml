@@ -15,7 +15,7 @@
       {{ __setHTMLUnsafe(JSLinksAPIData) }}
     </div>
     <div id="wasabyStartScript">
-      <Router._ServerRouting._Bootstrap.StartApplicationScript requiredModules="{{ additionalDeps }}" onServer="{{ true }}"/>
+      <Router._ServerRouting._Bootstrap.StartApplicationScript requiredModules="{{ requiredModules }}" onServer="{{ true }}"/>
     </div>
   </body>
 </html>

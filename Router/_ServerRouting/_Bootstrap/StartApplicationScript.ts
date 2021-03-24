@@ -6,21 +6,21 @@ import template = require('wml!Router/_ServerRouting/_Bootstrap/StartApplication
 
 class StartApplicationScript extends Control {
    _template: TemplateFunction = template;
-   private requiredModules: string[] = [];
+   protected requiredModules: string = '[]';
    protected isIE: boolean = detection.isIE;
 
    _beforeMount(options: {requiredModules: string[]}): Promise<any> {
       if (typeof window !== 'undefined') {
          return;
       }
-      this.requiredModules = options.requiredModules || [];
+      this.requiredModules = this.getRequiredModulesString(options.requiredModules || []);
    }
 
-   getDeps(): string {
-      if (!this.requiredModules || !this.requiredModules.length) {
+   private getRequiredModulesString(requiredModules: string[]): string {
+      if (!requiredModules || !requiredModules.length) {
          return '[]';
       }
-      return '["' + this.requiredModules.join('","') + '"]';
+      return '["' + requiredModules.join('","') + '"]';
    }
 }
 
