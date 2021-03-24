@@ -9,7 +9,7 @@ class StartApplicationScript extends Control {
    private requiredModules: string[] = [];
    protected isIE: boolean = detection.isIE;
 
-   _beforeMount(options): Promise<any> {
+   _beforeMount(options: {requiredModules: string[]}): Promise<any> {
       if (typeof window !== 'undefined') {
          return;
       }
