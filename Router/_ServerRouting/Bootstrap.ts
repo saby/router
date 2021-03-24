@@ -55,9 +55,6 @@ interface IFullData{
  * @param options
  */
 function renderControls(moduleName: string, options: IRenderOptions): Promise<string | void> {
-   // это опция, на которую заложились в Builder'е, чтобы понимать что это новое окружение
-   headDataStore.write('isNewEnvironment', true);
-
    options.bootstrapWrapperMode = true;
 
    const result: Promise<string> = Promise.resolve(ControlsHTMLTemplate({
