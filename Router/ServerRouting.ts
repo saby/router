@@ -109,7 +109,8 @@ function renderPageSource(options: IRenderOptions, request: IServerRoutingReques
             // временная кука, чтобы принудительно переключать старый рендер или рендер от div
             // renderType = 'old' - старый рендер
             // renderType = 'new' - рендер от div
-            const renderType: string = cookie.get('RenderType');
+            // сейчас по умолчанию строим по-старому, чтобы тесты не упали
+            const renderType: string = cookie.get('RenderType') || 'old';
 
             // условно-старый способ генерации HTML
             if (renderType !== 'new' && (pageConfig === false || renderType === 'old')) {
