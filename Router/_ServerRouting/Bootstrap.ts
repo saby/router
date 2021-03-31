@@ -27,7 +27,7 @@ export interface IRenderOptions {
    RUMEnabled?: boolean;
    bootstrapWrapperMode?: boolean;
    application: string;
-   pageConfig: {title: string};
+   pageConfig: {title?: string};
 }
 
 /**
