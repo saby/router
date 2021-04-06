@@ -198,16 +198,24 @@ function (Router, AppInit, EnvNode) {
             window.history.replaceState.restore();
          });
 
-         function testReplaceState(state, href) {
+         /**
+          * Тестирование метода History.replaceState в двух сценариях
+          * 1) на вход приходит объект со state и href
+          * 2) на вход приходит объект со state. а href будет вычислен по state
+          * @param {*} newState 
+          */
+         function testReplaceState(newState) {
+            var href = newState.href || newState.state;
+
             Data.setHistoryPosition(2);
-            History.replaceState({ state: state, href: href });
+            History.replaceState(newState);
 
             var hstate = History.getCurrentState();
             assert.strictEqual(hstate.id, 2);
-            assert.strictEqual(hstate.state, state);
+            assert.strictEqual(hstate.state, newState.state);
             assert.strictEqual(hstate.href, href);
 
-            assert.strictEqual(Data.getRelativeUrl(), state);
+            assert.strictEqual(Data.getRelativeUrl(), newState.state);
 
             assert(replaceStateStub.calledOnce, 'expected window.history.replaceState to be called');
             var replaceStateArgs = replaceStateStub.getCall(0).args;
@@ -215,12 +223,17 @@ function (Router, AppInit, EnvNode) {
             assert.strictEqual(replaceStateArgs[2], href);
          }
 
-         it('replaces the current state with the specified one', function() {
-            testReplaceState('/upage?navigation=profile', '/profile');
+         it('замена в истории текущего состяния', function() {
+            // тест метода History.replaceState, когда на вход подаются state и href
+            var newState = {state: '/upage?navigation=profile', href: '/profile'};
+            testReplaceState(newState);
          });
 
-         it('replaces the current state with the specified one without href', function() {
-            testReplaceState('/upage?navigation=profile', '/upage?navigation=profile');
+         it('замена в истории текущего состяния без передачи href', function() {
+            // тест метода History.replaceState когда на вход подается ТОЛЬКО state
+            // в таком случае, href будет вычислен основываясь на state
+            var newState = {state: '/upage?navigation=profile'};
+            testReplaceState(newState);
          });
       });
    });
