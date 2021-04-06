@@ -39,31 +39,6 @@ function (Router, fakeAppManager) {
          stubSandbox.restore();
       });
 
-      describe('#canChangeApplication', function() {
-         var getCoreInstanceStub;
-
-         beforeEach(function() {
-            getCoreInstanceStub = stubSandbox.stub(Data, 'getCoreInstance');
-         });
-         afterEach(function() {
-            Data.getCoreInstance.restore();
-         });
-
-         it('returns true if there is a Core instance in request', function() {
-            getCoreInstanceStub.returns({
-               changeApplicationHandler: function() {
-                  /* empty */
-               }
-            });
-            assert.isTrue(Controller.canChangeApplication());
-         });
-
-         it('returns false if there is no Core instance in request', function() {
-            getCoreInstanceStub.returns(undefined);
-            assert.isFalse(Controller.canChangeApplication());
-         });
-      });
-
       describe('#addRoute/#removeRoute', function() {
          it('registers and unregisters the route', function() {
             var registeredRoutes = Data.getRegisteredRoutes(),
@@ -264,33 +239,6 @@ function (Router, fakeAppManager) {
                }
             }, navigationDelay);
          });
-
-         /* waiting for https://online.sbis.ru/opendoc.html?guid=436271ce-e419-4ad3-a3fe-cbbed1287729
-         it('loads new application and calls changeApplicationHandler', function(done) {
-            fakeAppManager.createFakeApp('anotherapp');
-
-            var fakeCoreInstance = {
-                  changeApplicationHandler: stubSandbox.spy()
-               },
-               getCoreInstanceStub = stubSandbox.stub(Data, 'getCoreInstance');
-
-            getCoreInstanceStub.returns(fakeCoreInstance);
-
-            Controller.navigate({ state: '/anotherapp/test/url' });
-            setTimeout(function() {
-               try {
-                  assert(
-                     fakeCoreInstance.changeApplicationHandler.calledOnceWith(null, 'anotherapp/Index'),
-                     'expected changeApplicationHandler to be called'
-                  );
-                  done();
-               } catch (e) {
-                  done(e);
-               } finally {
-                  Data.getCoreInstance.restore();
-               }
-            }, navigationDelay * 2);
-         });*/
       });
 
       describe('onpopstate handler', function() {
