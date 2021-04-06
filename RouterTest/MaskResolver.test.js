@@ -1,19 +1,11 @@
 /* global assert */
 /* eslint-disable max-nested-callbacks */
-define(['Router/router', 'Application/Initializer', 'SbisEnv/PresentationService'], /**
+define(['Router/router'], /**
  * @param { import('../Router/router') } Router
- * @param AppInit
- * @param EnvNode
  */
-function (Router, AppInit, EnvNode) {
+function (Router) {
    var MaskResolver = Router.MaskResolver,
       Data = Router.Data;
-
-   var env;
-   if (typeof window === 'undefined') {
-      env = EnvNode.default;
-   }
-   AppInit.default({}, env);
 
    // переопределим router.js в тестах, т.к. он подтянется из корня, а там из RouterDemo
    Router.UrlRewriter._prepareRoutes({});
