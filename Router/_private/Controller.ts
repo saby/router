@@ -21,24 +21,6 @@ let isNavigating: boolean = false;
 _initializeController();
 
 /*
- * Checks if Router can switch the currently active application.
- * This can only be done if the page has an Application/Core controller instance.
- * @function
- * @returns {Boolean} can Router switch the active application
- */
-/**
- * Определяет, может ли система роутинга переключить текущее приложение без перезагрузки страницы.
- * Это можно сделать только в том случае, если на странице есть экземпляр {@link Application/Core}.
- * @function
- * @returns {Boolean} Возможно ли изменить текущее приложение без перезагрузки страницы.
- */
-export function canChangeApplication(): boolean {
-   // Router can switch applications when there is an Application/Core
-   // instance on it
-   return !!Data.getCoreInstance();
-}
-
-/*
  *
  * Performs the single page navigation (without reloading the page) to a new
  * state

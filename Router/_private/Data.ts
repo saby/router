@@ -8,7 +8,7 @@
  */
 
 import { getConfig } from 'Application/Env';
-import StoreManager, { ICoreInstance } from './StoreManager';
+import StoreManager from './StoreManager';
 
 import * as UrlRewriter from './UrlRewriter';
 import { ILocation } from 'Application/Interface';
@@ -48,7 +48,6 @@ export interface IRouterData {
     historyPosition: number;
     registeredRoutes: Record<string, IRegisteredRoute>;
     registeredReferences: Record<string, IRegisteredReference>;
-    coreInstance?: ICoreInstance;
     relativeUrl: string;
 }
 
@@ -201,20 +200,6 @@ export function getRegisteredRoutes(): Record<string, IRegisteredRoute> {
  */
 export function getRegisteredReferences(): Record<string, IRegisteredReference> {
     return _getField('registeredReferences');
-}
-
-/*
- * Get the instance of Application/Core if it exists on the page
- * @returns {Controls/Application/Core}
- * @hidden
- */
-/**
- * Возвращает экземпляр Application/Core, если он существует на странице.
- * @returns {Controls/Application/Core}
- * @hidden
- */
-export function getCoreInstance(): ICoreInstance {
-    return StoreManager.getCoreInstance();
 }
 
 function _initNewStorage(storage: IRouterData): void {

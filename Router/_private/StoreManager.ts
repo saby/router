@@ -6,11 +6,6 @@ import { ILocation, IStore } from 'Application/Interface';
 import { IRouterData, IRegisteredRoute, IRegisteredReference, IHistoryState } from 'Router/_private/Data';
 
 const STORAGE_KEY = 'RouterData';
-const CORE_INSTANCE_KEY = 'CoreInstance';
-
-export interface ICoreInstance {
-    changeApplicationHandler: (e: Event, newAppName: string) => boolean;
-}
 
 /**
  * Класс-заглушка на случай, если нету VDOM или если код выполняется на сервисе представления
@@ -98,14 +93,6 @@ class RouterData implements IRouterData {
     set registeredReferences(val: Record<string, IRegisteredReference>) {
         this._storage.set('registeredReferences', val);
     }
-
-    get coreInstance(): ICoreInstance {
-        return <ICoreInstance>this._storage.get('coreInstance');
-    }
-
-    set coreInstance(val: ICoreInstance) {
-        this._storage.set('coreInstance', val);
-    }
 }
 
 /**
@@ -153,14 +140,6 @@ class StoreManager {
 
         this._routerData = new RouterData(routerStorage);
         return this._routerData;
-    }
-
-    getCoreInstance(): ICoreInstance {
-        if (AppInit.isInit()) {
-            const storage: IStore<Record<string, unknown>> = AppEnv.getStore<Record<string, unknown>>(CORE_INSTANCE_KEY);
-            return storage && storage['instance'] as ICoreInstance;
-        }
-        return null;
     }
 }
 
