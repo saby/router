@@ -19,7 +19,7 @@ interface IServerRoutingRequest {
 }
 
 // таймаут ожиданию предзагрузки данных для страницы
-const GET_DATA_TO_RENDER_TIMEOUT = 30000;
+export const GET_DATA_TIMEOUT = 23000;
 
 /**
  * В модуле, который строится на странице может быть метод getDataToRender.
@@ -143,7 +143,7 @@ function getDataToRender(module: IModuleToRender, url: string, moduleName: strin
 
     // Promise для ограничения по времени вызов метода предзагрузки данных
     const timeoutPromise = new Promise((resolve, reject) => {
-        setTimeout(reject, GET_DATA_TO_RENDER_TIMEOUT);
+        setTimeout(reject, GET_DATA_TIMEOUT);
     });
 
     return Promise.race([module.getDataToRender(url), timeoutPromise])
@@ -151,12 +151,12 @@ function getDataToRender(module: IModuleToRender, url: string, moduleName: strin
             return pageConfig;
         })
         .catch((err) => {
-            let timeoutError;
+            let timeoutError: Error;
             if (err) {
                 logger.error('Router/ServerRouting',
                     `Error when loading data for module ${moduleName}: ` + err.message, err);
             } else {
-                timeoutError = new Error(`Timeout error while loading data for module ${moduleName}`);
+                timeoutError = new Error(`Timeout error while loading data for module ${moduleName}, url: ${url}`);
                 logger.warn('Router/ServerRouting', timeoutError.message);
             }
             return {error: err || timeoutError};
