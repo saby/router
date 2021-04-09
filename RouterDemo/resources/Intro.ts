@@ -19,14 +19,11 @@ class Intro extends Control implements Data.IRegisterableComponent {
    protected _preventNavigate: boolean = false;
 
    protected _beforeMount(options: {}): void {
-      Controller.addRoute(this, (newState, currentState): Promise<boolean> => {
-         return new Promise((resolve, reject) => {
-            if (this._preventNavigate) {
-               reject();
-               return;
-            }
-            resolve(true);
-         });
+      Controller.addRoute(this, (): boolean => {         
+         if (this._preventNavigate) {
+            return false;
+         }
+         return true;
       });
    }
 
