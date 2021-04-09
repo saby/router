@@ -7,14 +7,11 @@
  * @public
  */
 
-import { IoC } from 'Env/Env';
 
 import * as Data from './Data';
-
 import { getAppNameByUrl } from './MaskResolver';
 import * as History from './History';
 import * as UrlRewriter from './UrlRewriter';
-import { ICoreInstance } from 'Router/_private/StoreManager';
 
 let isNavigating: boolean = false;
 
@@ -67,8 +64,9 @@ export function navigate(newState: Data.IHistoryState, callback?: Function, errb
       state: rewrittenNewUrl,
       href: prettyUrl
    };
+   isNavigating = true;
 
-   const tryApplyNewStateCb = (accept: boolean) => {
+   const tryApplyNewStateCallback = (accept: boolean) => {
       isNavigating = false;
       if (accept) {
          if (callback) {
@@ -81,28 +79,26 @@ export function navigate(newState: Data.IHistoryState, callback?: Function, errb
          errback();
       }
    };
-   const tryApplyNewStateEb = (err: Error) => {
+   const tryApplyNewStateErrback = (err: Error) => {
       isNavigating = false;
       if (errback) {
          errback(err);
       }
    };
 
-
-   isNavigating = true;
    let result: Promise<boolean> | boolean;
    try {
       result = _tryApplyNewState(rewrittenNewState);
    } catch(err) {
-      tryApplyNewStateEb(err);
+      tryApplyNewStateErrback(err);
       return;
    }
    
    if (result instanceof Promise) {
-      result.then(tryApplyNewStateCb, tryApplyNewStateEb);
+      result.then(tryApplyNewStateCallback, tryApplyNewStateErrback);
       return;
    }
-   tryApplyNewStateCb(result);
+   tryApplyNewStateCallback(result);
 }
 
 /*
@@ -217,9 +213,9 @@ function _getNavigationState(
 }
 
 function _tryApplyNewState(newState: Data.IHistoryState): Promise<boolean> | boolean {
-   const state: Data.IHistoryState = History.getCurrentState();
+   const currentState: Data.IHistoryState = History.getCurrentState();
    const newApp: string = getAppNameByUrl(newState.state);
-   const currentApp: string = getAppNameByUrl(state.state);
+   const currentApp: string = getAppNameByUrl(currentState.state);
    
    const callback = function(res: boolean): boolean {
       if (newApp === currentApp) {
@@ -266,7 +262,7 @@ function _callBeforeUrlChangeCallbacks(newState: Data.IHistoryState): Promise<bo
          continue;
       }
       const route: Data.IRegisteredRoute = registeredRoutes[routeId];
-      const beforeCb: Promise<any> | any = route.beforeUrlChangeCb(newState, currentState)
+      const beforeCb: Promise<boolean> | boolean = route.beforeUrlChangeCb(newState, currentState);
       if (beforeCb instanceof Promise) {
          beforeUrlChangePromises.push(beforeCb);
       } else {
