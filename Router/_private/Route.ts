@@ -194,12 +194,12 @@ class Route extends Control implements IRegisterableComponent {
     private _register(): void {
         Controller.addRoute(
             this as IRegisterableComponent,
-            (newLoc, oldLoc) => {
+            async (newLoc, oldLoc) => {
                 return this._beforeApplyNewUrl(newLoc, oldLoc);
             },
-            () => {
+            async () => {
                 this._forceUpdate();
-                return true;
+                return Promise.resolve(true);
             }
         );
     }
@@ -208,7 +208,7 @@ class Route extends Control implements IRegisterableComponent {
         Controller.removeRoute(this);
     }
 
-    private _beforeApplyNewUrl(newLoc: Data.IHistoryState, oldLoc: Data.IHistoryState): boolean {
+    private async _beforeApplyNewUrl(newLoc: Data.IHistoryState, oldLoc: Data.IHistoryState): Promise<boolean> {
         let result: boolean;
 
         const oldUrlOptions: Record<string, unknown> = this._urlOptions;
@@ -230,7 +230,7 @@ class Route extends Control implements IRegisterableComponent {
             this._notify('change', [this._urlOptions, oldUrlOptions]);
         }
 
-        return result;
+        return Promise.resolve(result);
     }
 
     private _applyNewUrl(mask: string, cfg: IRouteOptions): boolean {
