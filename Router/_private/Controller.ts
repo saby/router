@@ -7,11 +7,14 @@
  * @public
  */
 
+import { IoC } from 'Env/Env';
 
 import * as Data from './Data';
+
 import { getAppNameByUrl } from './MaskResolver';
 import * as History from './History';
 import * as UrlRewriter from './UrlRewriter';
+import { ICoreInstance } from 'Router/_private/StoreManager';
 
 let isNavigating: boolean = false;
 
@@ -64,41 +67,29 @@ export function navigate(newState: Data.IHistoryState, callback?: Function, errb
       state: rewrittenNewUrl,
       href: prettyUrl
    };
+
    isNavigating = true;
-
-   const tryApplyNewStateCallback = (accept: boolean) => {
-      isNavigating = false;
-      if (accept) {
-         if (callback) {
-            callback();
-         } else {
-            History.push(rewrittenNewState);
+   _tryApplyNewState(rewrittenNewState).then(
+        (accept) => {
+         isNavigating = false;
+         if (accept) {
+            if (callback) {
+               callback();
+            } else {
+               History.push(rewrittenNewState);
+            }
+            _notifyStateChanged(rewrittenNewState, currentState);
+         } else if (errback) {
+            errback();
          }
-         _notifyStateChanged(rewrittenNewState, currentState);
-      } else if (errback) {
-         errback();
+      },
+        (err) => {
+         isNavigating = false;
+         if (errback) {
+                errback(err);
       }
-   };
-   const tryApplyNewStateErrback = (err: Error) => {
-      isNavigating = false;
-      if (errback) {
-         errback(err);
-      }
-   };
-
-   let result: Promise<boolean> | boolean;
-   try {
-      result = _tryApplyNewState(rewrittenNewState);
-   } catch(err) {
-      tryApplyNewStateErrback(err);
-      return;
-   }
-   
-   if (result instanceof Promise) {
-      result.then(tryApplyNewStateCallback, tryApplyNewStateErrback);
-      return;
-   }
-   tryApplyNewStateCallback(result);
+        }
+   );
 }
 
 /*
@@ -129,8 +120,8 @@ export function replaceState(newHistoryState: Data.IHistoryState): void {
 
 export function addRoute(
     route: Data.IRegisterableComponent,
-    beforeUrlChangeCb: Data.TStateChangeFunction = () => { return true; },
-    afterUrlChangeCb: Data.TStateChangeFunction = () => { return true; }
+    beforeUrlChangeCb: Data.TStateChangeFunction = () => { return Promise.resolve(true); },
+    afterUrlChangeCb: Data.TStateChangeFunction = () => { return Promise.resolve(true); }
 ): void {
    Data.getRegisteredRoutes()[route.getInstanceId()] = {
       beforeUrlChangeCb,
@@ -212,15 +203,15 @@ function _getNavigationState(
    return localState;
 }
 
-function _tryApplyNewState(newState: Data.IHistoryState): Promise<boolean> | boolean {
-   const currentState: Data.IHistoryState = History.getCurrentState();
+async function _tryApplyNewState(newState: Data.IHistoryState): Promise<boolean> {
+   const state: Data.IHistoryState = History.getCurrentState();
    const newApp: string = getAppNameByUrl(newState.state);
-   const currentApp: string = getAppNameByUrl(currentState.state);
-   
-   const callback = function(res: boolean): boolean {
-      if (newApp === currentApp) {
-         return res;
-      }
+   const currentApp: string = getAppNameByUrl(state.state);
+
+   const result: boolean = await _checkRoutesAcceptNewState(newState);
+   if (newApp === currentApp) {
+      return result;
+   } else {
       // Переходим без СПА, потому что сломалась синхронизация HEAD
       // при несовпадении VirtualDom inferno разрушает HEAD. Нужно
       // допатчить инферно так, чтобы под капотом библиотека НИКОГДА
@@ -228,22 +219,9 @@ function _tryApplyNewState(newState: Data.IHistoryState): Promise<boolean> | boo
       window.location.href = newState.href;
       return false;
    }
-
-   const result: Promise<boolean> | boolean = _callBeforeUrlChangeCallbacks(newState);
-   if (result instanceof Promise) {
-      return result.then((res) => callback(res));
-   }
-   return callback(result);
 }
 
-/**
- * Вызов всех предобработчиков смены url-адреса
- * Результат может быть как Promise<boolean> так и просто boolean - всё зависит от того, 
- * что вернут эти самые предобработчики
- * @param newState 
- * @returns 
- */
-function _callBeforeUrlChangeCallbacks(newState: Data.IHistoryState): Promise<boolean> | boolean {
+async function _checkRoutesAcceptNewState(newState: Data.IHistoryState): Promise<boolean> {
    const currentState: Data.IHistoryState = History.getCurrentState();
    const registeredRoutes: Record<string, Data.IRegisteredRoute> = Data.getRegisteredRoutes();
 
@@ -252,32 +230,16 @@ function _callBeforeUrlChangeCallbacks(newState: Data.IHistoryState): Promise<bo
       return false;
    }
 
-   // вызовы АСИНХРОННЫХ предобработчиков смены url-адреса
-   let beforeUrlChangePromises: Array<Promise<boolean>> = [];
-   // вызовы СИНХРОННЫХ предобработчиков смены url-адреса
-   const beforeUrlChangeResults: Array<boolean> = [];
-
+   const promises: Array<Promise<boolean>> = [];
    for (const routeId in registeredRoutes) {
-      if (!registeredRoutes.hasOwnProperty(routeId)) {
-         continue;
-      }
-      const route: Data.IRegisteredRoute = registeredRoutes[routeId];
-      const beforeCb: Promise<boolean> | boolean = route.beforeUrlChangeCb(newState, currentState);
-      if (beforeCb instanceof Promise) {
-         beforeUrlChangePromises.push(beforeCb);
-      } else {
-         beforeUrlChangeResults.push(beforeCb)
+      if (registeredRoutes.hasOwnProperty(routeId)) {
+         const route: Data.IRegisteredRoute = registeredRoutes[routeId];
+         promises.push(route.beforeUrlChangeCb(newState, currentState));
       }
    }
 
-   // АСИНХРОННЫЙ результат выполнения предобработчиков смены url-адреса
-   if (beforeUrlChangePromises.length) {
-      beforeUrlChangePromises = beforeUrlChangePromises.concat(beforeUrlChangeResults.map((r) => Promise.resolve(r)));
-      return Promise.all(beforeUrlChangePromises).then((results) => results.indexOf(false) === -1);
-   }
-
-   // СИНХРОННЫЙ результат выполнения предобработчиков смены url-адреса
-   return beforeUrlChangeResults.indexOf(false) === -1;
+   // Make sure none of the registered routes responded with 'false'
+   return Promise.all(promises).then((results) => results.indexOf(false) === -1);
 }
 
 function _notifyStateChanged(newState: Data.IHistoryState, oldState: Data.IHistoryState): void {
