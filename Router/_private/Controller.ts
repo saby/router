@@ -93,7 +93,7 @@ export function navigate(newState: Data.IHistoryState, callback?: Function, errb
       tryApplyNewStateErrback(err);
       return;
    }
-   
+
    if (result instanceof Promise) {
       result.then(tryApplyNewStateCallback, tryApplyNewStateErrback);
       return;
@@ -177,7 +177,8 @@ function _initializeController(): void {
          } else {
             // going forward
             const nextState: Data.IHistoryState = History.getNextState();
-            const navigateToState: Data.IHistoryState = _getNavigationState(nextState, event.state, Data.getRelativeUrl());
+            const navigateToState: Data.IHistoryState =
+               _getNavigationState(nextState, event.state, Data.getRelativeUrl());
             navigate(
                navigateToState,
                () => History.forward(navigateToState),
@@ -216,8 +217,8 @@ function _tryApplyNewState(newState: Data.IHistoryState): Promise<boolean> | boo
    const currentState: Data.IHistoryState = History.getCurrentState();
    const newApp: string = getAppNameByUrl(newState.state);
    const currentApp: string = getAppNameByUrl(currentState.state);
-   
-   const callback = function(res: boolean): boolean {
+
+   const callback = (res: boolean): boolean => {
       if (newApp === currentApp) {
          return res;
       }
@@ -227,7 +228,7 @@ function _tryApplyNewState(newState: Data.IHistoryState): Promise<boolean> | boo
       // не удаляла HEAD и HTML
       window.location.href = newState.href;
       return false;
-   }
+   };
 
    const result: Promise<boolean> | boolean = _callBeforeUrlChangeCallbacks(newState);
    if (result instanceof Promise) {
@@ -238,10 +239,10 @@ function _tryApplyNewState(newState: Data.IHistoryState): Promise<boolean> | boo
 
 /**
  * Вызов всех предобработчиков смены url-адреса
- * Результат может быть как Promise<boolean> так и просто boolean - всё зависит от того, 
+ * Результат может быть как Promise<boolean> так и просто boolean - всё зависит от того,
  * что вернут эти самые предобработчики
- * @param newState 
- * @returns 
+ * @param newState
+ * @returns
  */
 function _callBeforeUrlChangeCallbacks(newState: Data.IHistoryState): Promise<boolean> | boolean {
    const currentState: Data.IHistoryState = History.getCurrentState();
@@ -253,9 +254,9 @@ function _callBeforeUrlChangeCallbacks(newState: Data.IHistoryState): Promise<bo
    }
 
    // вызовы АСИНХРОННЫХ предобработчиков смены url-адреса
-   let beforeUrlChangePromises: Array<Promise<boolean>> = [];
+   let beforeUrlChangePromises: Promise<boolean>[] = [];
    // вызовы СИНХРОННЫХ предобработчиков смены url-адреса
-   const beforeUrlChangeResults: Array<boolean> = [];
+   const beforeUrlChangeResults: boolean[] = [];
 
    for (const routeId in registeredRoutes) {
       if (!registeredRoutes.hasOwnProperty(routeId)) {
@@ -266,7 +267,7 @@ function _callBeforeUrlChangeCallbacks(newState: Data.IHistoryState): Promise<bo
       if (beforeCb instanceof Promise) {
          beforeUrlChangePromises.push(beforeCb);
       } else {
-         beforeUrlChangeResults.push(beforeCb)
+         beforeUrlChangeResults.push(beforeCb);
       }
    }
 

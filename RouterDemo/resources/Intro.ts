@@ -3,10 +3,8 @@
  * @author Мустафин Л.И.
  */
 
-// @ts-ignore
-import {Control, TemplateFunction} from 'UI/Base';
+import { Control, TemplateFunction } from 'UI/Base';
 import { Controller, Data } from 'Router/router';
-// @ts-ignore
 import template = require('wml!RouterDemo/resources/Intro');
 
 /**
@@ -18,8 +16,8 @@ class Intro extends Control implements Data.IRegisterableComponent {
    protected _preventNavigateMessage: string = '';
    protected _preventNavigate: boolean = false;
 
-   protected _beforeMount(options: {}): void {
-      Controller.addRoute(this, (): boolean => {         
+   protected _beforeMount(): void {
+      Controller.addRoute(this, () => {
          if (this._preventNavigate) {
             return false;
          }
