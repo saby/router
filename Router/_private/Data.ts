@@ -27,7 +27,7 @@ export interface IHistoryState {
     href?: string;
 }
 
-export type TStateChangeFunction = (newLoc: IHistoryState, oldLoc: IHistoryState) => Promise<boolean>;
+export type TStateChangeFunction = (newLoc: IHistoryState, oldLoc: IHistoryState) => Promise<boolean> | boolean;
 
 export interface IRegisterableComponent {
     getInstanceId: () => string;
