@@ -3,9 +3,7 @@
  * @author Мустафин Л.И.
  */
 
-// @ts-ignore
-import {Control, TemplateFunction} from 'UI/Base';
-// @ts-ignore
+import { Control, TemplateFunction } from 'UI/Base';
 import template = require('wml!RouterDemo/resources/Masks');
 
 /**
