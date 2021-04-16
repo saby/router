@@ -6,10 +6,11 @@
 
 import { ModulesManager } from 'RequireJsLoader/conduct';
 import { MaskResolver } from 'Router/router';
-import { BaseRoute } from 'UI/Base';
 import { Body as AppBody } from 'Application/Page';
-import { mainRender, IRenderOptions } from 'Router/_ServerRouting/Bootstrap';
 import { logger, cookie } from 'Application/Env';
+import { BaseRoute } from 'UI/Base';
+import { headDataStore } from 'UI/Deps';
+import { mainRender, IRenderOptions } from 'Router/_ServerRouting/Bootstrap';
 
 interface IServerRoutingRequest {
     path: string;
@@ -140,6 +141,11 @@ function getDataToRender(module: IModuleToRender, url: string, moduleName: strin
     if (typeof module.getDataToRender !== 'function') {
         return Promise.resolve(false);
     }
+
+    // TODO свойство isNewEnvironment будет пересмотрено
+    // в https://online.sbis.ru/opendoc.html?guid=c28a34a5-54b2-4873-be99-f452189e64c0
+    // Если зовем метод getDataToRender, значит мы находимся в новом окружении
+    headDataStore.write('isNewEnvironment', true);
 
     // Promise для ограничения по времени вызов метода предзагрузки данных
     const timeoutPromise = new Promise((resolve, reject) => {
