@@ -78,7 +78,7 @@ function aggregateFullData(moduleName: string, options: IRenderOptions, controls
    const JSLinksAPIBase = AppJSLinks.getInstance(BASE_DEPS_NAMESPACE);
 
    /** Вполне возможно, что никто не успел создать title. Нужно сделать его самим из дефолтного поля */
-   createTitle(options.pageConfig.title);
+   createTitle(options.pageConfig?.title);
    /** Создаем внутри <head> стандартные тги: wsConfig, кодировка, и прочее. */
    createWsConfig(options);
    createDefaultTags(options);
