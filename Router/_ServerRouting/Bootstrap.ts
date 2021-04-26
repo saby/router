@@ -3,7 +3,7 @@ import * as HTMLTemplate from 'wml!Router/_ServerRouting/_Bootstrap/HTML';
 import * as ControlsHTMLTemplate from 'wml!Router/_ServerRouting/_Bootstrap/ControlsHTML';
 
 import { Body as AppBody, Head as AppHead, JSLinks as AppJSLinks } from 'Application/Page';
-import { logger } from 'Application/Env';
+import { logger, setConfig } from 'Application/Env';
 import { TagMarkup, fromJML } from 'UI/Base';
 import { addPageDeps, aggregateDependencies, BASE_DEPS_NAMESPACE, headDataStore } from 'UI/Deps';
 import { createWsConfig, createDefaultTags, createTitle } from 'UI/Head';
@@ -27,7 +27,7 @@ export interface IRenderOptions {
    RUMEnabled?: boolean;
    bootstrapWrapperMode?: boolean;
    application: string;
-   pageConfig: {title?: string};
+   pageConfig: {title?: string} | false;
 }
 
 /**
@@ -55,7 +55,7 @@ interface IFullData{
  * @param options
  */
 function renderControls(moduleName: string, options: IRenderOptions): Promise<string | void> {
-   options.bootstrapWrapperMode = true;
+   setConfig('bootstrapWrapperMode', true);
 
    const result: Promise<string> = Promise.resolve(ControlsHTMLTemplate({
       moduleName,
@@ -78,8 +78,8 @@ function aggregateFullData(moduleName: string, options: IRenderOptions, controls
    const JSLinksAPIBase = AppJSLinks.getInstance(BASE_DEPS_NAMESPACE);
 
    /** Вполне возможно, что никто не успел создать title. Нужно сделать его самим из дефолтного поля */
-   createTitle(options.pageConfig?.title);
-   /** Создаем внутри <head> стандартные тги: wsConfig, кодировка, и прочее. */
+   createTitle(options.pageConfig ? options.pageConfig.title || '' : '');
+   /** Создаем внутри <head> стандартные теги: wsConfig, кодировка, и прочее. */
    createWsConfig(options);
    createDefaultTags(options);
    /** Добавим текущий модуль moduleName в зависимости (все дочерние добавятся сами, а он - нет) */
