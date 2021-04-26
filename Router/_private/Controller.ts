@@ -164,10 +164,18 @@ function _initializeController(): void {
             return;
          }
 
+         // тут проверяем, что если в истории браузера записан какой-то объект состояния и в нем нет полей
+         // роутера (id, state, href), то не вызываем navigate. Т.к. считаем, что кто-то записал состояние
+         // в обход роутера и не хочет, чтобы совершали переход роутером
+         if (event.state && !event.state.id && !event.state.state && !event.state.href) {
+            return;
+         }
+
          const currentState: Data.IHistoryState = History.getCurrentState();
          const prevState: Data.IHistoryState = History.getPrevState();
+
+         // нажатие на стрелку "назад" браузера
          if ((!event.state && !prevState) || (event.state && event.state.id < currentState.id)) {
-            // going back
             const navigateToState: Data.IHistoryState = _getNavigationState(
                prevState,
                event.state,
@@ -175,7 +183,7 @@ function _initializeController(): void {
             );
             navigate(navigateToState, () => History.back(navigateToState));
          } else {
-            // going forward
+            // нажатие на стрелку "вперед" браузера
             const nextState: Data.IHistoryState = History.getNextState();
             const navigateToState: Data.IHistoryState =
                _getNavigationState(nextState, event.state, Data.getRelativeUrl());
