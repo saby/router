@@ -1,12 +1,5 @@
-<UI.Base:HTML
-        attr:application="RouterDemo/Index"
-        attr:rootapp="UI/Base:Document"
-        scope="{{_options}}">
-    <ws:bodyTemplate>
-        <ws:partial template="{{bodyTemplate.content}}">
-            <ws:bodyContent>
-                <RouterDemo.Main />
-            </ws:bodyContent>
-        </ws:partial>
-    </ws:bodyTemplate>
-</UI.Base:HTML>
+<div style="width: inherit; height: inherit;">
+    <a class="vdom-focus-in" tabindex="1" attr:key="vdom-focus-in"></a>
+    <RouterDemo.Main scope="{{_options}}"/>
+    <a class="vdom-focus-out" tabindex="0" attr:key="vdom-focus-out"></a>
+</div>

@@ -6,9 +6,7 @@
 
 import { ModulesManager } from 'RequireJsLoader/conduct';
 import { MaskResolver } from 'Router/router';
-import { Body as AppBody } from 'Application/Page';
-import { logger, cookie } from 'Application/Env';
-import { BaseRoute } from 'UI/Base';
+import { logger } from 'Application/Env';
 import { headDataStore } from 'UI/Deps';
 import { mainRender, IRenderOptions } from 'Router/_ServerRouting/Bootstrap';
 
@@ -90,7 +88,6 @@ export function getPageSource(options: IRenderOptions, request: IServerRoutingRe
  * @param request
  */
 function renderPageSource(options: IRenderOptions, request: IServerRoutingRequest): Promise<IPageSource> {
-
     const modulesManager = new ModulesManager();
     const moduleName = getAppName(request);
     let module;
@@ -107,20 +104,7 @@ function renderPageSource(options: IRenderOptions, request: IServerRoutingReques
 
     return getDataToRender(module, request.path, moduleName)
         .then((pageConfig: object | false) => {
-            // временная кука, чтобы принудительно переключать старый рендер или рендер от div
-            // renderType = 'old' - старый рендер
-            // renderType = 'new' - рендер от div
-            const renderType: string = cookie.get('RenderType');
-
-            // условно-старый способ генерации HTML
-            if (renderType !== 'new' && (pageConfig === false || renderType === 'old')) {
-                return renderOldHtml(moduleName, options);
-            }
-
-            // генерация HTML методом трёхэтпного построения верстки
-            if (pageConfig && typeof pageConfig === 'object') {
-                options.pageConfig = pageConfig;
-            }
+            options.pageConfig = pageConfig;
             return mainRender(moduleName, {application: moduleName, ...options});
         })
         .then((html) => {
@@ -166,19 +150,5 @@ function getDataToRender(module: IModuleToRender, url: string, moduleName: strin
                 logger.warn('Router/ServerRouting', timeoutError.message);
             }
             return {error: err || timeoutError};
-        });
-}
-
-/**
- * условно-старый способ генерации HTML
- * @param moduleName
- * @param options
- */
-function renderOldHtml(moduleName: string, options: IRenderOptions): Promise<string> {
-    return Promise.resolve(BaseRoute({application: moduleName, ...options}))
-        .then((html) => {
-            //FIXME: Костылямбрий, который будет жить, пока не закончится переход на построение от шаблона #bootsrap
-            const classes = AppBody.getInstance().getClassString() || '';
-            return html.replace('__htmlBodyClasses', classes).replace('__htmlBodyClasses', classes);
         });
 }
