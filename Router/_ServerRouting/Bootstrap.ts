@@ -6,7 +6,7 @@ import { Body as AppBody, Head as AppHead, JSLinks as AppJSLinks } from 'Applica
 import { logger, setConfig } from 'Application/Env';
 import { TagMarkup, fromJML } from 'UI/Base';
 import { addPageDeps, aggregateDependencies, BASE_DEPS_NAMESPACE, headDataStore } from 'UI/Deps';
-import { createWsConfig, createDefaultTags, createTitle } from 'UI/Head';
+import { createWsConfig, createTitle } from 'UI/Head';
 
 /**
  * @interface IRenderOptions
@@ -81,7 +81,6 @@ function aggregateFullData(moduleName: string, options: IRenderOptions, controls
    createTitle(options.pageConfig ? options.pageConfig.title || '' : '');
    /** Создаем внутри <head> стандартные теги: wsConfig, кодировка, и прочее. */
    createWsConfig(options);
-   createDefaultTags(options);
    /** Добавим текущий модуль moduleName в зависимости (все дочерние добавятся сами, а он - нет) */
    addPageDeps([moduleName]);
    /** Опрашиваем depsCollector на предмет собранных зависимостей. */
