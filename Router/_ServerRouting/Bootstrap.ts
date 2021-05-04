@@ -1,5 +1,4 @@
 
-import * as HTMLTemplate from 'wml!Router/_ServerRouting/_Bootstrap/HTML';
 import * as ControlsHTMLTemplate from 'wml!Router/_ServerRouting/_Bootstrap/ControlsHTML';
 
 import { Body as AppBody, Head as AppHead, JSLinks as AppJSLinks } from 'Application/Page';
@@ -98,13 +97,21 @@ function aggregateFullData(moduleName: string, options: IRenderOptions, controls
    };
 }
 
+function getRequiredModulesString(requiredModules: string[]): string {
+   if (!requiredModules || !requiredModules.length) {
+      return '[]';
+   }
+   return requiredModules.join('","');
+}
+
 /**
  * Этап 3
  * @param moduleName
  * @param fullData
  */
 function renderHTML(moduleName: string, fullData: IFullData): string {
-   return HTMLTemplate({...fullData, ...{moduleName}});
+    const requiredModules = getRequiredModulesString(fullData.requiredModules || []);
+    return HTMLTemplate({ ...fullData, requiredModules, ...{moduleName}});
 }
 
 export function mainRender(moduleName: string, options: IRenderOptions): Promise<string> {
@@ -116,4 +123,62 @@ export function mainRender(moduleName: string, options: IRenderOptions): Promise
             pageResolve(renderHTML(moduleName, fullData));
          });
    });
+}
+
+
+
+function HTMLTemplate(values: IFullData & { moduleName?: string }): string {
+    const HeadAPIData = values.HeadAPIData || '';
+    const BodyAPIClasses = values.BodyAPIClasses || '';
+    const moduleName = values.moduleName || '';
+    const controlsHTML = values.controlsHTML || '';
+    const JSLinksAPIBaseData = values.JSLinksAPIBaseData || '';
+    const JSLinksAPIData = values.JSLinksAPIData || '';
+    const requiredModules = values.requiredModules || '';
+
+    return `<!DOCTYPE html><html lang="en"><head>${ HeadAPIData }</head><body class="${ BodyAPIClasses }"><div id="wasaby-content" style="width:inherit;height:inherit" application="${ moduleName }">${ controlsHTML }</div><div class="wasabyBaseDeps">${ JSLinksAPIBaseData }</div><div class="wasabyJSDeps">${ JSLinksAPIData }</div><div id="wasabyStartScript"><div key="scripts"><script key="init_script">document.addEventListener('DOMContentLoaded', function() {
+    let steps = [
+        /* запуск ядра по умолчанию для всех браузеров */
+        {
+            deps: ['Env/Env', 'Application/Initializer', 'Application/Env', 'SbisEnvUI/Wasaby',
+                'UI/Base', 'UI/State', 'Application/State', 'Core/polyfill'],
+            callback: function(Env, AppInit, AppEnv, EnvUIWasaby, UIBase, UIState, AppState) {
+                window.startContextData = {AppData: new UIState.AppData({})};
+                Object.assign(Env.constants, window.wsConfig);
+                require(["${ requiredModules }"], function() {
+                    var sr = new AppState.StateReceiver(UIState.Serializer);
+                    AppInit.default(window.wsConfig, void 0, sr);
+                    UIBase.BootstrapStart({}, document.getElementById('wasaby-content'));
+                });
+                if (Env.constants.isProduction) {
+                    console.log(
+                        '%c\tЭта функция браузера предназначена для разработчиков.\t\n' +
+                        '\tЕсли кто-то сказал вам скопировать и вставить что-то здесь, это мошенники.\t\n' +
+                        '\tВыполнив эти действия, вы предоставите им доступ к своему аккаунту.\t\n',
+                        'background: red; color: white; font-size: 22px; font-weight: bolder; text-shadow: 1px 1px 2px black;'
+                    );
+                }
+            }
+        }
+    ];
+    if (false) {  //isIE
+        /* для IE сначала грузим polyfill, чтобы в ядре под IE это все было доступно */
+        steps.unshift({
+            deps: ['Core/polyfill'],
+            callback: function() {}
+        })
+    }
+
+    function startApplication(steps) {
+        let step = steps.shift();
+        require(step.deps, function() {
+            step.callback.apply(this, arguments);
+            if (steps.length) {
+                startApplication(steps);
+            }
+        })
+    }
+
+    startApplication(steps);
+});</script></div></div></body></html>`;
 }
