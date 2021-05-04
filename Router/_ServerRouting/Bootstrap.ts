@@ -5,7 +5,7 @@ import { Body as AppBody, Head as AppHead, JSLinks as AppJSLinks } from 'Applica
 import { logger, setConfig } from 'Application/Env';
 import { TagMarkup, fromJML } from 'UI/Base';
 import { addPageDeps, aggregateDependencies, BASE_DEPS_NAMESPACE, headDataStore } from 'UI/Deps';
-import { createWsConfig, createTitle } from 'UI/Head';
+import { createWsConfig, createDefaultTags, createTitle } from 'UI/Head';
 
 /**
  * @interface IRenderOptions
@@ -13,20 +13,20 @@ import { createWsConfig, createTitle } from 'UI/Head';
  * @property {object} pageConfig - поле, в котором будут лежать предзагруженные данные для построения страницы
  */
 export interface IRenderOptions {
-   appRoot: string;
-   wsRoot: string;
-   resourceRoot: string;
-   cdnRoot?: string;
-   staticDomains: string[];
-   logLevel?: string;
-   servicesPath: string;
-   buildnumber?: string;
-   product?: string;
-   pageName?: string;
-   RUMEnabled?: boolean;
-   bootstrapWrapperMode?: boolean;
-   application: string;
-   pageConfig: {title?: string} | false;
+    appRoot: string;
+    wsRoot: string;
+    resourceRoot: string;
+    cdnRoot?: string;
+    staticDomains: string[];
+    logLevel?: string;
+    servicesPath: string;
+    buildnumber?: string;
+    product?: string;
+    pageName?: string;
+    RUMEnabled?: boolean;
+    bootstrapWrapperMode?: boolean;
+    application: string;
+    pageConfig: { title?: string } | false;
 }
 
 /**
@@ -38,14 +38,14 @@ export interface IRenderOptions {
  * @property {string[]} requiredModules   - массив с именами доп. зависимостей. Они нужны непосредственно для старта.
  * @property {string} controlsHTML        - стррока вида HTML с версткой контролов, полученная на первом шаге.
  */
-interface IFullData{
-   HeadAPIData: string;
-   BodyAPIClasses: string;
-   JSLinksAPIBaseData: string;
-   JSLinksAPIData: string;
+interface IFullData {
+    HeadAPIData: string;
+    BodyAPIClasses: string;
+    JSLinksAPIBaseData: string;
+    JSLinksAPIData: string;
 
-   requiredModules: string[];
-   controlsHTML: string;
+    requiredModules: string[];
+    controlsHTML: string;
 }
 
 /**
@@ -54,14 +54,14 @@ interface IFullData{
  * @param options
  */
 function renderControls(moduleName: string, options: IRenderOptions): Promise<string | void> {
-   setConfig('bootstrapWrapperMode', true);
+    setConfig('bootstrapWrapperMode', true);
 
-   const result: Promise<string> = Promise.resolve(ControlsHTMLTemplate({
-      moduleName,
-      options
-   }, {key: 'bd_'}));
+    const result: Promise<string> = Promise.resolve(ControlsHTMLTemplate({
+        moduleName,
+        options
+    }, { key: 'bd_' }));
 
-   return result.catch((e) => logger.error(e));
+    return result.catch((e) => logger.error(e));
 }
 
 /**
@@ -71,37 +71,38 @@ function renderControls(moduleName: string, options: IRenderOptions): Promise<st
  * @param controlsHTML
  */
 function aggregateFullData(moduleName: string, options: IRenderOptions, controlsHTML: string): IFullData {
-   const BodyAPI = AppBody.getInstance();
-   const HeadAPI = AppHead.getInstance();
-   const JSLinksAPI = AppJSLinks.getInstance();
-   const JSLinksAPIBase = AppJSLinks.getInstance(BASE_DEPS_NAMESPACE);
+    const BodyAPI = AppBody.getInstance();
+    const HeadAPI = AppHead.getInstance();
+    const JSLinksAPI = AppJSLinks.getInstance();
+    const JSLinksAPIBase = AppJSLinks.getInstance(BASE_DEPS_NAMESPACE);
 
-   /** Вполне возможно, что никто не успел создать title. Нужно сделать его самим из дефолтного поля */
-   createTitle(options.pageConfig ? options.pageConfig.title || '' : '');
-   /** Создаем внутри <head> стандартные теги: wsConfig, кодировка, и прочее. */
-   createWsConfig(options);
-   /** Добавим текущий модуль moduleName в зависимости (все дочерние добавятся сами, а он - нет) */
-   addPageDeps([moduleName]);
-   /** Опрашиваем depsCollector на предмет собранных зависимостей. */
-   const deps = headDataStore.read('collectDependencies')();
-   /** Раскидываем собранные JS и CSS зависимости по HeadAPI и JSLinksAPI */
-   aggregateDependencies(options, deps);
+    /** Вполне возможно, что никто не успел создать title. Нужно сделать его самим из дефолтного поля */
+    createTitle(options.pageConfig ? options.pageConfig.title || '' : '');
+    /** Создаем внутри <head> стандартные теги: wsConfig, кодировка, и прочее. */
+    createWsConfig(options);
+    createDefaultTags(options);
+    /** Добавим текущий модуль moduleName в зависимости (все дочерние добавятся сами, а он - нет) */
+    addPageDeps([moduleName]);
+    /** Опрашиваем depsCollector на предмет собранных зависимостей. */
+    const deps = headDataStore.read('collectDependencies')();
+    /** Раскидываем собранные JS и CSS зависимости по HeadAPI и JSLinksAPI */
+    aggregateDependencies(options, deps);
 
-   return {
-      HeadAPIData: new TagMarkup(HeadAPI.getData().map(fromJML), {getResourceUrl: false}).outerHTML,
-      BodyAPIClasses: BodyAPI.getClassString(),
-      JSLinksAPIBaseData: new TagMarkup(JSLinksAPIBase.getData().map(fromJML), {getResourceUrl: false}).outerHTML,
-      JSLinksAPIData: new TagMarkup(JSLinksAPI.getData().map(fromJML), {getResourceUrl: false}).outerHTML,
-      requiredModules: deps.additionalDeps,
-      controlsHTML
-   };
+    return {
+        HeadAPIData: new TagMarkup(HeadAPI.getData().map(fromJML), { getResourceUrl: false }).outerHTML,
+        BodyAPIClasses: BodyAPI.getClassString(),
+        JSLinksAPIBaseData: new TagMarkup(JSLinksAPIBase.getData().map(fromJML), { getResourceUrl: false }).outerHTML,
+        JSLinksAPIData: new TagMarkup(JSLinksAPI.getData().map(fromJML), { getResourceUrl: false }).outerHTML,
+        requiredModules: deps.additionalDeps,
+        controlsHTML
+    };
 }
 
 function getRequiredModulesString(requiredModules: string[]): string {
-   if (!requiredModules || !requiredModules.length) {
-      return '[]';
-   }
-   return requiredModules.join('","');
+    if (!requiredModules || !requiredModules.length) {
+        return '[]';
+    }
+    return requiredModules.join('","');
 }
 
 /**
@@ -110,18 +111,18 @@ function getRequiredModulesString(requiredModules: string[]): string {
  * @param fullData
  */
 function renderHTML(moduleName: string, fullData: IFullData): string {
-    return HTMLTemplate({ ...fullData, ...{moduleName}});
+    return HTMLTemplate({ ...fullData, ...{ moduleName } });
 }
 
 export function mainRender(moduleName: string, options: IRenderOptions): Promise<string> {
-   return new Promise((pageResolve) => {
-      renderControls(moduleName, options)
-         .then((controlsHTML: string = '') => {
-            const fullData = aggregateFullData(moduleName, options, controlsHTML);
+    return new Promise((pageResolve) => {
+        renderControls(moduleName, options)
+            .then((controlsHTML: string = '') => {
+                const fullData = aggregateFullData(moduleName, options, controlsHTML);
 
-            pageResolve(renderHTML(moduleName, fullData));
-         });
-   });
+                pageResolve(renderHTML(moduleName, fullData));
+            });
+    });
 }
 
 
@@ -135,7 +136,7 @@ function HTMLTemplate(values: IFullData & { moduleName?: string }): string {
     const JSLinksAPIData = values.JSLinksAPIData || '';
     const requiredModules = getRequiredModulesString(values.requiredModules || []);
 
-    return `<!DOCTYPE html><html lang="en"><head>${ HeadAPIData }</head><body class="${ BodyAPIClasses }"><div id="wasaby-content" style="width:inherit;height:inherit" application="${ moduleName }">${ controlsHTML }</div><div class="wasabyBaseDeps">${ JSLinksAPIBaseData }</div><div class="wasabyJSDeps">${ JSLinksAPIData }</div><div id="wasabyStartScript"><div key="scripts"><script key="init_script">document.addEventListener('DOMContentLoaded', function() {
+    return `<!DOCTYPE html><html lang="en"><head>${HeadAPIData}</head><body class="${BodyAPIClasses}"><div id="wasaby-content" style="width:inherit;height:inherit" application="${moduleName}">${controlsHTML}</div><div class="wasabyBaseDeps">${JSLinksAPIBaseData}</div><div class="wasabyJSDeps">${JSLinksAPIData}</div><div id="wasabyStartScript"><div key="scripts"><script key="init_script">document.addEventListener('DOMContentLoaded', function() {
     let steps = [
         /* запуск ядра по умолчанию для всех браузеров */
         {
@@ -144,7 +145,7 @@ function HTMLTemplate(values: IFullData & { moduleName?: string }): string {
             callback: function(Env, AppInit, AppEnv, EnvUIWasaby, UIBase, UIState, AppState) {
                 window.startContextData = {AppData: new UIState.AppData({})};
                 Object.assign(Env.constants, window.wsConfig);
-                require(["${ requiredModules }"], function() {
+                require(["${requiredModules}"], function() {
                     var sr = new AppState.StateReceiver(UIState.Serializer);
                     AppInit.default(window.wsConfig, void 0, sr);
                     UIBase.BootstrapStart({}, document.getElementById('wasaby-content'));
