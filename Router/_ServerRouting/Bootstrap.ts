@@ -110,8 +110,7 @@ function getRequiredModulesString(requiredModules: string[]): string {
  * @param fullData
  */
 function renderHTML(moduleName: string, fullData: IFullData): string {
-    const requiredModules = getRequiredModulesString(fullData.requiredModules || []);
-    return HTMLTemplate({ ...fullData, requiredModules, ...{moduleName}});
+    return HTMLTemplate({ ...fullData, ...{moduleName}});
 }
 
 export function mainRender(moduleName: string, options: IRenderOptions): Promise<string> {
@@ -134,7 +133,7 @@ function HTMLTemplate(values: IFullData & { moduleName?: string }): string {
     const controlsHTML = values.controlsHTML || '';
     const JSLinksAPIBaseData = values.JSLinksAPIBaseData || '';
     const JSLinksAPIData = values.JSLinksAPIData || '';
-    const requiredModules = values.requiredModules || '';
+    const requiredModules = getRequiredModulesString(values.requiredModules || []);
 
     return `<!DOCTYPE html><html lang="en"><head>${ HeadAPIData }</head><body class="${ BodyAPIClasses }"><div id="wasaby-content" style="width:inherit;height:inherit" application="${ moduleName }">${ controlsHTML }</div><div class="wasabyBaseDeps">${ JSLinksAPIBaseData }</div><div class="wasabyJSDeps">${ JSLinksAPIData }</div><div id="wasabyStartScript"><div key="scripts"><script key="init_script">document.addEventListener('DOMContentLoaded', function() {
     let steps = [
