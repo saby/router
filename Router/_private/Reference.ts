@@ -6,17 +6,15 @@ import template = require('wml!Router/_private/Reference');
 
 import * as Controller from './Controller';
 import * as MaskResolver from './MaskResolver';
-import { getReverse, get } from './UrlRewriter';
-import { IHistoryState, ISyntheticMouseEvent, getRelativeUrl } from './Data';
+import { getReverse } from './UrlRewriter';
+import { IHistoryState, ISyntheticMouseEvent } from './Data';
 import { IRegisterableComponent, getVisibleRelativeUrl } from 'Router/_private/Data';
-import { UrlParts } from "./MaskResolver/UrlParts";
 
 interface IReferenceOptions extends Record<string, unknown> {
     content?: Function;
     state?: string;
     href?: string;
     clear?: boolean;
-    keepQuery?: boolean;
 }
 
 /*
@@ -213,20 +211,11 @@ class Reference extends Control implements IRegisterableComponent {
     }
 
     private _recalcHref(cfg: IReferenceOptions, url?: string): void {
-        //TODO: https://online.sbis.ru/opendoc.html?guid=8132eb2c-9e44-44cd-a30d-515f52429a24
-        if (this._state && cfg.keepQuery) {
-            return;
-        }
         this._state = MaskResolver.calculateHref(cfg.state, cfg, url);
         if (cfg.href) {
             this._href = MaskResolver.calculateHref(cfg.href, cfg, url);
         } else {
             this._href = getReverse(this._state);
-        }
-        //TODO: https://online.sbis.ru/opendoc.html?guid=8132eb2c-9e44-44cd-a30d-515f52429a24
-        if (cfg.keepQuery) {
-            const urlParts = new UrlParts(url || get(getRelativeUrl()));
-            this._href += urlParts.getQuery();
         }
     }
 
