@@ -4,7 +4,7 @@ import * as ControlsHTMLTemplate from 'wml!Router/_ServerRouting/_Bootstrap/Cont
 import { Body as AppBody, Head as AppHead, JSLinks as AppJSLinks } from 'Application/Page';
 import { logger, setConfig } from 'Application/Env';
 import { TagMarkup, fromJML } from 'UI/Base';
-import { addPageDeps, aggregateDependencies, BASE_DEPS_NAMESPACE, headDataStore } from 'UI/Deps';
+import { addPageDeps, aggregateDependencies, BASE_DEPS_NAMESPACE, headDataStore, UTILS_SCRIPTS_NAMESPACE } from 'UI/Deps';
 import { createWsConfig, createDefaultTags, createTitle } from 'UI/Head';
 
 /**
@@ -43,6 +43,7 @@ interface IFullData {
     BodyAPIClasses: string;
     JSLinksAPIBaseData: string;
     JSLinksAPIData: string;
+    JSLinksAPIUtilScriptsData: string;
 
     requiredModules: string[];
     controlsHTML: string;
@@ -75,6 +76,7 @@ function aggregateFullData(moduleName: string, options: IRenderOptions, controls
     const HeadAPI = AppHead.getInstance();
     const JSLinksAPI = AppJSLinks.getInstance();
     const JSLinksAPIBase = AppJSLinks.getInstance(BASE_DEPS_NAMESPACE);
+    const JSLinksAPIUtilScripts = AppJSLinks.getInstance(UTILS_SCRIPTS_NAMESPACE);
 
     /** Вполне возможно, что никто не успел создать title. Нужно сделать его самим из дефолтного поля */
     createTitle(options.pageConfig ? options.pageConfig.title || '' : '');
@@ -92,6 +94,7 @@ function aggregateFullData(moduleName: string, options: IRenderOptions, controls
         HeadAPIData: new TagMarkup(HeadAPI.getData().map(fromJML), { getResourceUrl: false }).outerHTML,
         BodyAPIClasses: BodyAPI.getClassString(),
         JSLinksAPIBaseData: new TagMarkup(JSLinksAPIBase.getData().map(fromJML), { getResourceUrl: false }).outerHTML,
+        JSLinksAPIUtilScriptsData: new TagMarkup(JSLinksAPIUtilScripts.getData().map(fromJML), {getResourceUrl: false}).outerHTML,
         JSLinksAPIData: new TagMarkup(JSLinksAPI.getData().map(fromJML), { getResourceUrl: false }).outerHTML,
         requiredModules: deps.additionalDeps,
         controlsHTML
