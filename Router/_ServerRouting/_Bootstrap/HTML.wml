@@ -13,11 +13,6 @@
     </div>
     <div class="wasabyUtilScripts">
       {{ __setHTMLUnsafe(JSLinksAPIUtilScriptsData) }}
-         <script>
-             require(['SbisEnvUI/TimeTesterInv'], function(TimeTester){
-                new TimeTester.default();
-             })
-         </script>
     </div>
     <div class="wasabyJSDeps">
       {{ __setHTMLUnsafe(JSLinksAPIData) }}
