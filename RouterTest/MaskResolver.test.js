@@ -561,6 +561,21 @@ function (Router) {
                assert.strictEqual(newUrl, '/path/#first=fvalue&second=abc');
             });
          });
+         
+         /** Проверка вычисления url-адреса, когда используется корневая маска (с "/" вначале).
+          * с опцией keepQuery query-часть url-адреса не должна очищаться */
+         describe('keepQuery', function() {
+            it('root url', function() {
+               Data.setRelativeUrl('/?query=value');
+               var newUrl = MaskResolver.calculateHref('/page/:pageId', { pageId: 'NewName', keepQuery: true });
+               assert.strictEqual(newUrl, '/page/NewName?query=value');
+            });
+            it('simple url', function() {
+               Data.setRelativeUrl('/page/Name?query=value');
+               var newUrl = MaskResolver.calculateHref('/page/:pageId', { pageId: 'NewName', keepQuery: true });
+               assert.strictEqual(newUrl, '/page/NewName?query=value');
+            });
+         });
       });
 
       describe('#calculateQueryHref', function() {
