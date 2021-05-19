@@ -15,11 +15,18 @@ export class UrlModifier {
     private readonly cfg: Record<string, unknown>;
     private readonly urlParts: UrlParts;
     private readonly maskTypes: IMaskType[];
+    /**
+     * Признак того, при использовании корневой маски (которая начиниется с символа "/")
+     * не нужно удалять текущие query параметры из URL-адреса
+     */
+    private readonly keepQuery: boolean;
     constructor(mask: string, cfg: Record<string, unknown>, url: string) {
         this.mask = mask;
         this.urlParts = new UrlParts(url);
         // определим тип маски
         this.maskTypes = calculateMaskType(mask, this.urlParts);
+
+        this.keepQuery = !!cfg.keepQuery;
 
         this.cfg = cfg.clear ? {} : cfg;
         // когда нужно заменить url переданной маской
@@ -52,7 +59,8 @@ export class UrlModifier {
             }
         });
         if (isReplaceMask) {
-            ['path', 'query', 'fragment'].forEach((field) => {
+            const urlPartFields: string[] = this.keepQuery ? ['path', 'fragment'] : ['path', 'query', 'fragment'];
+            urlPartFields.forEach((field) => {
                 if (newUrlParts[field] === undefined) {
                     newUrlParts[field] = '';
                 }
