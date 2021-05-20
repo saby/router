@@ -11,8 +11,8 @@
     <div class="wasabyBaseDeps">
       {{ __setHTMLUnsafe(JSLinksAPIBaseData) }}
     </div>
-    <div class="wasabyUtilScripts">
-      {{ __setHTMLUnsafe(JSLinksAPIUtilScriptsData) }}
+    <div class="wasabyTimeTester">
+      {{ __setHTMLUnsafe(JSLinksAPITimeTesterData) }}
     </div>
     <div class="wasabyJSDeps">
       {{ __setHTMLUnsafe(JSLinksAPIData) }}
