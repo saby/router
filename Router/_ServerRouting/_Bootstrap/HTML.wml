@@ -11,13 +11,8 @@
     <div class="wasabyBaseDeps">
       {{ __setHTMLUnsafe(JSLinksAPIBaseData) }}
     </div>
-    <div class="wasabyUtilScripts">
-      {{ __setHTMLUnsafe(JSLinksAPIUtilScriptsData) }}
-         <script>
-             require(['SbisEnvUI/TimeTesterInv'], function(TimeTester){
-                new TimeTester.default();
-             })
-         </script>
+    <div class="wasabyTimeTester">
+      {{ __setHTMLUnsafe(JSLinksAPITimeTesterData) }}
     </div>
     <div class="wasabyJSDeps">
       {{ __setHTMLUnsafe(JSLinksAPIData) }}
