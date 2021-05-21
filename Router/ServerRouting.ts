@@ -7,7 +7,7 @@
 import { ModulesManager } from 'RequireJsLoader/conduct';
 import { MaskResolver } from 'Router/router';
 import { logger } from 'Application/Env';
-import { headDataStore } from 'UI/Deps';
+import { headDataStore } from 'UICommon/Deps';
 import { mainRender, IRenderOptions } from 'Router/_ServerRouting/Bootstrap';
 
 interface IServerRoutingRequest {
@@ -90,7 +90,7 @@ export function getPageSource(options: IRenderOptions, request: IServerRoutingRe
 function renderPageSource(options: IRenderOptions, request: IServerRoutingRequest): Promise<IPageSource> {
     const modulesManager = new ModulesManager();
     const moduleName = getAppName(request);
-    let module;
+    let module: IModuleToRender;
 
     try {
         module = modulesManager.loadSync(moduleName);
