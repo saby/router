@@ -4,7 +4,7 @@ import * as ControlsHTMLTemplate from 'wml!Router/_ServerRouting/_Bootstrap/Cont
 import { Body as AppBody, Head as AppHead, JSLinks as AppJSLinks } from 'Application/Page';
 import { logger, setConfig } from 'Application/Env';
 import { TagMarkup, fromJML } from 'UI/Base';
-import { addPageDeps, aggregateDependencies, BASE_DEPS_NAMESPACE, headDataStore } from 'UI/Deps';
+import { addPageDeps, aggregateDependencies, BASE_DEPS_NAMESPACE, headDataStore } from 'UICommon/Deps';
 import { createWsConfig, createDefaultTags, createTitle } from 'UI/Head';
 
 /**
