@@ -93,8 +93,16 @@ function renderPageSource(options: IRenderOptions, request: IServerRoutingReques
 
     const modulesManager = new ModulesManager();
     const moduleName = getAppName(request);
-    let module;
 
+    // FIXME: https://online.sbis.ru/opendoc.html?guid=03651902-f2a9-4a02-a2b7-30b9d85aa66c
+    if (moduleName.startsWith('https:')) {
+        return Promise.resolve({
+            status: PageSourceStatus.NOT_FOUND,
+            error: new Error(`Не удалось разрешить url ${moduleName}, нет соотвествий в облаке.`)
+        });
+    }
+
+    let module;
     try {
         module = modulesManager.loadSync(moduleName);
     } catch (error) {
