@@ -1,0 +1,43 @@
+/// <amd-module name="Router/_ServerRouting/_Bootstrap/Interface" />
+
+/**
+ * @interface IFullData - данные для построения полной страницы
+ * @property {string} HeadAPIData         - данные из HeadAPI. Строка вида HTML.
+ * @property {string} BodyAPIClasses      - данные из BodyAPI. Строка с классами для <body>.
+ * @property {string} JSLinksAPIBaseData  - данные из JSLinksAPI, но с базовыми скриптами. Строка вида HTML.
+ * @property {string} JSLinksAPIData      - данные из JSLinksAPI со всеми остальными скриптами. Строка вида HTML.
+ * @property {string[]} requiredModules   - массив с именами доп. зависимостей. Они нужны непосредственно для старта.
+ * @property {string} controlsHTML        - стррока вида HTML с версткой контролов, полученная на первом шаге.
+ */
+export interface IFullData {
+   HeadAPIData: string;
+   BodyAPIClasses: string;
+   JSLinksAPIBaseData: string;
+   JSLinksAPIData: string;
+   JSLinksAPITimeTesterData: string;
+
+   requiredModules: string[];
+   controlsHTML: string;
+}
+
+/**
+ * @interface IRenderOptions
+ * @property {boolean} bootstrapWrapperMode - флаг, который говорит компоненту SbisEnvUI.Bootstrap строить только контент
+ * @property {object} pageConfig - поле, в котором будут лежать предзагруженные данные для построения страницы
+ */
+export interface IRenderOptions {
+   appRoot: string;
+   wsRoot: string;
+   resourceRoot: string;
+   cdnRoot?: string;
+   staticDomains: string[];
+   logLevel?: string;
+   servicesPath: string;
+   buildnumber?: string;
+   product?: string;
+   pageName?: string;
+   RUMEnabled?: boolean;
+   bootstrapWrapperMode?: boolean;
+   application: string;
+   pageConfig: { title?: string } | false;
+}
