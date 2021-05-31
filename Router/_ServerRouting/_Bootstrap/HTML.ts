@@ -57,7 +57,7 @@ function getStartScript(values: IRenderFullData): string {
    ].join('') : 'require';
 
    return [
-      `<script key="init_script">,
+      `<script key="init_script">
 document.addEventListener('DOMContentLoaded', function () {
   ${mainStart}('Env/Env', 'Application/Initializer', 'Application/Env', 'SbisEnvUI/Wasaby', 'UI/Base', 'UI/State', 'Application/State', 'Core/polyfill',
     function (Env, AppInit, AppEnv, EnvUIWasaby, UIBase, UIState, AppState) {
