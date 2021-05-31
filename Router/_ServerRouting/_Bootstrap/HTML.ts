@@ -59,7 +59,7 @@ function getStartScript(values: IRenderFullData): string {
    return [
       `<script key="init_script">
 document.addEventListener('DOMContentLoaded', function () {
-  ${mainStart}('Env/Env', 'Application/Initializer', 'Application/Env', 'SbisEnvUI/Wasaby', 'UI/Base', 'UI/State', 'Application/State', 'Core/polyfill',
+  ${mainStart}(['Env/Env', 'Application/Initializer', 'Application/Env', 'SbisEnvUI/Wasaby', 'UI/Base', 'UI/State', 'Application/State', 'Core/polyfill'],
     function (Env, AppInit, AppEnv, EnvUIWasaby, UIBase, UIState, AppState) {
 	   window.startContextData = {
 		  AppData: new UIState.AppData({})
@@ -81,5 +81,5 @@ function getRequiredModulesString(requiredModules: string[]): string {
    if (!requiredModules || !requiredModules.length) {
       return '[]';
    }
-   return requiredModules.join('","');
+   return `['${requiredModules.join('\',\'')}']`;
 }
