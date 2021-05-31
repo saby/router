@@ -7,48 +7,8 @@ import { TagMarkup, fromJML } from 'UI/Base';
 import { addPageDeps, aggregateDependencies, BASE_DEPS_NAMESPACE, headDataStore,
     TIMETESTER_SCRIPTS_NAMESPACE } from 'UICommon/Deps';
 import { createWsConfig, createDefaultTags, createTitle } from 'UI/Head';
-
-/**
- * @interface IRenderOptions
- * @property {boolean} bootstrapWrapperMode - флаг, который говорит компоненту SbisEnvUI.Bootstrap строить только контент
- * @property {object} pageConfig - поле, в котором будут лежать предзагруженные данные для построения страницы
- */
-export interface IRenderOptions {
-    appRoot: string;
-    wsRoot: string;
-    resourceRoot: string;
-    cdnRoot?: string;
-    staticDomains: string[];
-    logLevel?: string;
-    servicesPath: string;
-    buildnumber?: string;
-    product?: string;
-    pageName?: string;
-    RUMEnabled?: boolean;
-    bootstrapWrapperMode?: boolean;
-    application: string;
-    pageConfig: { title?: string } | false;
-}
-
-/**
- * @interface IFullData - данные для построения полной страницы
- * @property {string} HeadAPIData         - данные из HeadAPI. Строка вида HTML.
- * @property {string} BodyAPIClasses      - данные из BodyAPI. Строка с классами для <body>.
- * @property {string} JSLinksAPIBaseData  - данные из JSLinksAPI, но с базовыми скриптами. Строка вида HTML.
- * @property {string} JSLinksAPIData      - данные из JSLinksAPI со всеми остальными скриптами. Строка вида HTML.
- * @property {string[]} requiredModules   - массив с именами доп. зависимостей. Они нужны непосредственно для старта.
- * @property {string} controlsHTML        - стррока вида HTML с версткой контролов, полученная на первом шаге.
- */
-interface IFullData {
-    HeadAPIData: string;
-    BodyAPIClasses: string;
-    JSLinksAPIBaseData: string;
-    JSLinksAPIData: string;
-    JSLinksAPITimeTesterData: string;
-
-    requiredModules: string[];
-    controlsHTML: string;
-}
+import { render } from 'Router/_ServerRouting/_Bootstrap/HTML';
+import { IFullData, IRenderOptions } from 'Router/_ServerRouting/_Bootstrap/Interface';
 
 /**
  * Этап 1
@@ -95,18 +55,12 @@ function aggregateFullData(moduleName: string, options: IRenderOptions, controls
         HeadAPIData: new TagMarkup(HeadAPI.getData().map(fromJML), { getResourceUrl: false }).outerHTML,
         BodyAPIClasses: BodyAPI.getClassString(),
         JSLinksAPIBaseData: new TagMarkup(JSLinksAPIBase.getData().map(fromJML), { getResourceUrl: false }).outerHTML,
-        JSLinksAPITimeTesterData: new TagMarkup(JSLinksAPITimeTester.getData().map(fromJML), {getResourceUrl: false}).outerHTML,
+        JSLinksAPITimeTesterData: new TagMarkup(JSLinksAPITimeTester
+           .getData().map(fromJML), {getResourceUrl: false}).outerHTML,
         JSLinksAPIData: new TagMarkup(JSLinksAPI.getData().map(fromJML), { getResourceUrl: false }).outerHTML,
         requiredModules: deps.additionalDeps,
         controlsHTML
     };
-}
-
-function getRequiredModulesString(requiredModules: string[]): string {
-    if (!requiredModules || !requiredModules.length) {
-        return '[]';
-    }
-    return requiredModules.join('","');
 }
 
 /**
@@ -115,7 +69,7 @@ function getRequiredModulesString(requiredModules: string[]): string {
  * @param fullData
  */
 function renderHTML(moduleName: string, fullData: IFullData): string {
-    return HTMLTemplate({ ...fullData, ...{ moduleName } });
+    return render({ ...fullData, ...{ moduleName } });
 }
 
 export function mainRender(moduleName: string, options: IRenderOptions): Promise<string> {
@@ -127,62 +81,4 @@ export function mainRender(moduleName: string, options: IRenderOptions): Promise
                 pageResolve(renderHTML(moduleName, fullData));
             });
     });
-}
-
-
-
-function HTMLTemplate(values: IFullData & { moduleName?: string }): string {
-    const HeadAPIData = values.HeadAPIData || '';
-    const BodyAPIClasses = values.BodyAPIClasses || '';
-    const moduleName = values.moduleName || '';
-    const controlsHTML = values.controlsHTML || '';
-    const JSLinksAPIBaseData = values.JSLinksAPIBaseData || '';
-    const JSLinksAPIData = values.JSLinksAPIData || '';
-    const requiredModules = getRequiredModulesString(values.requiredModules || []);
-
-    return `<!DOCTYPE html><html lang="en"><head>${HeadAPIData}</head><body class="${BodyAPIClasses}"><div id="wasaby-content" style="width:inherit;height:inherit" application="${moduleName}">${controlsHTML}</div><div class="wasabyBaseDeps">${JSLinksAPIBaseData}</div><div class="wasabyJSDeps">${JSLinksAPIData}</div><div id="wasabyStartScript"><div key="scripts"><script key="init_script">document.addEventListener('DOMContentLoaded', function() {
-    let steps = [
-        /* запуск ядра по умолчанию для всех браузеров */
-        {
-            deps: ['Env/Env', 'Application/Initializer', 'Application/Env', 'SbisEnvUI/Wasaby',
-                'UI/Base', 'UI/State', 'Application/State', 'Core/polyfill'],
-            callback: function(Env, AppInit, AppEnv, EnvUIWasaby, UIBase, UIState, AppState) {
-                window.startContextData = {AppData: new UIState.AppData({})};
-                Object.assign(Env.constants, window.wsConfig);
-                require(["${requiredModules}"], function() {
-                    var sr = new AppState.StateReceiver(UIState.Serializer);
-                    AppInit.default(window.wsConfig, void 0, sr);
-                    UIBase.BootstrapStart({}, document.getElementById('wasaby-content'));
-                });
-                if (Env.constants.isProduction) {
-                    console.log(
-                        '%c\\tЭта функция браузера предназначена для разработчиков.\\t\\n' +
-                        '\\tЕсли кто-то сказал вам скопировать и вставить что-то здесь, это мошенники.\\t\\n' +
-                        '\\tВыполнив эти действия, вы предоставите им доступ к своему аккаунту.\\t\\n',
-                        'background: red; color: white; font-size: 22px; font-weight: bolder; text-shadow: 1px 1px 2px black;'
-                    );
-                }
-            }
-        }
-    ];
-    if (false) {  //isIE
-        /* для IE сначала грузим polyfill, чтобы в ядре под IE это все было доступно */
-        steps.unshift({
-            deps: ['Core/polyfill'],
-            callback: function() {}
-        })
-    }
-
-    function startApplication(steps) {
-        let step = steps.shift();
-        require(step.deps, function() {
-            step.callback.apply(this, arguments);
-            if (steps.length) {
-                startApplication(steps);
-            }
-        })
-    }
-
-    startApplication(steps);
-});</script></div></div></body></html>`;
 }
