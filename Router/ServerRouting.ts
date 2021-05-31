@@ -1,7 +1,7 @@
 /// <amd-module name="Router/ServerRouting" />
 /**
  * Рендеринг страницы на сервере
- * @author Санников К.А.
+ * @author Мустафин Л.И.
  */
 
 import { ModulesManager } from 'RequireJsLoader/conduct';

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<ui_module id="a857d050-c754-4d39-90ec-fca5e2ddf033" name="RouterDemo" package="Платформа" responsible="Санников К.А." required="1" version="1.00">
+<ui_module id="a857d050-c754-4d39-90ec-fca5e2ddf033" name="RouterDemo" package="Платформа" responsible="Мустафин Л.И." required="1" version="1.00">
 
   <description>Router for WaSaby</description>
 

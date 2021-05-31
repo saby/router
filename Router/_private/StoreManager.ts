@@ -11,7 +11,7 @@ const STORAGE_KEY = 'RouterData';
  * Класс-заглушка на случай, если нету VDOM или если код выполняется на сервисе представления
  * @class Router/_private/StoreManager#FakeStore
  * @public
- * @author Санников К.А.
+ * @author Мустафин Л.И.
  */
 class FakeStore implements IStore<Record<string, unknown>> {
     private _store: Record<string, unknown> = {};
@@ -42,7 +42,7 @@ class FakeStore implements IStore<Record<string, unknown>> {
  * Класс-обертка над IStore. Реализует интерфейс IRouterData
  * @class Router/_private/StoreManager#RouterData
  * @public
- * @author Санников К.А.
+ * @author Мустафин Л.И.
  */
 class RouterData implements IRouterData {
 
@@ -99,7 +99,7 @@ class RouterData implements IRouterData {
  * Класс-менеджер хранилища
  * @class Router/_private/StoreManager
  * @public
- * @author Санников К.А.
+ * @author Мустафин Л.И.
  */
 class StoreManager {
 
