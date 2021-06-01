@@ -11,7 +11,7 @@ interface IRenderFullData extends IFullData {
 }
 
 export function render(values: IRenderFullData): string {
-   return [
+   const htmlLines = [
       '<!DOCTYPE html>',
       '<html lang="en">',
       '  <head>',
@@ -23,19 +23,30 @@ export function render(values: IRenderFullData): string {
       '    </div>',
       '    <div class="wasabyBaseDeps">',
       `      ${values.JSLinksAPIBaseData}`,
-      '    </div>',
+      '    </div>'
+   ];
+   if (values.JSLinksAPITimeTesterData) {
+      htmlLines.push(...[
       '    <div class="wasabyTimeTester">',
       `      ${values.JSLinksAPITimeTesterData}`,
-      '    </div>',
+      '    </div>'
+      ]);
+   }
+   if (values.JSLinksAPIData) {
+      htmlLines.push(...[
       '    <div class="wasabyJSDeps">',
       `      ${values.JSLinksAPIData}`,
-      '    </div>',
+      '    </div>'
+      ]);
+   }
+   htmlLines.push(...[
       '    <div id="wasabyStartScript">',
       `      ${getStartScript(values)}`,
       '    </div>',
       '  </body>',
       '</html>'
-   ].join(newLine);
+   ]);
+   return htmlLines.join(newLine);
 }
 
 /**
@@ -118,6 +129,8 @@ document.addEventListener('DOMContentLoaded', function () {
          Проблема в том, что при старте html.tmpl-страницы на клиенте, не вызывается UI/Base:Document
          Это должно быть сведено в одну точку */
          UIDeps.headDataStore.write('isNewEnvironment', true);
+         // переключаем SbisEnvUI/Bootstrap в режим рендера в div
+         AppEnv.setConfig('bootstrapWrapperMode', true);
          window.startContextData = {AppData: new UIState.AppData({})};
          require([${builderOptions.dependencies}], function (){
             var templateFn = ${builderOptions.builder};
