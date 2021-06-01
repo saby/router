@@ -3,7 +3,7 @@
 /**
  * Набор общих функций для управления в системе роутинга.
  * @module Router/_private/Controller
- * @author Санников К.А.
+ * @author Мустафин Л.И.
  * @public
  */
 

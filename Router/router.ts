@@ -11,7 +11,7 @@
  * @includes Reference Router/_private/Reference
  * @includes Route Router/_private/Route
  * @public
- * @author Санников К.А.
+ * @author Мустафин Л.И.
  */
 /**
  * Библиотека single-page роутинга
@@ -24,7 +24,7 @@
  * @includes Reference Router/_private/Reference
  * @includes Route Router/_private/Route
  * @public
- * @author Санников К.А.
+ * @author Мустафин Л.И.
  */
 
 import * as Controller from './_private/Controller';

@@ -44,7 +44,7 @@ const FILTERED_OPTIONS_NAMES: string[] =
  * @extends UI/Base:Control
  * @control
  * @public
- * @author Санников К.А.
+ * @author Мустафин Л.И.
  */
 class Route extends Control implements IRegisterableComponent {
     /*
