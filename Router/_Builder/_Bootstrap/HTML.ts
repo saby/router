@@ -1,9 +1,9 @@
-/// <amd-module name="Router/_ServerRouting/_Bootstrap/HTML" />
+/// <amd-module name="Router/_Builder/_Bootstrap/HTML" />
 
 // @ts-ignore
-import * as HTML from 'text!Router/_ServerRouting/_Bootstrap/HTML.html';
+import * as HTML from 'text!Router/_Builder/_Bootstrap/HTML.html';
 import { detection, constants } from 'Env/Env';
-import { IFullData, IBuilderOptions } from 'Router/_ServerRouting/_Bootstrap/Interface';
+import { IFullData, IBuilderOptions } from './Interface';
 
 const newLine = '\n';
 interface IRenderFullData extends IFullData {

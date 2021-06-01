@@ -8,8 +8,7 @@ import { ModulesManager } from 'RequireJsLoader/conduct';
 import { MaskResolver } from 'Router/router';
 import { logger } from 'Application/Env';
 import { headDataStore, isModuleExists } from 'UICommon/Deps';
-import { mainRender } from 'Router/_ServerRouting/Bootstrap';
-import { IRenderOptions } from 'Router/_ServerRouting/_Bootstrap/Interface';
+import { mainRender, IRenderOptions } from 'Router/Builder';
 
 interface IServerRoutingRequest {
     path: string;
