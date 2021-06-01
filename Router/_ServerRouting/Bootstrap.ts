@@ -32,7 +32,7 @@ function renderControls(moduleName: string, options: IRenderOptions): Promise<st
  * @param options
  * @param controlsHTML
  */
-function aggregateFullData(moduleName: string, options: IRenderOptions, controlsHTML: string): IFullData {
+export function aggregateFullData(moduleName: string, options: IRenderOptions, controlsHTML: string): IFullData {
     const BodyAPI = AppBody.getInstance();
     const HeadAPI = AppHead.getInstance();
     const JSLinksAPI = AppJSLinks.getInstance();

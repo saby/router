@@ -3,7 +3,7 @@
 // @ts-ignore
 import * as HTML from 'text!Router/_ServerRouting/_Bootstrap/HTML.html';
 import { detection, constants } from 'Env/Env';
-import { IFullData } from 'Router/_ServerRouting/_Bootstrap/Interface';
+import { IFullData, IBuilderOptions } from 'Router/_ServerRouting/_Bootstrap/Interface';
 
 const newLine = '\n';
 interface IRenderFullData extends IFullData {
@@ -38,7 +38,16 @@ export function render(values: IRenderFullData): string {
    ].join(newLine);
 }
 
+/**
+ * Стартовый скрипт, который в браузере "оживляет" страницу
+ * @param values
+ * @returns
+ */
 function getStartScript(values: IRenderFullData): string {
+   if (values.builderOptions?.builder) {
+      return getStaticPageStartScript(values.builderOptions);
+   }
+
    const consoleMessage = 'console.log(\n' +
       "'%c\\tЭта функция браузера предназначена для разработчиков.\\t\\n' +\n" +
       "'\\tЕсли кто-то сказал вам скопировать и вставить что-то здесь, это мошенники.\\t\\n' +\n" +
@@ -81,4 +90,50 @@ function getRequiredModulesString(requiredModules: string[]): string {
       return '[]';
    }
    return `['${requiredModules.join('\',\'')}']`;
+}
+
+/**
+ * Стартовые скрипты для статичных страниц, которые создает builder из файлов name.html.tmpl
+ * @param builderOptions
+ * @returns
+ */
+function getStaticPageStartScript(builderOptions: IBuilderOptions): string {
+   if (builderOptions.builderCompatible) {
+      throw new Error('Обнаружено некорректное использование шаблона статичной страницы. '
+         + 'Нельзя строить статичную страницу в режиме совместимости ("compatible" = true)!') ;
+   }
+
+   return `<script>
+window.receivedStates = '{"ThemesController": {"themes" : {"' + (window.defaultStaticTheme || 'default') + '": true}}}';
+document.addEventListener('DOMContentLoaded', function () {
+   require(['UICore/Base', 'Application/Initializer', 'Application/Env', 'SbisEnvUI/Compatible', 'UI/Executor',
+            'Application/State', 'UI/State', 'UICommon/Deps', 'SbisEnvUI/Wasaby'],
+      function (UICore, AppInitializer, AppEnv, Compatible, UIExecutor, AppState, UIState, UIDeps) {
+         /*Первый шаг - старт Application, иницализация core и темы. Второй шаг - загрузка ресурсов*/
+         AppInitializer.default(window.wsConfig, new AppEnv.EnvBrowser(window['wsConfig']),
+                                new AppState.StateReceiver(UIState.Serializer));
+         Compatible.AppInit();
+
+         /* Этот же флаг проставляется в UI/Base:Document
+         Проблема в том, что при старте html.tmpl-страницы на клиенте, не вызывается UI/Base:Document
+         Это должно быть сведено в одну точку */
+         UIDeps.headDataStore.write('isNewEnvironment', true);
+         window.startContextData = {AppData: new UIState.AppData({})};
+         require([${builderOptions.dependencies}], function (){
+            var templateFn = ${builderOptions.builder};
+            templateFn.stable = true;
+            var cnt = UICore.Control.extend({
+               _template: templateFn
+            });
+            cnt.defaultProps = {
+               notLoadThemes: true
+            };
+            Compatible.AppStart._shouldStart = false;
+            var domElement = UICore.selectRenderDomNode(document.getElementById('wasaby-content'));
+            Compatible.AppStart.createControl(cnt, {}, domElement);
+         });
+      }
+   );
+});
+      </script>`;
 }
