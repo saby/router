@@ -7,9 +7,11 @@
  * @author Мустафин Л.И.
  */
 
-import { IFullData, IRenderOptions } from './_ServerRouting/_Bootstrap/Interface';
-import { aggregateFullData } from './_ServerRouting/Bootstrap';
-import { render } from './_ServerRouting/_Bootstrap/HTML';
+import { IFullData, IRenderOptions } from './_Builder/_Bootstrap/Interface';
+import { aggregateFullData, mainRender } from './_Builder/Bootstrap';
+import { render } from './_Builder/_Bootstrap/HTML';
+
+export { mainRender, IRenderOptions };
 
 /**
  * Рендер html для статичных страниц, которые генерятся из файлов вида name.html.tmpl в builder

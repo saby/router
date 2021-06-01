@@ -1,4 +1,4 @@
-/// <amd-module name="Router/_ServerRouting/_Bootstrap/Interface" />
+/// <amd-module name="Router/_Builder/_Bootstrap/Interface" />
 
 /**
  * @interface IFullData - данные для построения полной страницы
