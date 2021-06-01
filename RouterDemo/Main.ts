@@ -1,6 +1,6 @@
 /// <amd-module name="RouterDemo/Main" />
 /**
- * @author Санников К.А.
+ * @author Мустафин Л.И.
  */
 
 import {Control, TemplateFunction} from 'UI/Base';

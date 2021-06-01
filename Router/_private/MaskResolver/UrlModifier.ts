@@ -204,11 +204,17 @@ class PathModifier {
         }
 
         let newUrlPart: string = urlPart.slice(0, maskIndexInUrl + urlPartFromMask.length);
+        const urlPartSliced: string = urlPart.slice(maskIndexInUrl + urlPartFromMask.length);
         reUrlReplaceItems.forEach((reUrlReplace) => {
-            const _match: RegExpMatchArray = urlPart.slice(maskIndexInUrl + urlPartFromMask.length)
-                                                    .match(new RegExp(reUrlReplace));
+            const _match: RegExpMatchArray = urlPartSliced.match(new RegExp(reUrlReplace));
+
+            /** напр. есть url /ModuleName/page/business-groups и есть маска /group/:groupId
+             * чтобы ошибочно не взять часть этого url (там есть слово "group"),
+             * проверим один дополнительный символ слева на равенство символу /
+             */
             if (_match) {
-                newUrlPart += _match[0];
+                const matchIndex = urlPart.indexOf(_match[0]);
+                newUrlPart += (matchIndex === 0 || urlPart[matchIndex - 1] === '/') ? _match[0] : '';
             }
         });
         return newUrlPart;
