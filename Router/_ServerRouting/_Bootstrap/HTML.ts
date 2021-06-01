@@ -39,13 +39,12 @@ export function render(values: IRenderFullData): string {
 }
 
 function getStartScript(values: IRenderFullData): string {
-   const consoleMessage = [
-      'console.log(',
-      '"%c\tЭта функция браузера предназначена для разработчиков.\t',
-      '\tЕсли кто-то сказал вам скопировать и вставить что-то здесь, это мошенники.\t',
-      '\tВыполнив эти действия, вы предоставите им доступ к своему аккаунту.\t',
-      'background: red; color: white; font-size: 22px; font-weight: bolder; text-shadow: 1px 1px 2px black;");'
-   ].join(newLine);
+   const consoleMessage = 'console.log(\n' +
+      "'%c\\tЭта функция браузера предназначена для разработчиков.\\t\\n' +\n" +
+      "'\\tЕсли кто-то сказал вам скопировать и вставить что-то здесь, это мошенники.\\t\\n' +\n" +
+      "'\\tВыполнив эти действия, вы предоставите им доступ к своему аккаунту.\\t\\n',\n" +
+      "'background: red; color: white; font-size: 22px; font-weight: bolder; text-shadow: 1px 1px 2px black;'\n" +
+      ');';
 
    /**
     * Для IE сначала грузим Core/polyfill, чтобы в ядре под IE это все было доступно
