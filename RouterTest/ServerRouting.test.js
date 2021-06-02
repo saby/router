@@ -1,8 +1,9 @@
 /* global assert */
-define(['Router/ServerRouting'], /**
+/* global sinon */
+define(['Router/ServerRouting', 'UICommon/Deps'], /**
  * @param { import('../Router/ServerRouting') } ServerRouting
  */
-function(ServerRouting) {
+function(ServerRouting, UIDeps) {
    function createFakeRequest(path) {
       return {
          path: path,
@@ -43,6 +44,9 @@ function(ServerRouting) {
 
       it('rendering the provided application -> successfully generate page', function(done) {
          var fakeRequest = createFakeRequest('/RouterTest/?from=landing');
+         // заглушка метода проверки существования модуля, который строим
+         var isModuleExistsStub = sinon.stub(UIDeps, 'isModuleExists');
+         isModuleExistsStub.withArgs('RouterTest/Index').returns(true);
          var successHandlerCalled = false;
          var notFoundHandlerCalled = false;
          var onSuccessHandler = function(html) {
@@ -56,6 +60,8 @@ function(ServerRouting) {
                assert.isTrue(successHandlerCalled, 'Шаблон страницы должен был построиться');
                assert.isFalse(notFoundHandlerCalled);
                assert.hasAllKeys(pageSource, ['status', 'html']);
+               // сбросим заглушку
+               isModuleExistsStub.restore();
             })
             .then(done, done);
       });

@@ -7,7 +7,7 @@
 import { ModulesManager } from 'RequireJsLoader/conduct';
 import { MaskResolver } from 'Router/router';
 import { logger } from 'Application/Env';
-import { headDataStore } from 'UICommon/Deps';
+import { headDataStore, isModuleExists } from 'UICommon/Deps';
 import { mainRender } from 'Router/_ServerRouting/Bootstrap';
 import { IRenderOptions } from 'Router/_ServerRouting/_Bootstrap/Interface';
 
@@ -91,8 +91,15 @@ export function getPageSource(options: IRenderOptions, request: IServerRoutingRe
 function renderPageSource(options: IRenderOptions, request: IServerRoutingRequest): Promise<IPageSource> {
     const modulesManager = new ModulesManager();
     const moduleName = getAppName(request);
-    let module: IModuleToRender;
 
+    if (!isModuleExists(moduleName)) {
+        return Promise.resolve({
+            status: PageSourceStatus.NOT_FOUND,
+            error: new Error(`Модуля с названием ${moduleName} не существует.`)
+        });
+    }
+
+    let module: IModuleToRender;
     try {
         module = modulesManager.loadSync(moduleName);
     } catch (error) {
