@@ -1,4 +1,4 @@
-/// <amd-module name="Router/_ServerRouting/_Bootstrap/Interface" />
+/// <amd-module name="Router/_Builder/_Bootstrap/Interface" />
 
 /**
  * @interface IFullData - данные для построения полной страницы
@@ -18,6 +18,9 @@ export interface IFullData {
 
    requiredModules: string[];
    controlsHTML: string;
+
+   // поля при генерации статичной странички в билдере
+   builderOptions?: IBuilderOptions;
 }
 
 /**
@@ -40,4 +43,12 @@ export interface IRenderOptions {
    bootstrapWrapperMode?: boolean;
    application: string;
    pageConfig: { title?: string } | false;
+   _options?: IBuilderOptions;
+}
+
+// поля при генерации статичной странички в билдере
+export interface IBuilderOptions {
+   builder: string;
+   builderCompatible: boolean;
+   dependencies: string[];
 }
