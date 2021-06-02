@@ -9,7 +9,7 @@ import { MaskResolver } from 'Router/router';
 import { Body as AppBody } from 'Application/Page';
 import { logger, cookie } from 'Application/Env';
 import { BaseRoute } from 'UI/Base';
-import { headDataStore } from 'UI/Deps';
+import { headDataStore, isModuleExists } from 'UI/Deps';
 import { mainRender, IRenderOptions } from 'Router/_ServerRouting/Bootstrap';
 
 interface IServerRoutingRequest {
@@ -93,8 +93,15 @@ function renderPageSource(options: IRenderOptions, request: IServerRoutingReques
 
     const modulesManager = new ModulesManager();
     const moduleName = getAppName(request);
-    let module: IModuleToRender;
 
+    if (!isModuleExists(moduleName)) {
+        return Promise.resolve({
+            status: PageSourceStatus.NOT_FOUND,
+            error: new Error(`Модуля с названием ${moduleName} не существует.`)
+        });
+    }
+
+    let module: IModuleToRender;
     try {
         module = modulesManager.loadSync(moduleName);
     } catch (error) {
