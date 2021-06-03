@@ -44,6 +44,7 @@ export interface IRenderOptions {
    application: string;
    pageConfig: { title?: string } | false;
    _options?: IBuilderOptions;
+   doNotCheckModuleInContents: true | undefined;
 }
 
 // поля при генерации статичной странички в билдере
