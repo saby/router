@@ -92,7 +92,11 @@ function renderPageSource(options: IRenderOptions, request: IServerRoutingReques
     const modulesManager = new ModulesManager();
     const moduleName = getAppName(request);
 
-    if (!isModuleExists(moduleName)) {
+    /** Нужно проверять наличие модуля, перед запросом через require.
+     * Иначе будет уязвимость с производительностью, потому что могут передать в адресе мусор
+     * https://online.sbis.ru/opendoc.html?guid=76a641dd-1f2a-497a-aa2b-a7f102da5735
+     */
+    if (!options.doNotCheckModuleInContents && !isModuleExists(moduleName)) {
         return Promise.resolve({
             status: PageSourceStatus.NOT_FOUND,
             error: new Error(`Модуля с названием ${moduleName} не существует.`)
