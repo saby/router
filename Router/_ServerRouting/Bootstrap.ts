@@ -28,6 +28,7 @@ export interface IRenderOptions {
    bootstrapWrapperMode?: boolean;
    application: string;
    pageConfig: {title?: string};
+   doNotCheckModuleInContents: true | undefined;
 }
 
 /**
