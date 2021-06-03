@@ -91,7 +91,7 @@ function renderPageSource(options: IRenderOptions, request: IServerRoutingReques
     const modulesManager = new ModulesManager();
     const moduleName = getAppName(request);
 
-    if (!isModuleExists(moduleName)) {
+    if (!options.doNotCheckModuleInContents && !isModuleExists(moduleName)) {
         return Promise.resolve({
             status: PageSourceStatus.NOT_FOUND,
             error: new Error(`Модуля с названием ${moduleName} не существует.`)
