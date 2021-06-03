@@ -40,4 +40,5 @@ export interface IRenderOptions {
    bootstrapWrapperMode?: boolean;
    application: string;
    pageConfig: { title?: string } | false;
+   doNotCheckModuleInContents: true | undefined;
 }
