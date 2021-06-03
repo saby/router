@@ -210,11 +210,19 @@ class PathModifier {
 
             /** напр. есть url /ModuleName/page/business-groups и есть маска /group/:groupId
              * чтобы ошибочно не взять часть этого url (там есть слово "group"),
-             * проверим один дополнительный символ слева на равенство символу /
+             * проверим один дополнительный символ слева на равенство символу "/" или пустоте
+             * И проверим символ справа - там не должно быть ничего
+             *                            либо правый символ найденной подстроки должен быть равен символу "/"
              */
             if (_match) {
-                const matchIndex = urlPart.indexOf(_match[0]);
-                newUrlPart += (matchIndex === 0 || urlPart[matchIndex - 1] === '/') ? _match[0] : '';
+                const matchIndex = _match.index;
+                // следующий символ справа от найденной строки
+                const matchRightChar = urlPartSliced[matchIndex + _match[0].length];
+                const matchLastChar = _match[0][_match[0].length - 1];
+                if ((matchIndex === 0 || urlPartSliced[matchIndex - 1] === '/')
+                        && (typeof matchRightChar === 'undefined' || matchLastChar === '/')) {
+                    newUrlPart += _match[0];
+                }
             }
         });
         return newUrlPart;

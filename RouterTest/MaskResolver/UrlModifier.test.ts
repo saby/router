@@ -37,8 +37,12 @@ describe('Router/_private/MaskResolver/UrlModifier', () => {
          // лидирующий слеш
          modifier = new UrlModifier('/group/:groupId/page/:pageId', {pageId: 'new-page'}, '/page/business-groups');
          assert.strictEqual(modifier.modify(), '/page/new-page');
+         modifier = new UrlModifier('/group/:groupId/page/:pageId', {pageId: 'new-page'}, '/page/groups');
+         assert.strictEqual(modifier.modify(), '/page/new-page');
          // без лидирующего слеша
          modifier = new UrlModifier('group/:groupId/page/:pageId', {pageId: 'new-page'}, '/page/business-groups');
+         assert.strictEqual(modifier.modify(), '/page/new-page');
+         modifier = new UrlModifier('group/:groupId/page/:pageId', {pageId: 'new-page'}, '/page/groups');
          assert.strictEqual(modifier.modify(), '/page/new-page');
 
          modifier = new UrlModifier('tab/:tab', {tab: 'newtab'}, '/path/tab/oldtab/tab/');
