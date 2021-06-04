@@ -31,7 +31,7 @@ interface IReferenceOptions extends Record<string, unknown> {
  * Вычисленный адрес передается внутрь компонента под именем href.
  * При клике на Reference совершается переход по выбранному адресу без перезагрузки страницы.
  *
- * <a href="https://github.com/saby/Router#using-reference-to-change-urls">Статья о компоненте</a>
+ * <a href="https://wasaby.dev/doc/platform/routing/#router-references">Статья о компоненте</a>
  *
  * @example
  * Обычно Router.router:Reference используется в сочетании с элементом ссылки `a`, так как
@@ -60,7 +60,7 @@ class Reference extends Control implements IRegisterableComponent {
      * @name Router/_private/Reference#state
      * @cfg {String} A mask that specifies which part of the actual URL should be changed
      * @remark
-     * Refer to documentation <a href="https://github.com/saby/Router#using-reference-to-change-urls">for
+     * Refer to documentation <a href="https://wasaby.dev/doc/platform/routing/#router-references">for
      * detailed description</a>.
      */
     /**
@@ -71,7 +71,7 @@ class Reference extends Control implements IRegisterableComponent {
      * для каждого placeholder'a также должно быть передано в Reference в качестве опции (см. пример).
      *
      * Опция state поддерживает те же типы масок, что и Router.router:Route. Более подробно о видах масок
-     * можно <a href="https://github.com/saby/Router#mask-types">прочитать в статье</a>.
+     * можно <a href="https://wasaby.dev/doc/platform/routing/mask-and-syntax/">прочитать в статье</a>.
      *
      * Если маска в текущем адресе отсутствует, URL-адрес при переходе будет не изменен, а дополнен этой
      * маской с соответствующим значением.
@@ -90,13 +90,22 @@ class Reference extends Control implements IRegisterableComponent {
      * Текущий адрес: "/book/destination/Russia" -> После: "/book/destination/Italy"
      * Текущий адрес: "/book/destination/USA/day/Tue?price=mid" -> После: "/book/destination/Italy/day/Tue?price=mid"
      * Текущий адрес: "/book/all" -> После: "/book/all/destination/Italy"
+     *
+     * Чтобы удалить параметр из URL-адреса, необходимо его добавить в маску, но не передавать для него значение
+     * <pre>
+     * <Router.router:Reference state="destination/:country/day/:dayName" country="Italy">
+     *    <a href="{{ content.href }}">Go to Italy</a>
+     * </Router.router:Reference>
+     * </pre>
+     *
+     * Текущий адрес: "/book/destination/USA/day/Tue?price=mid" -> После: "/book/destination/Italy?price=mid"
      */
 
     /*
      * @name Router/_private/Reference#href
      * @cfg {String} A mask that specified which part of the "pretty" (user friendly) URL should be changed
      * @remark
-     * Refer to documentation <a href="https://github.com/saby/Router#specifying-a-pretty-url">for
+     * Refer to documentation <a href="https://wasaby.dev/doc/platform/routing/#beautiful-link">for
      * detailed description</a>.
      */
     /**
@@ -110,7 +119,7 @@ class Reference extends Control implements IRegisterableComponent {
      * Если опция href не задана, в качестве красивого адреса будет использоваться реальный адрес, изменяемый
      * опцией state, что подходит в большинстве случаев.
      *
-     * Более подробно о красивых адресах можно <a href="https://github.com/saby/Router#specifying-a-pretty-url">
+     * Более подробно о красивых адресах можно <a href="https://wasaby.dev/doc/platform/routing/#beautiful-link">
      * прочитать в статье</a>.
      *
      * Опция href поддерживает те же виды масок и параметров, как и опция state.
