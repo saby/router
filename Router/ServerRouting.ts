@@ -114,6 +114,10 @@ function renderPageSource(options: IRenderOptions, request: IServerRoutingReques
         });
     }
 
+    // TODO свойство isNewEnvironment будет пересмотрено
+    // в https://online.sbis.ru/opendoc.html?guid=c28a34a5-54b2-4873-be99-f452189e64c0
+    headDataStore.write('isNewEnvironment', true);
+
     return getDataToRender(module, request.path, moduleName)
         .then((pageConfig: object | false) => {
             options.pageConfig = pageConfig;
@@ -137,11 +141,6 @@ function getDataToRender(module: IModuleToRender, url: string, moduleName: strin
     if (typeof module.getDataToRender !== 'function') {
         return Promise.resolve(false);
     }
-
-    // TODO свойство isNewEnvironment будет пересмотрено
-    // в https://online.sbis.ru/opendoc.html?guid=c28a34a5-54b2-4873-be99-f452189e64c0
-    // Если зовем метод getDataToRender, значит мы находимся в новом окружении
-    headDataStore.write('isNewEnvironment', true);
 
     // Promise для ограничения по времени вызов метода предзагрузки данных
     const timeoutPromise = new Promise((resolve, reject) => {
