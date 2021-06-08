@@ -10,11 +10,9 @@ import { logger } from 'Application/Env';
 import { headDataStore, isModuleExists } from 'UICommon/Deps';
 import { mainRender, IRenderOptions } from 'Router/Builder';
 
-interface IServerRoutingRequest {
+export interface IServerRoutingRequest {
     path: string;
     compatible: boolean;
-    staticConfig: object;
-    pageName: string;
 }
 
 // таймаут ожиданию предзагрузки данных для страницы

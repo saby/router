@@ -41,7 +41,7 @@ export interface IRenderOptions {
    pageName?: string;
    RUMEnabled?: boolean;
    bootstrapWrapperMode?: boolean;
-   application: string;
+   application?: string;
    pageConfig: { title?: string } | false;
    _options?: IBuilderOptions;
    doNotCheckModuleInContents: true | undefined;
