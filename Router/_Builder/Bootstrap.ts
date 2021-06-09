@@ -6,7 +6,7 @@ import { logger, setConfig } from 'Application/Env';
 import { TagMarkup, fromJML } from 'UI/Base';
 import { addPageDeps, aggregateDependencies, BASE_DEPS_NAMESPACE, headDataStore,
     TIMETESTER_SCRIPTS_NAMESPACE } from 'UICommon/Deps';
-import { createWsConfig, createDefaultTags, createTitle } from 'UI/Head';
+import { createWsConfig, createDefaultTags, createTitle, createViewPort } from 'UI/Head';
 import { render } from './_Bootstrap/HTML';
 import { IFullData, IRenderOptions } from './_Bootstrap/Interface';
 
@@ -17,7 +17,8 @@ import { IFullData, IRenderOptions } from './_Bootstrap/Interface';
  */
 function renderControls(moduleName: string, options: IRenderOptions): Promise<string | void> {
     setConfig('bootstrapWrapperMode', true);
-
+    createTitle(options.pageConfig ? options.pageConfig.title || '' : '');
+    createViewPort();
     const result: Promise<string> = Promise.resolve(ControlsHTMLTemplate({
         moduleName,
         options
@@ -39,8 +40,6 @@ export function aggregateFullData(moduleName: string, options: IRenderOptions, c
     const JSLinksAPIBase = AppJSLinks.getInstance(BASE_DEPS_NAMESPACE);
     const JSLinksAPITimeTester = AppJSLinks.getInstance(TIMETESTER_SCRIPTS_NAMESPACE);
 
-    /** Вполне возможно, что никто не успел создать title. Нужно сделать его самим из дефолтного поля */
-    createTitle(options.pageConfig ? options.pageConfig.title || '' : '');
     /** Создаем внутри <head> стандартные теги: wsConfig, кодировка, и прочее. */
     createWsConfig(options);
     createDefaultTags(options);
