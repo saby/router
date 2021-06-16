@@ -11,8 +11,7 @@ const fakeRenderOptions: IRenderOptions = {
    resourceRoot: '/',
    staticDomains: [],
    servicesPath: '/',
-   pageConfig: {},
-   doNotCheckModuleInContents: undefined
+   pageConfig: {}
 };
 
 function createFakeRequest(path: string): IServerRoutingRequest {
