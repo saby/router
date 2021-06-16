@@ -82,3 +82,15 @@ export function mainRender(moduleName: string, options: IRenderOptions): Promise
             });
     });
 }
+
+/**
+ *
+ * @returns
+ */
+export function renderHTMLforOldRoutes(controlsHTML: string, options: IRenderOptions): Promise<string> {
+    return new Promise((pageResolve) => {
+        const moduleName = options.application || '';
+        const fullData = aggregateFullData(moduleName, options, controlsHTML);
+        pageResolve(renderHTML(moduleName, fullData));
+    });
+}
