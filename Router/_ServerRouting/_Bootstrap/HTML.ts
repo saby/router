@@ -38,6 +38,10 @@ export function render(values: IRenderFullData): string {
    ].join(newLine);
 }
 function getStartScript(values: IRenderFullData): string {
+   /**
+    * Для определенных сценариев необходимо отключать оживление страницы и убирать класс pre-load
+    * https://online.sbis.ru/opendoc.html?guid=9a741529-db8c-4698-a962-9ab5924e113c
+    */
    if(values.isCanceledRevive) {
       return [
          `<script key="init_script">`,
