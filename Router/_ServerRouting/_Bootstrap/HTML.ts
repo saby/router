@@ -10,7 +10,7 @@ interface IRenderFullData extends IFullData {
    moduleName?: string;
 }
 
-export function render(values: IRenderFullData): string {
+export function render(values: IRenderFullData, isCanceledRevive: boolean): string {
    return [
       '<!DOCTYPE html>',
       '<html lang="en">',
@@ -37,8 +37,13 @@ export function render(values: IRenderFullData): string {
       '</html>'
    ].join(newLine);
 }
-
-function getStartScript(values: IRenderFullData): string {
+function getStartScript(values: IRenderFullData, isCanceledRevive: boolean): string {
+   if(isCanceledRevive) {
+      return [
+         `<script key="init_script">`,
+         `</script>`
+      ].join(newLine);
+   }
    const consoleMessage = 'console.log(\n' +
       "'%c\\tЭта функция браузера предназначена для разработчиков.\\t\\n' +\n" +
       "'\\tЕсли кто-то сказал вам скопировать и вставить что-то здесь, это мошенники.\\t\\n' +\n" +

@@ -68,8 +68,8 @@ function aggregateFullData(moduleName: string, options: IRenderOptions, controls
  * @param moduleName
  * @param fullData
  */
-function renderHTML(moduleName: string, fullData: IFullData): string {
-    return render({ ...fullData, ...{ moduleName } });
+function renderHTML(moduleName: string, fullData: IFullData, isCanceledRevive: boolean): string {
+    return render({ ...fullData, ...{ moduleName } }, isCanceledRevive);
 }
 
 export function mainRender(moduleName: string, options: IRenderOptions): Promise<string> {
@@ -78,7 +78,7 @@ export function mainRender(moduleName: string, options: IRenderOptions): Promise
             .then((controlsHTML: string = '') => {
                 const fullData = aggregateFullData(moduleName, options, controlsHTML);
 
-                pageResolve(renderHTML(moduleName, fullData));
+                pageResolve(renderHTML(moduleName, fullData, options.isCanceledRevive));
             });
     });
 }
