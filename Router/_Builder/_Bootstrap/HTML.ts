@@ -58,6 +58,17 @@ function getStartScript(values: IRenderFullData): string {
    if (values.builderOptions?.builder) {
       return getStaticPageStartScript(values.builderOptions);
    }
+   /**
+    * Для определенных сценариев необходимо отключать оживление страницы и убирать класс pre-load
+    * https://online.sbis.ru/opendoc.html?guid=9a741529-db8c-4698-a962-9ab5924e113c
+    */
+   if(values.isCanceledRevive) {
+      return [
+         `<script key="init_script">`,
+         `document.getElementById('wasaby-content').querySelector('.pre-load').className = '';`,
+         `</script>`
+      ].join(newLine);
+   }
 
    const consoleMessage = 'console.log(\n' +
       "'%c\\tЭта функция браузера предназначена для разработчиков.\\t\\n' +\n" +
