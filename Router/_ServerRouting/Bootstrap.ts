@@ -59,7 +59,8 @@ function aggregateFullData(moduleName: string, options: IRenderOptions, controls
            .getData().map(fromJML), {getResourceUrl: false}).outerHTML,
         JSLinksAPIData: new TagMarkup(JSLinksAPI.getData().map(fromJML), { getResourceUrl: false }).outerHTML,
         requiredModules: deps.additionalDeps,
-        controlsHTML
+        controlsHTML,
+        isCanceledRevive: options.isCanceledRevive
     };
 }
 
@@ -68,8 +69,8 @@ function aggregateFullData(moduleName: string, options: IRenderOptions, controls
  * @param moduleName
  * @param fullData
  */
-function renderHTML(moduleName: string, fullData: IFullData, isCanceledRevive: boolean): string {
-    return render({ ...fullData, ...{ moduleName } }, isCanceledRevive);
+function renderHTML(moduleName: string, fullData: IFullData): string {
+    return render({ ...fullData, ...{ moduleName } });
 }
 
 export function mainRender(moduleName: string, options: IRenderOptions): Promise<string> {
@@ -78,7 +79,7 @@ export function mainRender(moduleName: string, options: IRenderOptions): Promise
             .then((controlsHTML: string = '') => {
                 const fullData = aggregateFullData(moduleName, options, controlsHTML);
 
-                pageResolve(renderHTML(moduleName, fullData, options.isCanceledRevive));
+                pageResolve(renderHTML(moduleName, fullData));
             });
     });
 }

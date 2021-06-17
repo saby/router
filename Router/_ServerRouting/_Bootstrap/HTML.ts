@@ -10,7 +10,7 @@ interface IRenderFullData extends IFullData {
    moduleName?: string;
 }
 
-export function render(values: IRenderFullData, isCanceledRevive: boolean): string {
+export function render(values: IRenderFullData): string {
    return [
       '<!DOCTYPE html>',
       '<html lang="en">',
@@ -37,10 +37,11 @@ export function render(values: IRenderFullData, isCanceledRevive: boolean): stri
       '</html>'
    ].join(newLine);
 }
-function getStartScript(values: IRenderFullData, isCanceledRevive: boolean): string {
-   if(isCanceledRevive) {
+function getStartScript(values: IRenderFullData): string {
+   if(values.isCanceledRevive) {
       return [
          `<script key="init_script">`,
+         `document.getElementById('wasaby-content').querySelector('.pre-load').className = '';`,
          `</script>`
       ].join(newLine);
    }
