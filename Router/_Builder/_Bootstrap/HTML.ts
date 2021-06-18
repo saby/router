@@ -59,13 +59,15 @@ function getStartScript(values: IRenderFullData): string {
       return getStaticPageStartScript(values.builderOptions);
    }
    /**
-    * Для определенных сценариев необходимо отключать оживление страницы и убирать класс pre-load
+    * Для определенных сценариев тестирования нужно отключать оживление страницы и убирать класс pre-load:
     * https://online.sbis.ru/opendoc.html?guid=9a741529-db8c-4698-a962-9ab5924e113c
+    * Отключать оживление можно через query параметр ?isCanceledRevive=true (вместо true можно подставить любое значение)
     */
    if(values.isCanceledRevive) {
       return [
          `<script key="init_script">`,
-         `document.getElementById('wasaby-content').querySelector('.pre-load').className = '';`,
+         `var elementPreloadClass = document.querySelector('.pre-load');`,
+         `elementPreloadClass !== null && elementPreloadClass.classList.remove('pre-load');`,
          `</script>`
       ].join(newLine);
    }
