@@ -58,7 +58,8 @@ export function aggregateFullData(moduleName: string, options: IRenderOptions, c
            .getData().map(fromJML), {getResourceUrl: false}).outerHTML,
         JSLinksAPIData: new TagMarkup(JSLinksAPI.getData().map(fromJML), { getResourceUrl: false }).outerHTML,
         requiredModules: deps.additionalDeps,
-        controlsHTML
+        controlsHTML,
+        isCanceledRevive: options.isCanceledRevive
     };
 }
 

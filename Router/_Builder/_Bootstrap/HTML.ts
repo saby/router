@@ -58,6 +58,19 @@ function getStartScript(values: IRenderFullData): string {
    if (values.builderOptions?.builder) {
       return getStaticPageStartScript(values.builderOptions);
    }
+   /**
+    * Для определенных сценариев тестирования нужно отключать оживление страницы и убирать класс pre-load:
+    * https://online.sbis.ru/opendoc.html?guid=9a741529-db8c-4698-a962-9ab5924e113c
+    * Отключать оживление можно через query параметр ?isCanceledRevive=true (вместо true можно подставить любое значение)
+    */
+   if(values.isCanceledRevive) {
+      return [
+         `<script key="init_script">`,
+         `var elementPreloadClass = document.querySelector('.pre-load');`,
+         `elementPreloadClass !== null && elementPreloadClass.classList.remove('pre-load');`,
+         `</script>`
+      ].join(newLine);
+   }
 
    const consoleMessage = 'console.log(\n' +
       "'%c\\tЭта функция браузера предназначена для разработчиков.\\t\\n' +\n" +

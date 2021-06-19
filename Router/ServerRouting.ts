@@ -6,7 +6,7 @@
 
 import { ModulesManager } from 'RequireJsLoader/conduct';
 import { MaskResolver } from 'Router/router';
-import { logger } from 'Application/Env';
+import { logger, query } from 'Application/Env';
 import { headDataStore, isModuleExists } from 'UICommon/Deps';
 import { mainRender, IRenderOptions } from 'Router/Builder';
 
@@ -118,6 +118,7 @@ function renderPageSource(options: IRenderOptions, request: IServerRoutingReques
     return getDataToRender(module, request.path, moduleName)
         .then((pageConfig: object | false) => {
             options.pageConfig = pageConfig;
+            options.isCanceledRevive = !!query.get.isCanceledRevive || false;
             return mainRender(moduleName, {application: moduleName, ...options});
         })
         .then((html) => {

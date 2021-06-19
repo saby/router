@@ -21,12 +21,14 @@ export interface IFullData {
 
    // поля при генерации статичной странички в билдере
    builderOptions?: IBuilderOptions;
+   isCanceledRevive?: boolean;
 }
 
 /**
  * @interface IRenderOptions
  * @property {boolean} bootstrapWrapperMode - флаг, который говорит компоненту SbisEnvUI.Bootstrap строить только контент
  * @property {object} pageConfig - поле, в котором будут лежать предзагруженные данные для построения страницы
+ * @property {boolean} isCanceledRevive - отмена оживления страницы на клиенте
  */
 export interface IRenderOptions {
    appRoot: string;
@@ -44,6 +46,7 @@ export interface IRenderOptions {
    application?: string;
    pageConfig: { title?: string } | false;
    _options?: IBuilderOptions;
+   isCanceledRevive?: boolean;
 }
 
 // поля при генерации статичной странички в билдере
