@@ -8,10 +8,10 @@
  */
 
 import { IFullData, IRenderOptions } from './_Builder/_Bootstrap/Interface';
-import { aggregateFullData, mainRender } from './_Builder/Bootstrap';
+import { aggregateFullData, mainRender, renderHTMLforOldRoutes } from './_Builder/Bootstrap';
 import { render } from './_Builder/_Bootstrap/HTML';
 
-export { mainRender, IRenderOptions };
+export { mainRender, IRenderOptions, renderHTMLforOldRoutes };
 
 /**
  * Рендер html для статичных страниц, которые генерятся из файлов вида name.html.tmpl в builder

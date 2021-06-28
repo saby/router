@@ -82,3 +82,15 @@ export function mainRender(moduleName: string, options: IRenderOptions): Promise
             });
     });
 }
+
+/**
+ * Оборачивает <div>...</div> со старыми контролами в HTML
+ * Метод вызывается в PresentationService/Service для части страниц из старого роутинга,
+ * которые построены через 'wml!UI/Route' - тогда контент будет как <div>...</div>
+ * @returns
+ */
+export function renderHTMLforOldRoutes(controlsHTML: string, options: IRenderOptions): string {
+    const moduleName = options.application || '';
+    const fullData = aggregateFullData(moduleName, options, controlsHTML);
+    return renderHTML(moduleName, fullData);
+}
