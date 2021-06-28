@@ -46,7 +46,7 @@ export function getAppNameByUrl(url: string): string {
 /**
  * Извлекает значения из текущего адреса по заданной маске.
  * @function
- * @param {String} mask Параметризованная маска.
+ * @param {String} mask Параметризованная маска, напр. "/doc/:guid?tab=:tabId". Подробнее о масках читайте <a href="/doc/platform/developmentapl/interface-development/routing/mask-and-syntax/">здесь</a>.
  * @param {String} [url] Адрес, из которого будут извлекаться значения. По умолчанию используется текущий URL.
  * @returns {Record<string, string>} Объект, в котором ключи - названия параметров, а значения - значения параметров.
  * @public
@@ -68,7 +68,7 @@ export function calculateUrlParams(mask: string, url?: string): Record<string, s
 /**
  * Вычисляет новый URL-адрес, применяя к текущему маску и значения параметров для ее заполнения.
  * @function
- * @param {String} mask Параметризованная маска.
+ * @param {String} mask Параметризованная маска, напр. "/doc/:guid?tab=:tabId". Подробнее о масках читайте <a href="/doc/platform/developmentapl/interface-development/routing/mask-and-syntax/">здесь</a>.
  * @param {Record<string, string>} cfg Объект со значениями параметров, используемых в маске.
  * @param currentUrl Url адрес, с которым будет работать метод. Необязательный параметр.
  * @returns {String} Вычисленный адрес.
