@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<ui_module for_cdn="0" id="a857d050-c754-4d39-90ec-fca5e2ddf022" name="Router" package="Платформа" required="1" responsible="Мустафин Л.И." version="1.00">
+<ui_module for_cdn="0" id="a857d050-c754-4d39-90ec-fca5e2ddf022" name="Router" package="Presentation" required="1" responsible="Мустафин Л.И." version="1.00">
 
   <description>Библиотека, предназначенная для определения правил построения приложения в зависимости от URL запроса. Решает задачи построения страницы на сервере и организации SPA-переходов при навигации на клиенте.</description>
 
