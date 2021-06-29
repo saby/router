@@ -9,6 +9,14 @@ import { addPageDeps, aggregateDependencies, BASE_DEPS_NAMESPACE, headDataStore,
 import { createWsConfig, createDefaultTags, createTitle, createViewPort } from 'UI/Head';
 import { render } from './_Bootstrap/HTML';
 import { IFullData, IRenderOptions } from './_Bootstrap/Interface';
+import { DataAggregator } from './_Bootstrap/DataAggregator';
+import { BaseScripts } from './_Bootstrap/DataAggregators/BaseScripts';
+import { CSS } from './_Bootstrap/DataAggregators/CSS';
+import { DefaultTags } from './_Bootstrap/DataAggregators/DefaultTags';
+import { JS } from './_Bootstrap/DataAggregators/JS';
+import { Other } from './_Bootstrap/DataAggregators/Other';
+import { UtilsScripts } from './_Bootstrap/DataAggregators/UtilsScripts';
+import { WsConfig } from './_Bootstrap/DataAggregators/WsConfig';
 
 /**
  * Этап 1
@@ -34,32 +42,19 @@ function renderControls(moduleName: string, options: IRenderOptions): Promise<st
  * @param controlsHTML
  */
 export function aggregateFullData(moduleName: string, options: IRenderOptions, controlsHTML: string): IFullData {
-    const BodyAPI = AppBody.getInstance();
-    const HeadAPI = AppHead.getInstance();
-    const JSLinksAPI = AppJSLinks.getInstance();
-    const JSLinksAPIBase = AppJSLinks.getInstance(BASE_DEPS_NAMESPACE);
-    const JSLinksAPITimeTester = AppJSLinks.getInstance(TIMETESTER_SCRIPTS_NAMESPACE);
-
-    /** Создаем внутри <head> стандартные теги: wsConfig, кодировка, и прочее. */
-    createWsConfig(options);
-    createDefaultTags(options);
-    /** Добавим текущий модуль moduleName в зависимости (все дочерние добавятся сами, а он - нет) */
-    addPageDeps([moduleName]);
-    /** Опрашиваем depsCollector на предмет собранных зависимостей. */
-    const deps = headDataStore.read('collectDependencies')();
-    /** Раскидываем собранные JS и CSS зависимости по HeadAPI и JSLinksAPI */
-    aggregateDependencies(options, deps);
+    const aggregatedData = new DataAggregator(moduleName, options)
+        .add(WsConfig)
+        .add(DefaultTags)
+        .add(CSS)
+        .add(BaseScripts)
+        .add(UtilsScripts)
+        .add(JS)
+        .add(Other)
+        .getData();
 
     return {
-        HeadAPIData: new TagMarkup(HeadAPI.getData().map(fromJML), { getResourceUrl: false }).outerHTML,
-        BodyAPIClasses: BodyAPI.getClassString(),
-        JSLinksAPIBaseData: new TagMarkup(JSLinksAPIBase.getData().map(fromJML), { getResourceUrl: false }).outerHTML,
-        JSLinksAPITimeTesterData: new TagMarkup(JSLinksAPITimeTester
-           .getData().map(fromJML), {getResourceUrl: false}).outerHTML,
-        JSLinksAPIData: new TagMarkup(JSLinksAPI.getData().map(fromJML), { getResourceUrl: false }).outerHTML,
-        requiredModules: deps.additionalDeps,
-        controlsHTML,
-        isCanceledRevive: options.isCanceledRevive
+        ...aggregatedData,
+        ...{controlsHTML}
     };
 }
 
