@@ -1,12 +1,7 @@
 
 import * as ControlsHTMLTemplate from 'wml!Router/_Builder/_Bootstrap/ControlsHTML';
-
-import { Body as AppBody, Head as AppHead, JSLinks as AppJSLinks } from 'Application/Page';
 import { logger, setConfig } from 'Application/Env';
-import { TagMarkup, fromJML } from 'UI/Base';
-import { addPageDeps, aggregateDependencies, BASE_DEPS_NAMESPACE, headDataStore,
-    TIMETESTER_SCRIPTS_NAMESPACE } from 'UICommon/Deps';
-import { createWsConfig, createDefaultTags, createTitle, createViewPort } from 'UI/Head';
+import { createTitle, createViewPort } from 'UI/Head';
 import { render } from './_Bootstrap/HTML';
 import { IFullData, IRenderOptions } from './_Bootstrap/Interface';
 import { DataAggregator } from './_Bootstrap/DataAggregator';
