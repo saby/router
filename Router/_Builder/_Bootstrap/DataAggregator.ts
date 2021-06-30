@@ -4,7 +4,7 @@ import { IFullData, IRenderOptions, IDataAggregatorModule } from './Interface';
 import { addPageDeps, headDataStore } from 'UICommon/Deps';
 
 export class DataAggregator {
-    private _modules: IDataAggregatorModule[];
+    private _modules: IDataAggregatorModule[] = [];
 
     constructor(private _moduleName: string, private _options: IRenderOptions) {}
 
