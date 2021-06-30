@@ -1,7 +1,5 @@
 /// <amd-module name="Router/_Builder/_Bootstrap/Interface" />
 
-import { IDeps } from 'wasaby-cli/store/_repos/saby-ui/UICommon/_deps/DepsCollector';
-
 /**
  * @interface IFullData - данные для построения полной страницы
  * @property {string} HeadAPIData         - данные из HeadAPI. Строка вида HTML.
@@ -61,18 +59,18 @@ export interface IBuilderOptions {
 
 export interface ICollectedDeps {
    // готовые ссылки на js
-   scripts: IDeps;
+   scripts: string[];
    // названия js модулей
-   js: IDeps;
+   js: string[];
    css: {
-      simpleCss: IDeps;
-      themedCss: IDeps;
+      simpleCss: string[];
+      themedCss: string[];
    };
-   tmpl: IDeps;
-   wml: IDeps;
+   tmpl: string[];
+   wml: string[];
    rsSerialized: string;
-   rtpackModuleNames: IDeps;
-   additionalDeps: IDeps;
+   rtpackModuleNames: string[];
+   additionalDeps: string[];
 }
 
 export interface IDataAggregatorModule {
