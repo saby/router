@@ -23,7 +23,7 @@ export class BaseScripts implements IDataAggregatorModule {
         for (const scriptsKey in scripts) {
             if (scripts.hasOwnProperty(scriptsKey)) {
                 rawUrl = `${scripts[scriptsKey]}.js`;
-                src = rawUrl.startsWith('/') ? rawUrl : getResourceUrl(cfg.resourceRoot + rawUrl);
+                src = rawUrl.startsWith('/') ? rawUrl : getResourceUrl(options.resourceRoot + rawUrl);
 
                 API.createTag('script', {
                     type: 'text/javascript',
