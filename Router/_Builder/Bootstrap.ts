@@ -7,6 +7,7 @@ import { IFullData, IRenderOptions } from './_Bootstrap/Interface';
 import { DataAggregator } from './_Bootstrap/DataAggregator';
 import { BaseScripts } from './_Bootstrap/DataAggregators/BaseScripts';
 import { CSS } from './_Bootstrap/DataAggregators/CSS';
+import { Body } from './_Bootstrap/DataAggregators/Body';
 import { DefaultTags } from './_Bootstrap/DataAggregators/DefaultTags';
 import { JS } from './_Bootstrap/DataAggregators/JS';
 import { Other } from './_Bootstrap/DataAggregators/Other';
@@ -41,6 +42,7 @@ export function aggregateFullData(moduleName: string, options: IRenderOptions, c
         .add(new WsConfig())
         .add(new DefaultTags())
         .add(new CSS())
+        .add(new Body())
         .add(new BaseScripts())
         .add(new UtilsScripts())
         .add(new JS())
