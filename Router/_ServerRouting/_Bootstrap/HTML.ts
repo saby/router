@@ -13,7 +13,7 @@ interface IRenderFullData extends IFullData {
 export function render(values: IRenderFullData): string {
    return [
       '<!DOCTYPE html>',
-      '<html lang="en">',
+      '<html lang="ru">',
       '  <head>',
       `    ${values.HeadAPIData}`,
       '  </head>',
