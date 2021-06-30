@@ -38,19 +38,19 @@ function renderControls(moduleName: string, options: IRenderOptions): Promise<st
  */
 export function aggregateFullData(moduleName: string, options: IRenderOptions, controlsHTML: string): IFullData {
     const aggregatedData = new DataAggregator(moduleName, options)
-        .add(WsConfig)
-        .add(DefaultTags)
-        .add(CSS)
-        .add(BaseScripts)
-        .add(UtilsScripts)
-        .add(JS)
-        .add(Other)
+        .add(new WsConfig())
+        .add(new DefaultTags())
+        .add(new CSS())
+        .add(new BaseScripts())
+        .add(new UtilsScripts())
+        .add(new JS())
+        .add(new Other())
         .getData();
 
-    return {
+    return ({
         ...aggregatedData,
         ...{controlsHTML}
-    };
+    } as IFullData);
 }
 
 /**
