@@ -82,7 +82,8 @@ export function mainRender(moduleName: string, options: IRenderOptions): Promise
  * @returns
  */
 export function renderHTMLforOldRoutes(controlsHTML: string, options: IRenderOptions): string {
-    const moduleName = options.application || '';
+    // "такие" страницы в браузере всегда безусловно будет строить UI/_base/RouteCompatible
+    const moduleName = 'UI/_base/RouteCompatible';
     const fullData = aggregateFullData(moduleName, options, controlsHTML);
     return renderHTML(moduleName, fullData);
 }
