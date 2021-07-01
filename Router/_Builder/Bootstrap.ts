@@ -2,6 +2,7 @@
 import * as ControlsHTMLTemplate from 'wml!Router/_Builder/_Bootstrap/ControlsHTML';
 import { logger, setConfig } from 'Application/Env';
 import { createTitle, createViewPort } from 'UI/Head';
+import { addPageDeps } from 'UICommon/Deps';
 import { render } from './_Bootstrap/HTML';
 import { IFullData, IRenderOptions } from './_Bootstrap/Interface';
 import { DataAggregator } from './_Bootstrap/DataAggregator';
@@ -82,8 +83,12 @@ export function mainRender(moduleName: string, options: IRenderOptions): Promise
  * @returns
  */
 export function renderHTMLforOldRoutes(controlsHTML: string, options: IRenderOptions): string {
+    // необходимо добавить в зависимости страницы "корневой" модуль
+    addPageDeps([options.application]);
+
     // "такие" страницы в браузере всегда безусловно будет строить UI/_base/RouteCompatible
     const moduleName = 'UI/_base/RouteCompatible';
+
     const fullData = aggregateFullData(moduleName, options, controlsHTML);
     return renderHTML(moduleName, fullData);
 }
