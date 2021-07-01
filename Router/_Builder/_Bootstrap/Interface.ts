@@ -41,6 +41,7 @@ export interface IRenderOptions {
    buildnumber?: string;
    product?: string;
    pageName?: string;
+   theme?: string;
    RUMEnabled?: boolean;
    bootstrapWrapperMode?: boolean;
    application?: string;
@@ -54,4 +55,24 @@ export interface IBuilderOptions {
    builder: string;
    builderCompatible: boolean;
    dependencies: string[];
+}
+
+export interface ICollectedDeps {
+   // готовые ссылки на js
+   scripts: string[];
+   // названия js модулей
+   js: string[];
+   css: {
+      simpleCss: string[];
+      themedCss: string[];
+   };
+   tmpl: string[];
+   wml: string[];
+   rsSerialized: string;
+   rtpackModuleNames: string[];
+   additionalDeps: string[];
+}
+
+export interface IDataAggregatorModule {
+   execute(deps: ICollectedDeps, options?: IRenderOptions): Partial<IFullData> | null;
 }
