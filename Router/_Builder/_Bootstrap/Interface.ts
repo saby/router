@@ -1,5 +1,7 @@
 /// <amd-module name="Router/_Builder/_Bootstrap/Interface" />
 
+import { ICollectedDeps } from 'UICommon/Deps';
+
 /**
  * @interface IFullData - данные для построения полной страницы
  * @property {string} HeadAPIData         - данные из HeadAPI. Строка вида HTML.
@@ -55,22 +57,6 @@ export interface IBuilderOptions {
    builder: string;
    builderCompatible: boolean;
    dependencies: string[];
-}
-
-export interface ICollectedDeps {
-   // готовые ссылки на js
-   scripts: string[];
-   // названия js модулей
-   js: string[];
-   css: {
-      simpleCss: string[];
-      themedCss: string[];
-   };
-   tmpl: string[];
-   wml: string[];
-   rsSerialized: string;
-   rtpackModuleNames: string[];
-   additionalDeps: string[];
 }
 
 export interface IDataAggregatorModule {
