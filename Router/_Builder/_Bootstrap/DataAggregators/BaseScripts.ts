@@ -7,9 +7,6 @@ import { TagMarkup, fromJML } from 'UI/Base';
 
 const BASE_DEPS_NAMESPACE: string = 'baseDeps';
 
-/**
- * Базовые скрипты приложения. Их 5. Без них даже RequireJS не заведется
- */
 export class BaseScripts implements IDataAggregatorModule {
     execute(deps: ICollectedDeps, options?: IRenderOptions): Partial<IFullData> | null {
         const  API = AppJSLinks.getInstance(BASE_DEPS_NAMESPACE);
