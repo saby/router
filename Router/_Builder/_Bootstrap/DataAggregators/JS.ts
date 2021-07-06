@@ -6,11 +6,9 @@ import { cookie } from "Env/Env";
 import { TagMarkup, fromJML } from 'UI/Base';
 import * as ModulesLoader from 'WasabyLoader/ModulesLoader';
 
-const BASE_DEPS_NAMESPACE: string = 'baseDeps';
-
 export class JS implements IDataAggregatorModule {
     execute(deps: ICollectedDeps, options?: IRenderOptions): Partial<IFullData> | null {
-        const  API = AppJSLinks.getInstance(BASE_DEPS_NAMESPACE);
+        const  API = AppJSLinks.getInstance();
         filterJsDeps(deps.js, deps.scripts)
             .map((js) => resolveLink(js))
             .concat(deps.scripts)
