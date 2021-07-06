@@ -112,11 +112,13 @@ class Route extends Control implements IRegisterableComponent {
 
     /*
      * @event Router/_private/Route#enter Fires when the current URL started matching the specified mask.
+     * @param {UICommon/Events:SyntheticEvent} event Event object.
      * @param {IHistoryState} newLocation Location that was navigated to.
      * @param {IHistoryState} oldLocation Location that was navigated from.
      */
     /**
      * @event Router/_private/Route#enter Срабатывает после перехода, в котором адрес начинает соответствовать маске
+     * @param {UICommon/Events:SyntheticEvent} event Объект события
      * @param {IHistoryState} newLocation Cостояние, в которое был совершен переход
      * @param {IHistoryState} oldLocation Cостояние, из которого был совершен переход
      * @example
@@ -129,11 +131,13 @@ class Route extends Control implements IRegisterableComponent {
 
     /*
      * @event Router/_private/Route#leave Fires when the current URL stops matching the specified mask.
+     * @param {UICommon/Events:SyntheticEvent} event Event object.
      * @param {IHistoryState} newLocation Location that was navigated to.
      * @param {IHistoryState} oldLocation Location that was navigated from.
      */
     /**
      * @event Router/_private/Route#leave Срабатывает после перехода, в котором адрес перестает соответствовать маске
+     * @param {UICommon/Events:SyntheticEvent} event Объект события
      * @param {IHistoryState} newLocation Состояние, в которое был совершен переход
      * @param {IHistoryState} oldLocation Состояние, из которого был совершен переход
      * @example
@@ -146,11 +150,13 @@ class Route extends Control implements IRegisterableComponent {
 
     /*
      * @event Router/_private/Route#change Fires when parameters resolved with the specified mask are changed.
+     * @param {UICommon/Events:SyntheticEvent} event Event object.
      * @param {Object} newParameters Resolved parameters after the navigation.
      * @param {Object} oldParameters Resolved parameters before the navigation.
      */
     /**
      * @event Router/_private/Route#change Срабатывает после перехода, в котором значение параметров маски изменилось
+     * @param {UICommon/Events:SyntheticEvent} event Объект события
      * @param {Object} newParameters Значения параметров после перехода
      * @param {Object} oldParameters Значения параметров до перехода
      * @example
@@ -159,9 +165,9 @@ class Route extends Control implements IRegisterableComponent {
      * </pre>
      * <pre>
      * Текущий адрес: "/home"
-     * Переход по адресу: "/home/alert/signup" -> changeAlert({ alertType: 'signup' }, { alertType: undefined })
-     * Переход по адресу: "/home/alert/login"  -> changeAlert({ alertType: 'login' }, { alertType: 'signup' })
-     * Переход по адресу: "/home"              -> changeAlert({ alertType: undefined }, { alertType: 'login' })
+     * Переход по адресу: "/home/alert/signup" -> changeAlert(event, { alertType: 'signup' }, { alertType: undefined })
+     * Переход по адресу: "/home/alert/login"  -> changeAlert(event, { alertType: 'login' }, { alertType: 'signup' })
+     * Переход по адресу: "/home"              -> changeAlert(event, { alertType: undefined }, { alertType: 'login' })
      * </pre>
      */
 
