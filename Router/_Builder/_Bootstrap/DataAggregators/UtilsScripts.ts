@@ -13,11 +13,11 @@ export class UtilsScripts implements IDataAggregatorModule {
         [{
             type: 'text/javascript',
             key: 'boomerang',
-            src: getResourceUrl('/cdn/Boomerang/v.0.0.2.js')
+            src: (getResourceUrl('/cdn/Boomerang/v.0.0.2.js') as string)
         }, {
             type: 'text/javascript',
             key: 'timetester',
-            src: getResourceUrl(`${options.resourceRoot}SbisEnvUI/callTimeTesterMinified.js`)
+            src: (getResourceUrl(`${options.resourceRoot}SbisEnvUI/callTimeTesterMinified.js`) as string)
         }].forEach((params) => API.createTag('script', params));
 
         return {
