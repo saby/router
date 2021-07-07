@@ -10,7 +10,9 @@ function (Router, AppInit, EnvNode) {
    if (typeof window === 'undefined') {
       env = EnvNode.default;
    }
-   AppInit.default({}, env);
+   if(!AppInit.isInit()){
+      AppInit.default({}, env);
+   }
 
    function getFakeHistoryState(id, url) {
       return {
