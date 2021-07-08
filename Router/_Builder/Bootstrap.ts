@@ -86,8 +86,8 @@ export function renderHTMLforOldRoutes(controlsHTML: string, options: IRenderOpt
     // необходимо добавить в зависимости страницы "корневой" модуль
     addPageDeps([options.application]);
 
-    // "такие" страницы в браузере всегда безусловно будет строить UI/_base/RouteCompatible
-    const moduleName = 'UI/_base/RouteCompatible';
+    // "такие" страницы в браузере всегда безусловно будет строить UICore/Base:RouteCompatible
+    const moduleName = 'UICore/Base:RouteCompatible';
 
     const fullData = aggregateFullData(moduleName, options, controlsHTML);
     return renderHTML(moduleName, fullData);
