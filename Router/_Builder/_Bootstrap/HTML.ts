@@ -4,6 +4,7 @@
 import * as HTML from 'text!Router/_Builder/_Bootstrap/HTML.html';
 import { detection, constants } from 'Env/Env';
 import { IFullData, IBuilderOptions } from './Interface';
+import {controller} from 'I18n/i18n';
 
 const newLine = '\n';
 interface IRenderFullData extends IFullData {
@@ -13,7 +14,7 @@ interface IRenderFullData extends IFullData {
 export function render(values: IRenderFullData): string {
    const htmlLines = [
       '<!DOCTYPE html>',
-      '<html lang="ru">',
+      `<html lang=${controller.currentLang || 'ru'}>`,
       '  <head>',
       `    ${values.HeadAPIData}`,
       '  </head>',
