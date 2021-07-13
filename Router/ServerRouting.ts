@@ -7,12 +7,9 @@
 import { MaskResolver } from 'Router/router';
 import { renderHTMLforOldRoutes, IRenderOptions } from 'Router/Builder';
 
-import { GET_DATA_TIMEOUT, DataToRender, PageSource, IServerRoutingRequest, IRenderPageData,
-    TDataToRender } from './_ServerRouting/Render';
+import { GET_DATA_TIMEOUT, PageSourceData, PageSource, IServerRoutingRequest, TPageSourceData } from './_ServerRouting/Render';
 
-export { renderHTMLforOldRoutes };
-
-export { GET_DATA_TIMEOUT, DataToRender, PageSource, IRenderPageData, TDataToRender };
+export { renderHTMLforOldRoutes, GET_DATA_TIMEOUT, PageSourceData, PageSource };
 
 
 /**
@@ -35,6 +32,6 @@ export function getAppName(request: IServerRoutingRequest): string {
 export function getPageSource(options: IRenderOptions, request: IServerRoutingRequest,
                               onSuccessHandler: (html: string) => void,
                               onNotFoundHandler: (error: Error) => void): Promise<unknown> {
-    const renderData: IRenderPageData = new DataToRender(request).getResult();
-    return new PageSource(options, renderData).render(onSuccessHandler, onNotFoundHandler);
+    const renderData: TPageSourceData = new PageSourceData(request).getResult();
+    return new PageSource().render(options, renderData, onSuccessHandler, onNotFoundHandler);
 }
