@@ -6,10 +6,9 @@
 
 import { MaskResolver } from 'Router/router';
 import { IRenderOptions } from './_ServerRouting/_Bootstrap/Interface';
-import { GET_DATA_TIMEOUT, DataToRender, PageSource, IServerRoutingRequest, IRenderPageData,
-    TDataToRender } from './_ServerRouting/Render';
+import { GET_DATA_TIMEOUT, DataToRender, PageSource, IServerRoutingRequest, TDataToRenderResult } from './_ServerRouting/Render';
 
-export { GET_DATA_TIMEOUT, DataToRender, PageSource, IRenderPageData, TDataToRender };
+export { GET_DATA_TIMEOUT, DataToRender, PageSource };
 
 /**
  * Получить название модуля, который в итоге будет строиться, по пути запроса.
@@ -31,6 +30,6 @@ export function getAppName(request: IServerRoutingRequest): string {
 export function getPageSource(options: IRenderOptions, request: IServerRoutingRequest,
                               onSuccessHandler: (html: string) => void,
                               onNotFoundHandler: (error: Error) => void): Promise<unknown> {
-    const renderData: IRenderPageData = new DataToRender(request).getResult();
-    return new PageSource(options, renderData).render(onSuccessHandler, onNotFoundHandler);
+    const renderData: TDataToRenderResult = new DataToRender(request).getResult();
+    return new PageSource().render(options, renderData, onSuccessHandler, onNotFoundHandler);
 }
