@@ -80,7 +80,7 @@ interface IModuleNotFound {
 /**
  * Интерфейс успешного результата процесса загрузки модуля и предзагрузки данных
  */
-interface IDataToRenderResultOK {
+interface IPageSourceDataOK {
     hasData: true;
     moduleName: string;
     dataToRender: Promise<unknown>;
@@ -90,18 +90,18 @@ interface IDataToRenderResultOK {
 /**
  * Интерфейс НЕ успешного результата процесса загрузки модуля и предзагрузки данных
  */
-interface IDataToRenderResultNotOK {
+interface IPageSourceDataNotOK {
     hasData: false;
     notFound: IPageSourceNotFound;
 }
 
-export type TDataToRenderResult = IDataToRenderResultOK | IDataToRenderResultNotOK;
+export type TPageSourceData = IPageSourceDataOK | IPageSourceDataNotOK;
 
 /**
  * Класс, который загружет модуль, который необходимо построить
  * и потом вызовет метод предзагрузки данных
  */
-export class DataToRender {
+export class PageSourceData {
     constructor(private request: IServerRoutingRequest) {
         request.compatible = false;
     }
@@ -111,10 +111,10 @@ export class DataToRender {
      * Вернет результат указанного типа
      * @returns
      */
-    getResult(): TDataToRenderResult {
+    getResult(): TPageSourceData {
         const moduleName = MaskResolver.getAppNameByUrl(this.request.path);
 
-        const loadResult: IModuleNotFound | IModuleFound = this.loadModule(moduleName);
+        const loadResult: IModuleNotFound | IModuleFound = new ModuleLoader().load(moduleName);
         if (loadResult.loadStatus === 'not_found') {
             return {
                 hasData: false,
@@ -126,19 +126,24 @@ export class DataToRender {
         // в https://online.sbis.ru/opendoc.html?guid=c28a34a5-54b2-4873-be99-f452189e64c0
         headDataStore.write('isNewEnvironment', true);
 
-        const dataToRender: Promise<unknown> = this.getDataToRender(loadResult.module, this.request.path, moduleName);
+        const dataToRender: Promise<unknown> = new DataToRender().get(loadResult.module, this.request.path, moduleName);
         return {
             hasData: true,
             moduleName,
             dataToRender
         };
     }
+}
 
+/**
+ * Класс для проверки существования модуля и его последующей загрузки
+ */
+class ModuleLoader {
     /**
      * Загрузка модуля, для которого будет построение страницы
      * @returns
      */
-     private loadModule(moduleName: string): IModuleNotFound | IModuleFound {
+    load(moduleName: string): IModuleNotFound | IModuleFound {
         /** Нужно проверять наличие модуля, перед запросом через require.
          * Иначе будет уязвимость с производительностью, потому что могут передать в адресе мусор
          * https://online.sbis.ru/opendoc.html?guid=76a641dd-1f2a-497a-aa2b-a7f102da5735
@@ -173,15 +178,18 @@ export class DataToRender {
             module
         };
     }
+}
 
+/**
+ *
+ */
+class DataToRender {
     /**
      * предзагрузка данных для страницы
      * @param module
      * @param url
-     * @return {} если нет метода для предзагрузки данных или сам метод предзагрузки данных может вернуть false
-     *         TDataToRender тогда это новый способ построения страницы (от div)
      */
-     private getDataToRender(module: IModuleToRender, url: string, moduleName: string): Promise<unknown> {
+    get(module: IModuleToRender, url: string, moduleName: string): Promise<unknown> {
         if (typeof module.getDataToRender !== 'function') {
             return Promise.resolve({});
         }
@@ -211,7 +219,7 @@ export class DataToRender {
 }
 
 /**
- * Класс призван генерировать html-код страницы используя данные, полученные после работы класса DataToRender
+ * Класс призван генерировать html-код страницы используя данные, полученные после работы класса PageSourceData
  */
 export class PageSource {
     /**
@@ -220,7 +228,7 @@ export class PageSource {
      * @param onNotFoundHandler
      * @returns
      */
-    render(options: IRenderOptions, renderData: TDataToRenderResult,
+    render(options: IRenderOptions, renderData: TPageSourceData,
            onSuccessHandler: (html: string) => void, onNotFoundHandler: (error: Error) => void): Promise<unknown> {
         const pageSource: Promise<TPageSource> = this.renderPageSource(options, renderData);
 
@@ -244,7 +252,7 @@ export class PageSource {
      * @param renderData
      * @returns Promise<IPageSource>
      */
-    private renderPageSource(options: IRenderOptions, renderData: TDataToRenderResult): Promise<TPageSource> {
+    private renderPageSource(options: IRenderOptions, renderData: TPageSourceData): Promise<TPageSource> {
         if (renderData.hasData === false) {
             return Promise.resolve(renderData.notFound);
         }
