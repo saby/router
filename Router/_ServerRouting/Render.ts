@@ -111,6 +111,8 @@ export class PageSourceData {
      * @returns
      */
     getResult(): TPageSourceData {
+        // Получить название модуля, который в итоге будет строиться, по пути запроса.
+        // Так же учитываются маршруты в router.json
         const moduleName = MaskResolver.getAppNameByUrl(this.request.path);
 
         const loadResult: IModuleNotFound | IModuleFound = new ModuleLoader().load(moduleName);
