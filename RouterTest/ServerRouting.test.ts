@@ -1,7 +1,7 @@
 import { assert } from 'chai';
 import { createSandbox } from 'sinon';
 import * as UIDeps from 'UICommon/Deps';
-import { getAppName, getPageSource, IServerRoutingRequest } from 'Router/ServerRouting';
+import { getPageSource, IServerRoutingRequest } from 'Router/ServerRouting';
 import { IRenderOptions } from 'Router/_Builder/_Bootstrap/Interface';
 
 
@@ -17,7 +17,9 @@ const fakeRenderOptions: IRenderOptions = {
 function createFakeRequest(path: string): IServerRoutingRequest {
    return {
       path,
-      compatible: false
+      compatible: false,
+      staticConfig: {},
+      pageName: ''
    };
 }
 
@@ -36,11 +38,6 @@ describe('Router/ServerRouting', () => {
 
    afterEach(() => {
       sandbox.restore();
-   });
-
-   it('получение имени модуля по URL адресу', () => {
-      const fakeRequest = createFakeRequest('/register/?from=landing');
-      assert.strictEqual(getAppName(fakeRequest), 'register/Index');
    });
 
    it('построение несуществующего модуля', (done) => {
