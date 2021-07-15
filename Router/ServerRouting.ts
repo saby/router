@@ -5,10 +5,12 @@
  */
 
 import { renderHTMLforOldRoutes, IRenderOptions } from 'Router/Builder';
+import { TPageSourceData } from './_ServerRouting/Interfaces/IPageSourceData';
+import { PageSourceData, IServerRoutingRequest } from './_ServerRouting/PageSourceData';
+import { PageSource } from './_ServerRouting/PageSource';
 
-import { GET_DATA_TIMEOUT, PageSourceData, PageSource, IServerRoutingRequest, TPageSourceData } from './_ServerRouting/Render';
-
-export { renderHTMLforOldRoutes, GET_DATA_TIMEOUT, PageSourceData, PageSource, IServerRoutingRequest };
+export { GET_DATA_TIMEOUT } from './_ServerRouting/DataToRender';
+export { renderHTMLforOldRoutes, PageSourceData, PageSource, IServerRoutingRequest };
 
 
 /**
