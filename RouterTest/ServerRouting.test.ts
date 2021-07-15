@@ -1,27 +1,9 @@
 import { assert } from 'chai';
 import { createSandbox } from 'sinon';
 import * as UIDeps from 'UICommon/Deps';
-import { getPageSource, IServerRoutingRequest } from 'Router/ServerRouting';
-import { IRenderOptions } from 'Router/_Builder/_Bootstrap/Interface';
+import { getPageSource } from 'Router/ServerRouting';
+import { fakeRenderOptions, createFakeRequest } from 'RouterTest/ServerRouting/FakeRenderData';
 
-
-const fakeRenderOptions: IRenderOptions = {
-   appRoot: '/',
-   wsRoot: 'WS.Core',
-   resourceRoot: '/',
-   staticDomains: [],
-   servicesPath: '/',
-   pageConfig: {}
-};
-
-function createFakeRequest(path: string): IServerRoutingRequest {
-   return {
-      path,
-      compatible: false,
-      staticConfig: {},
-      pageName: ''
-   };
-}
 
 describe('Router/ServerRouting', () => {
    let sandbox;

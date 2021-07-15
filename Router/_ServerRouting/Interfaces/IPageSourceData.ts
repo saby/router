@@ -5,7 +5,7 @@ import { IPageSourceNotFound } from './IPageSource';
 /**
  * Интерфейс успешного результата процесса загрузки модуля и предзагрузки данных
  */
-interface IPageSourceDataOK {
+export interface IPageSourceDataOK {
     hasData: true;
     moduleName: string;
     dataToRender: Promise<unknown>;
@@ -15,7 +15,7 @@ interface IPageSourceDataOK {
 /**
  * Интерфейс НЕ успешного результата процесса загрузки модуля и предзагрузки данных
  */
-interface IPageSourceDataNotOK {
+export interface IPageSourceDataNotOK {
     hasData: false;
     notFound: IPageSourceNotFound;
 }
