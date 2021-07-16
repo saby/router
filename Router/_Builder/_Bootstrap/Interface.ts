@@ -26,7 +26,6 @@ export interface IFullData {
 
 /**
  * @interface IRenderOptions
- * @property {boolean} bootstrapWrapperMode - флаг, который говорит компоненту SbisEnvUI.Bootstrap строить только контент
  * @property {object} pageConfig - поле, в котором будут лежать предзагруженные данные для построения страницы
  * @property {boolean} isCanceledRevive - отмена оживления страницы на клиенте
  */
@@ -43,7 +42,6 @@ export interface IRenderOptions {
    pageName?: string;
    theme?: string;
    RUMEnabled?: boolean;
-   bootstrapWrapperMode?: boolean;
    application?: string;
    pageConfig: { title?: string } | false;
    _options?: IBuilderOptions;
