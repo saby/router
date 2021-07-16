@@ -1,6 +1,6 @@
 
 import * as ControlsHTMLTemplate from 'wml!Router/_Builder/_Bootstrap/ControlsHTML';
-import { logger, setConfig } from 'Application/Env';
+import { logger } from 'Application/Env';
 import { createTitle, createViewPort } from 'UI/Head';
 import { addPageDeps } from 'UICommon/Deps';
 import { render } from './_Bootstrap/HTML';
