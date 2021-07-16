@@ -4,9 +4,8 @@
  * @author Мустафин Л.И.
  */
 
-import { headDataStore } from 'UICommon/Deps';
 import { MaskResolver } from 'Router/router';
-import { TPageSourceData } from './Interfaces/IPageSourceData';
+import { TPageSourceData, IDataToRenderNotExist } from './Interfaces/IPageSourceData';
 import { IModuleFound, IModuleNotFound } from './Interfaces/IModuleLoader';
 import { ModuleLoader } from './ModuleLoader';
 import { DataToRender } from './DataToRender';
@@ -46,11 +45,8 @@ export interface IServerRoutingRequest {
             };
         }
 
-        // TODO свойство isNewEnvironment будет пересмотрено
-        // в https://online.sbis.ru/opendoc.html?guid=c28a34a5-54b2-4873-be99-f452189e64c0
-        headDataStore.write('isNewEnvironment', true);
-
-        const dataToRender: Promise<unknown> = new DataToRender().get(loadResult.module, this.request.path, moduleName);
+        const dataToRender: Promise<IDataToRenderNotExist | unknown> =
+            new DataToRender().get(loadResult.module, this.request.path, moduleName);
         return {
             hasData: true,
             moduleName,

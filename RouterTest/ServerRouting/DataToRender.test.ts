@@ -2,6 +2,7 @@ import { assert } from 'chai';
 import { createSandbox } from 'sinon';
 import { DataToRender } from 'Router/_ServerRouting/DataToRender';
 import { IModuleFound } from 'Router/_ServerRouting/Interfaces/IModuleLoader';
+import { IDataToRenderNotExist } from 'Router/_ServerRouting/Interfaces/IPageSourceData';
 import * as IndexModule from 'RouterTest/Index';
 
 
@@ -41,6 +42,25 @@ describe('Router/_ServerRouting/DataToRender', () => {
             .then((data: {url: string}) => {
                 assert.isObject(data, 'Некорректный результат метода getDataToRender');
                 assert.equal(data.url, requestPath, 'Некорректный результат метода getDataToRender');
+            });
+    });
+
+    it('у модуля нет метода getDataToRender', () => {
+        const moduleName = 'RouterTest/Index';
+        const requestPath = '/url';
+
+        const loadResult: IModuleFound = {loadStatus: 'success', module: IndexModule};
+        // удалим метод getDataToRender, как будто его нет
+        delete loadResult.module.getDataToRender;
+
+        const dataToRender: Promise<IDataToRenderNotExist | unknown> =
+            new DataToRender().get(loadResult.module, requestPath, moduleName);
+
+        assert.instanceOf(dataToRender, Promise);
+        return dataToRender
+            .then((data: IDataToRenderNotExist) => {
+                assert.isObject(data, 'Некорректный результат метода getDataToRender');
+                assert.equal(data.getDataToRender, false, 'Некорректный результат при несуществующем методе getDataToRender');
             });
     });
 });

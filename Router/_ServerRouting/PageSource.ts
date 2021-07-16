@@ -21,7 +21,7 @@ export class PageSource {
      * @returns
      */
     render(options: IRenderOptions, renderData: TPageSourceData,
-           onSuccessHandler: (html: string) => void, onNotFoundHandler: (error: Error) => void): Promise<unknown> {
+           onSuccessHandler: (html: string) => void, onNotFoundHandler: (error: Error) => void): Promise<TPageSource> {
         const pageSource: Promise<TPageSource> = this.renderPageSource(options, renderData);
 
         return pageSource
