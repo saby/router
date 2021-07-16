@@ -143,8 +143,6 @@ document.addEventListener('DOMContentLoaded', function () {
          Проблема в том, что при старте html.tmpl-страницы на клиенте, не вызывается UI/Base:Document
          Это должно быть сведено в одну точку */
          UIDeps.headDataStore.write('isNewEnvironment', true);
-         // переключаем SbisEnvUI/Bootstrap в режим рендера в div
-         AppEnv.setConfig('bootstrapWrapperMode', true);
          window.startContextData = {AppData: new UIState.AppData({})};
          require([${builderOptions.dependencies}], function (){
             var templateFn = ${builderOptions.builder};

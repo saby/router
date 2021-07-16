@@ -21,7 +21,6 @@ import { WsConfig } from './_Bootstrap/DataAggregators/WsConfig';
  * @param options
  */
 function renderControls(moduleName: string, options: IRenderOptions): Promise<string | void> {
-    setConfig('bootstrapWrapperMode', true);
     createTitle(options.pageConfig ? options.pageConfig.title || '' : '');
     createViewPort();
     const result: Promise<string> = Promise.resolve(ControlsHTMLTemplate({
