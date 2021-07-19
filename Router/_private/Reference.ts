@@ -35,8 +35,7 @@ interface IReferenceOptions extends Record<string, unknown> {
  *
  * @example
  * Обычно Router.router:Reference используется в сочетании с элементом ссылки `a`, так как
- * это позволяет пользователю видеть адрес перед кликом на ссылку в браузере, и открывать
- * ссылку в отдельной вкладке.
+ * это позволяет пользователю видеть адрес перед кликом на ссылку в браузере.
  *
  * <pre>
  * <Router.router:Reference state="destination/:country" country="Italy">
