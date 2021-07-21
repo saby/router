@@ -17,13 +17,20 @@ import { ILocation } from 'Application/Interface';
  * Одно состояние в истории браузера.
  * @interface Router/_private/Data/IHistoryState
  * @public
+ * @author Мустафин Л.И.
  */
 export interface IHistoryState {
-    /** Числовой идентификатор текущего состояния */
+    /**
+     * @cfg {Number} Числовой идентификатор текущего состояния.
+     */
     id?: number;
-    /** Действительный адрес, с которым работает роутинг */
+    /**
+     * @cfg {String} Действительный адрес, с которым работает роутинг.
+     */
     state: string;
-    /** "Красивый" адрес, который отображается пользователю */
+    /**
+     * @cfg {String} "Красивый" адрес, который отображается пользователю.
+     */
     href?: string;
 }
 

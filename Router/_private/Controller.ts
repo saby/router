@@ -22,7 +22,7 @@ _initializeController();
  * Performs the single page navigation (without reloading the page) to a new
  * state
  * @function
- * @param {Data.IHistoryState} newState state to navigate to
+ * @param {Router/router:IHistoryState} newState state to navigate to
  * @param {Function} [callback] optional callback that will be called instead of window.history.push
  * @param {Function} [errback] optional errback that will be called if one of the Routes rejected the navigation
  */
@@ -30,7 +30,7 @@ _initializeController();
  *
  * Производит single-page переход (без перезагрузки страницы) к новому состоянию (URL-адресу).
  * @function
- * @param {Data.IHistoryState} newState Состояние для перехода.
+ * @param {Router/router:IHistoryState} newState Состояние для перехода.
  * @param {Function} [callback] Необязательная функция, будет вызвана вместо window.history.push.
  * @param {Function} [errback] Необязательная функция, будет вызвана если один из компонентов Route отменит переход
  */
@@ -88,14 +88,14 @@ export function navigate(newState: Data.IHistoryState, callback?: Function, errb
  * Performs the single page navigation while replacing the current history state
  * instead of adding a new one
  * @function
- * @param {Data.IHistoryState} newHistoryState state to navigate to
+ * @param {Router/router:IHistoryState} newHistoryState state to navigate to
  * @see Router/_private/Controller#navigate
  */
 /**
  *
  * Производит переход без перезагрузки страницы без добавления новой записи в историю переходов (вместо этого заменяет текущую).
  * @function
- * @param {Data.IHistoryState} newHistoryState Состояние для перехода.
+ * @param {Router/router:IHistoryState} newHistoryState Состояние для перехода.
  * @see Router/_private/Controller#navigate
  */
 export function replaceState(newHistoryState: Data.IHistoryState): void {
