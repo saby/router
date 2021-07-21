@@ -10,6 +10,7 @@
  * @includes UrlRewriter Router/_private/UrlRewriter
  * @includes Reference Router/_private/Reference
  * @includes Route Router/_private/Route
+ * @includes IHistoryState Router/_private/Data/IHistoryState
  * @public
  * @author Мустафин Л.И.
  */
@@ -23,6 +24,7 @@
  * @includes UrlRewriter Router/_private/UrlRewriter
  * @includes Reference Router/_private/Reference
  * @includes Route Router/_private/Route
+ * @includes IHistoryState Router/_private/Data/IHistoryState
  * @public
  * @author Мустафин Л.И.
  */
