@@ -1,0 +1,43 @@
+import { Control, IControlOptions, TemplateFunction } from 'UI/Base';
+import { isLoaded, loadAsync, loadSync } from 'WasabyLoader/ModulesLoader';
+import template = require('wml!RouterDemo/resources/PageLoader');
+
+interface IOptions extends IControlOptions {
+    pageId: string;
+}
+/**
+ * Загрузчик страниц, используется в {@link RouterDemo/Main}
+ */
+export default class PageLoader extends Control<IOptions> {
+    protected _template: TemplateFunction = template;
+
+    protected pageClassLoaded: Function = null;
+
+    _beforeMount(options: IOptions): void {
+        this._changePage(options.pageId);
+    }
+
+    _beforeUpdate(options: IOptions): void {
+        if (this._options.pageId !== options.pageId) {
+            const res = this._changePage(options.pageId);
+            if (!res || !res.then) {
+                this._forceUpdate();
+                return;
+            }
+            res.then(() => {
+                this._forceUpdate();
+            });
+        }
+    }
+
+    private _changePage(newPage: String): Promise<void> | void {
+        const moduleName = 'RouterDemo/resources/' + newPage;
+        if (isLoaded(moduleName)) {
+            this.pageClassLoaded = loadSync(moduleName);
+            return;
+        }
+        return loadAsync(moduleName).then((newPageClass: Function) => {
+            this.pageClassLoaded = newPageClass;
+        });
+    }
+}
