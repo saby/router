@@ -1,0 +1,6 @@
+{
+  "/Router-demo": "Router-demo/p/Intro",
+  "/Router-demo/p": "Router-demo/p",
+  "/Router-demo/doc": "Router-demo/doc",
+  "/Router-demo/regex:^([0-9]{6})$": "Router-demo/doc/$1"
+}
