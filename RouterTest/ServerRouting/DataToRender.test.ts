@@ -1,0 +1,199 @@
+/* stan-disable code-duplication -- это unit-тесты */
+import { IRouter, getRootRouter } from 'Router/router';
+import { DataToRender } from 'Router/_ServerRouting/DataToRender';
+import { IModuleFound, ModuleLoadStatus } from 'Router/_ServerRouting/Interfaces/IModuleLoader';
+import { IDataToRenderNotExist } from 'Router/_ServerRouting/Interfaces/IPageSourceData';
+import * as IndexModule from 'RouterTest/Index';
+import {
+    clearResponseWrapper,
+    createFakeResponse,
+    fakeRenderOptions,
+} from 'RouterTest/ServerRouting/FakeRenderData';
+import { initResponseWrapper } from 'Router/ServerRouting';
+
+jest.useFakeTimers();
+
+describe('Router/_ServerRouting/DataToRender', () => {
+    const moduleName = 'RouterTest/Index';
+    const requestPath = '/url';
+    let Router: IRouter;
+
+    const SUCCESS_MODULE_LOADED: IModuleFound = {
+        loadStatus: ModuleLoadStatus.SUCCESS,
+        module: IndexModule,
+        isRSC: false,
+        moduleName: 'RouterTest/Index',
+    };
+
+    beforeEach(() => {
+        Router = getRootRouter();
+        initResponseWrapper(createFakeResponse(), fakeRenderOptions, SUCCESS_MODULE_LOADED);
+    });
+    afterEach(() => {
+        jest.restoreAllMocks();
+        clearResponseWrapper();
+    });
+
+    it('вызов getDataToRender модуля', async () => {
+        const loadResult = { ...SUCCESS_MODULE_LOADED };
+        const getDataToRenderOriginal = loadResult.module.getDataToRender?.bind(loadResult.module);
+
+        // заглушка метода getDataToRender, чтобы он возвращал что нужно
+        const getDataToRenderStub = jest
+            .spyOn(loadResult.module, 'getDataToRender')
+            // @ts-ignore
+            .mockImplementation((url, params, router) => {
+                if (url === requestPath) {
+                    return { url };
+                }
+
+                return getDataToRenderOriginal?.(url, params, router);
+            });
+
+        const dataToRender: Promise<unknown> = new DataToRender().get(
+            loadResult.module,
+            requestPath,
+            moduleName,
+            { ...fakeRenderOptions, Router }
+        );
+
+        // Должен быть вызван метод получения данных
+        expect(getDataToRenderStub).toHaveBeenCalledTimes(1);
+        expect(getDataToRenderStub).toHaveBeenCalledWith(
+            requestPath,
+            expect.objectContaining({ pageConfig: {} }),
+            Router
+        );
+        expect(dataToRender).toBeInstanceOf(Promise);
+
+        return dataToRender.then((data: unknown) => {
+            expect(data).toMatchObject({ url: requestPath });
+        });
+    });
+
+    it('вызов статичного метода getDataToRender из default', async () => {
+        // обнулим методы getDataToRender, как будто их нет
+        jest.spyOn(IndexModule, 'getDataToRender');
+        // @ts-ignore
+        delete IndexModule.getDataToRender;
+
+        const loadResult = { ...SUCCESS_MODULE_LOADED };
+        const getDataToRenderOriginal = loadResult.module.default.getDataToRender?.bind(
+            loadResult.module
+        );
+
+        // заглушка метода getDataToRender, чтобы он возвращал что нужно
+        const getDataToRenderStub = jest
+            .spyOn(loadResult.module.default, 'getDataToRender')
+            // @ts-ignore
+            .mockImplementation((url, params, router) => {
+                if (url === requestPath) {
+                    return { url };
+                }
+
+                return getDataToRenderOriginal?.(url);
+            });
+
+        const dataToRender: Promise<unknown> = new DataToRender().get(
+            loadResult.module,
+            requestPath,
+            moduleName,
+            { ...fakeRenderOptions, Router }
+        );
+
+        // Должен быть вызван метод получения данных
+        expect(getDataToRenderStub).toHaveBeenCalledTimes(1);
+        expect(getDataToRenderStub).toHaveBeenCalledWith(
+            requestPath,
+            expect.objectContaining({ pageConfig: {} }),
+            Router
+        );
+        expect(dataToRender).toBeInstanceOf(Promise);
+
+        return dataToRender.then((data: unknown) => {
+            expect(data).toMatchObject({ url: requestPath });
+        });
+    });
+
+    it('у модуля нет метода getDataToRender', async () => {
+        // обнулим методы getDataToRender, как будто их нет
+        jest.spyOn(IndexModule, 'getDataToRender');
+        // @ts-ignore
+        delete IndexModule.getDataToRender;
+
+        jest.spyOn(IndexModule.default, 'getDataToRender');
+        // @ts-ignore
+        delete IndexModule.default.getDataToRender;
+
+        const loadResult = { ...SUCCESS_MODULE_LOADED };
+
+        const dataToRender: Promise<IDataToRenderNotExist | unknown> = new DataToRender().get(
+            loadResult.module,
+            requestPath,
+            moduleName,
+            { ...fakeRenderOptions, Router }
+        );
+
+        expect(dataToRender).toBeInstanceOf(Promise);
+
+        return dataToRender.then((data: IDataToRenderNotExist | unknown) => {
+            expect(data).toMatchObject({ getDataToRender: false });
+        });
+    });
+
+    it('метод из отдельного модуля getDataToRender в приоритете', async () => {
+        const loadResult = { ...SUCCESS_MODULE_LOADED };
+        const getDataToRenderModule = {
+            default: jest.fn().mockImplementation((url: string) => Promise.resolve({ url })),
+        };
+        // метод в Index, который НЕ должен быть вызван
+        const indexGetDataToRenderStub = jest
+            .spyOn(loadResult.module, 'getDataToRender')
+            .mockImplementation(() => Promise.resolve({ from: 'Index' }));
+
+        const dataToRender: Promise<unknown> = new DataToRender().get(
+            loadResult.module,
+            requestPath,
+            moduleName,
+            { ...fakeRenderOptions, Router },
+            getDataToRenderModule
+        );
+
+        // Должен быть вызван метод из отдельного модуля, а не из Index
+        expect(getDataToRenderModule.default).toHaveBeenCalledTimes(1);
+        expect(getDataToRenderModule.default).toHaveBeenCalledWith(
+            requestPath,
+            expect.objectContaining({ pageConfig: {} }),
+            Router
+        );
+        expect(indexGetDataToRenderStub).not.toHaveBeenCalled();
+
+        return dataToRender.then((data: unknown) => {
+            expect(data).toMatchObject({ url: requestPath });
+        });
+    });
+
+    it('если в отдельном модуле нет default, используется метод из Index', async () => {
+        const loadResult = { ...SUCCESS_MODULE_LOADED };
+        // отдельный модуль есть, но без default-экспорта
+        const getDataToRenderModule = {};
+        // метод в Index, который должен быть вызван как fallback
+        const indexGetDataToRenderStub = jest
+            .spyOn(loadResult.module, 'getDataToRender')
+            .mockImplementation((url: string) => Promise.resolve({ url }));
+
+        const dataToRender: Promise<unknown> = new DataToRender().get(
+            loadResult.module,
+            requestPath,
+            moduleName,
+            { ...fakeRenderOptions, Router },
+            getDataToRenderModule
+        );
+
+        expect(indexGetDataToRenderStub).toHaveBeenCalledTimes(1);
+
+        return dataToRender.then((data: unknown) => {
+            expect(data).toMatchObject({ url: requestPath });
+        });
+    });
+});
